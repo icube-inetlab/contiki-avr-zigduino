@@ -50,16 +50,16 @@
 #define A3 17
 
 /*---------------------------------------------------------------------------*/
-PROCESS(hello_world_process, "Read sensor process");
-AUTOSTART_PROCESSES(&hello_world_process);
+PROCESS(sensors_process, "Read sensor process");
+AUTOSTART_PROCESSES(&sensors_process);
 /*---------------------------------------------------------------------------*/
-PROCESS_THREAD(hello_world_process, ev, data)
+PROCESS_THREAD(sensors_process, ev, data)
 {
 
     static struct etimer timer;
     static int counter=0;
     PROCESS_BEGIN();
-    int led = 6;
+    //int led = 6;
     //pinMode(led,OUTPUT);
 
     printf("Start loop\n");    
@@ -73,7 +73,6 @@ PROCESS_THREAD(hello_world_process, ev, data)
 
 	    printf("Read Sensor A0: %d\n", a0);
 	    printf("Read Sensor A1: %d\n", a1);
-	
 
   	    /*
 	    if (a7 >= 1023)
@@ -81,6 +80,7 @@ PROCESS_THREAD(hello_world_process, ev, data)
 	    else
 	    	digitalWrite(led,HIGH);
 	    */
+
 	    printf("Counter: %d\n", counter);
 	    counter++;
             etimer_reset(&timer);

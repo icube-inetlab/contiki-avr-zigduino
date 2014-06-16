@@ -1,4 +1,4 @@
-CONTIKI_PROJECT = hello-world
+CONTIKI_PROJECT = sensors
 all: $(CONTIKI_PROJECT)
 TARGET = avr-zigduino
 CONTIKI = ../../../..
