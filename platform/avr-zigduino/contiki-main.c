@@ -75,7 +75,7 @@
 SENSORS(&button_sensor);
 
 // Zigduino has not been tested with Rime.
-#if 0
+#if 1
 #if UIP_CONF_ROUTER&&0
 #include "net/routing/rimeroute.h"
 #include "net/rime/rime-udp.h"
@@ -178,10 +178,11 @@ void initialize(void)
   rimeaddr_t addr;
   memset(&addr, 0, sizeof(rimeaddr_t));
 
-  addr.u8[0] = 0xff;
-
+  addr.u8[4] = 0xff;
+  addr.u8[5] = 0xff;
+  
 // Is this required with IPv6, I wonder?
-#if 0
+#if 1
   rf230_set_pan_addr(
     IEEE802154_PANID,
     0,
@@ -192,7 +193,7 @@ void initialize(void)
   rimeaddr_set_node_addr(&addr);
 #endif
 
-  //PRINTF("MAC address %x:%x:%x:%x:%x:%x:%x:%x\n",addr.u8[0],addr.u8[1],addr.u8[2],addr.u8[3],addr.u8[4],addr.u8[5],addr.u8[6],addr.u8[7]);
+  PRINTF("MAC address %x:%x:%x:%x:%x:%x:%x:%x\n",addr.u8[0],addr.u8[1],addr.u8[2],addr.u8[3],addr.u8[4],addr.u8[5],addr.u8[6],addr.u8[7]);
 
   /* Initialize stack protocols */
   queuebuf_init();
@@ -241,7 +242,7 @@ void initialize(void)
   //process_start(&tcpip_process, NULL);
 
   //Give ourselves a prefix
-  // init_net();
+  //init_net();
 
   
   printf("Autostart other processes\n");
