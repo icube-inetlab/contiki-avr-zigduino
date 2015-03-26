@@ -29,13 +29,12 @@
  *
  * This file is part of the Contiki desktop environment
  *
- * $Id: ctk-textentry-checkbox.h,v 1.1 2006/06/17 22:41:17 adamdunkels Exp $
  *
  */
-#ifndef __CTK_TEXTENTRY_CHECKBOX_H__
-#define __CTK_TEXTENTRY_CHECKBOX_H__
+#ifndef CTK_TEXTENTRY_CHECKBOX_H_
+#define CTK_TEXTENTRY_CHECKBOX_H_
 
 unsigned char ctk_textentry_checkbox_input(ctk_arch_key_t c,
 					   struct ctk_textentry *t);
 
-#endif /* __CTK_TEXTENTRY_CHECKBOX_H__ */
+#endif /* CTK_TEXTENTRY_CHECKBOX_H_ */

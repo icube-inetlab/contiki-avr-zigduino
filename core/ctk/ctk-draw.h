@@ -45,12 +45,11 @@
  *
  * This file is part of the Contiki desktop OS.
  *
- * $Id: ctk-draw.h,v 1.2 2006/08/26 23:56:18 oliverschmidt Exp $
  *
  */
 
-#ifndef __CTK_DRAW_H__
-#define __CTK_DRAW_H__
+#ifndef CTK_DRAW_H_
+#define CTK_DRAW_H_
 
 #include "ctk/ctk.h"
 #include "contiki-conf.h"
@@ -282,7 +281,7 @@ extern unsigned char ctk_draw_windowborder_width,
   ctk_draw_windowtitle_height;
 
 
-#endif /* __CTK_DRAW_H__ */
+#endif /* CTK_DRAW_H_ */
 
 
 /**

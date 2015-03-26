@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: uip-over-mesh.h,v 1.3 2008/11/09 12:20:56 adamdunkels Exp $
  */
 
 /**
@@ -38,15 +37,15 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __UIP_OVER_MESH_H__
-#define __UIP_OVER_MESH_H__
+#ifndef UIP_OVER_MESH_H_
+#define UIP_OVER_MESH_H_
 
 #include "net/uip.h"
 #include "net/uip-fw.h"
 #include "net/rime.h"
 
-void uip_over_mesh_init(u16_t channels);
-u8_t uip_over_mesh_send(void);
+void uip_over_mesh_init(uint16_t channels);
+uint8_t uip_over_mesh_send(void);
 
 void uip_over_mesh_set_gateway_netif(struct uip_fw_netif *netif);
 void uip_over_mesh_set_gateway(rimeaddr_t *gw);
@@ -54,4 +53,4 @@ void uip_over_mesh_set_net(uip_ipaddr_t *addr, uip_ipaddr_t *mask);
 
 void uip_over_mesh_make_announced_gateway(void);
 
-#endif /* __UIP-OVER-MESH_H__ */
+#endif /* UIP-OVER-MESH_H_ */

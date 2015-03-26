@@ -43,12 +43,11 @@
  *
  * This file is part of the Contiki desktop OS.
  *
- * $Id: ctk.h,v 1.9 2009/02/28 10:43:30 oliverschmidt Exp $
  *
  */
 
-#ifndef __CTK_H__
-#define __CTK_H__
+#ifndef CTK_H_
+#define CTK_H_
 
 
 #include "contiki-conf.h"
@@ -987,4 +986,4 @@ CCIF extern process_event_t ctk_signal_button_activate,
 /** @} */
 /** @} */
 /** @} */
-#endif /* __CTK_H__ */
+#endif /* CTK_H_ */

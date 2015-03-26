@@ -26,7 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: collect-common.c,v 1.2 2010/11/06 11:55:15 adamdunkels Exp $
  */
 
 /**
@@ -44,7 +43,6 @@
 #include "collect-common.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -96,7 +94,7 @@ collect_common_recv(const rimeaddr_t *originator, uint8_t seqno, uint8_t hops,
   printf(" %lu %lu 0", ((time >> 16) & 0xffff), time & 0xffff);
   /* Ignore latency for now */
   printf(" %u %u %u %u",
-         originator->u8[1] + (originator->u8[0] << 8), seqno, hops, 0);
+         originator->u8[0] + (originator->u8[1] << 8), seqno, hops, 0);
   for(i = 0; i < payload_len / 2; i++) {
     memcpy(&data, payload, sizeof(data));
     payload += sizeof(data);

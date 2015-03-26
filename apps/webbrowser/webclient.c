@@ -29,12 +29,10 @@
  *
  * This file is part of the "contiki" web browser.
  *
- * $Id: webclient.c,v 1.11 2010/10/19 18:29:03 adamdunkels Exp $
  *
  */
 
 #include <string.h>
-#include <stdio.h>
 
 #include "contiki-net.h"
 #include "www.h"
@@ -59,20 +57,18 @@
 #define ISO_space    0x20
 
 struct webclient_state {
-  u8_t timer;
-  u8_t state;
-  u8_t httpflag;
+  uint8_t timer;
+  uint8_t state;
+  uint8_t httpflag;
 
-  u16_t port;
+  uint16_t port;
   char host[40];
   char file[WWW_CONF_MAX_URLLEN];
-  char formvars[100];
-  char content_length[5];
-  u16_t getrequestptr;
-  u16_t getrequestleft;
+  uint16_t getrequestptr;
+  uint16_t getrequestleft;
   
   char httpheaderline[200];
-  u16_t httpheaderlineptr;
+  uint16_t httpheaderlineptr;
 
   char mimetype[32];
 };
@@ -113,31 +109,18 @@ webclient_init(void)
 static void
 init_connection(void)
 {
-  /* If formvars is set, this is a post */
-  int method = s.formvars[0] ? 1 : 0;
-  size_t http_method_size = method ? sizeof(http_post) : sizeof(http_get);
-
   s.state = WEBCLIENT_STATE_STATUSLINE;
 
-  s.getrequestleft = http_method_size - 1 + 1 +
+  s.getrequestleft = sizeof(http_get) - 1 + 1 +
     sizeof(http_10) - 1 +
     sizeof(http_crnl) - 1 +
     sizeof(http_host) - 1 +
     sizeof(http_crnl) - 1 +
-    (u16_t)strlen(http_user_agent_fields) +
-    (u16_t)strlen(s.file) + (u16_t)strlen(s.host);
+    (uint16_t)strlen(http_user_agent_fields) +
+    (uint16_t)strlen(s.file) + (uint16_t)strlen(s.host);
   s.getrequestptr = 0;
 
-  if (method) {
-    snprintf(s.content_length,sizeof(s.content_length),"%i",strlen(s.formvars));
-    s.getrequestleft +=
-    sizeof(http_content_length) + (u16_t)strlen(s.content_length) -1 +
-    sizeof(http_crnl) - 1 +
-    sizeof(http_content_type_form) - 1 +
-    (u16_t)strlen(s.formvars) ; 
-  }
   s.httpheaderlineptr = 0;
-
 }
 /*-----------------------------------------------------------------------------------*/
 void
@@ -146,8 +129,8 @@ webclient_close(void)
   s.state = WEBCLIENT_STATE_CLOSE;
 }
 /*-----------------------------------------------------------------------------------*/
-static unsigned char
-webclient_common(const char *host, u16_t port, const char *file)
+unsigned char
+webclient_get(const char *host, uint16_t port, const char *file)
 {
   uip_ipaddr_t addr;
   struct uip_conn *conn;
@@ -157,9 +140,7 @@ webclient_common(const char *host, u16_t port, const char *file)
   ipaddr = &addr;
   if(uiplib_ipaddrconv(host, &addr) == 0) {
 #if UIP_UDP
-    ipaddr = resolv_lookup(host);
-    
-    if(ipaddr == NULL) {
+    if(resolv_lookup(host,&ipaddr) != RESOLV_STATUS_CACHED) {
       return 0;
     }
 #else /* UIP_UDP */
@@ -179,20 +160,6 @@ webclient_common(const char *host, u16_t port, const char *file)
   
   init_connection();
   return 1;
-}
-/*-----------------------------------------------------------------------------------*/
-unsigned char
-webclient_get(const char *host, u16_t port, const char *file)
-{
-  s.formvars[0] = 0;
-  return webclient_common(host,port,file);
-}
-/*-----------------------------------------------------------------------------------*/
-unsigned char
-webclient_post(const char *host, u16_t port, const char *file, const char *formvars)
-{
-  strncpy(s.formvars, formvars, sizeof(s.formvars));
-  return webclient_common(host,port,file);
 }
 /*-----------------------------------------------------------------------------------*/
 /* Copy data into a "window", specified by the windowstart and
@@ -242,13 +209,8 @@ window_copy(int curptr, const char *data, unsigned char datalen)
 static void
 senddata(void)
 {
-  u16_t len;
+  uint16_t len;
   int curptr;
-  
-  /* If formvars is set, this is a post */
-  int method = s.formvars[0] ? 1 : 0;
-  size_t http_method_size = method ? sizeof(http_post) : sizeof(http_get);
-  const char* http_method = method ? http_post : http_get;
   
   if(s.getrequestleft > 0) {
 
@@ -257,7 +219,7 @@ senddata(void)
     windowend = windowstart + uip_mss();
     windowptr = (char *)uip_appdata - windowstart;
 
-    curptr = window_copy(curptr, http_method, http_method_size - 1);
+    curptr = window_copy(curptr, http_get, sizeof(http_get) - 1);
     curptr = window_copy(curptr, s.file, (unsigned char)strlen(s.file));
     curptr = window_copy(curptr, " ", 1);
     curptr = window_copy(curptr, http_10, sizeof(http_10) - 1);
@@ -267,20 +229,9 @@ senddata(void)
     curptr = window_copy(curptr, http_host, sizeof(http_host) - 1);
     curptr = window_copy(curptr, s.host, (unsigned char)strlen(s.host));
     curptr = window_copy(curptr, http_crnl, sizeof(http_crnl) - 1);
-    
-    if (method) {
-      curptr = window_copy(curptr, http_content_length, sizeof(http_content_length) - 1);
-      curptr = window_copy(curptr, s.content_length, (unsigned char)strlen(s.content_length));
-      curptr = window_copy(curptr, http_crnl, sizeof(http_crnl) - 1);
-      curptr = window_copy(curptr, http_content_type_form, sizeof(http_content_type_form) - 1);
-    }
 
     curptr = window_copy(curptr, http_user_agent_fields,
 		       (unsigned char)strlen(http_user_agent_fields));
-
-    if (method) {
-      curptr = window_copy(curptr, s.formvars, (unsigned char)strlen(s.formvars));
-    }
     
     len = s.getrequestleft > uip_mss()?
       uip_mss():
@@ -292,7 +243,7 @@ senddata(void)
 static void
 acked(void)
 {
-  u16_t len;
+  uint16_t len;
   
   if(s.getrequestleft > 0) {
     len = s.getrequestleft > uip_mss()?
@@ -303,8 +254,8 @@ acked(void)
   }
 }
 /*-----------------------------------------------------------------------------------*/
-static u16_t
-parse_statusline(u16_t len)
+static uint16_t
+parse_statusline(uint16_t len)
 {
   char *cptr;
   
@@ -370,8 +321,8 @@ casecmp(char *str1, const char *str2, char len)
   return 0;
 }
 /*-----------------------------------------------------------------------------------*/
-static u16_t
-parse_headers(u16_t len)
+static uint16_t
+parse_headers(uint16_t len)
 {
   char *cptr;
   static unsigned char i;
@@ -439,7 +390,7 @@ parse_headers(u16_t len)
 static void
 newdata(void)
 {
-  u16_t len;
+  uint16_t len;
 
   len = uip_datalen();
 
@@ -533,7 +484,7 @@ webclient_appcall(void *state)
 	init_connection();
 	}*/
 #if UIP_UDP
-      if(resolv_lookup(s.host) == NULL) {
+      if(resolv_lookup(s.host, NULL) != RESOLV_STATUS_CACHED) {
 	resolv_query(s.host);
       }
 #endif /* UIP_UDP */

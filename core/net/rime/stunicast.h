@@ -60,7 +60,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: stunicast.h,v 1.7 2010/06/14 19:19:17 adamdunkels Exp $
  */
 
 /**
@@ -70,8 +69,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __STUNICAST_H__
-#define __STUNICAST_H__
+#ifndef STUNICAST_H_
+#define STUNICAST_H_
 
 #include "sys/ctimer.h"
 #include "net/rime/unicast.h"
@@ -108,6 +107,6 @@ void stunicast_set_timer(struct stunicast_conn *c, clock_time_t t);
 
 rimeaddr_t *stunicast_receiver(struct stunicast_conn *c);
 
-#endif /* __STUNICAST_H__ */
+#endif /* STUNICAST_H_ */
 /** @} */
 /** @} */

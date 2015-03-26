@@ -25,19 +25,17 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- * $Id: platform-conf.h,v 1.1 2010/08/24 16:26:38 joxe Exp $
  */
 
 /**
  * \file
- *         A brief description of what this file is
+ *         Platform configuration for the Z1 platform
  * \author
  *         Joakim Eriksson <joakime@sics.se>
  */
 
-#ifndef __PLATFORM_CONF_H__
-#define __PLATFORM_CONF_H__
+#ifndef PLATFORM_CONF_H_
+#define PLATFORM_CONF_H_
 
 /*
  * Definitions below are dictated by the hardware and not really
@@ -45,23 +43,11 @@
  */
 #define ZOLERTIA_Z1 1  /* Enric */
 
-#ifdef __IAR_SYSTEMS_ICC__
-#include <intrinsics.h>
-#include <in430.h>
-#define dint() __disable_interrupt()
-#define eint() __enable_interrupt()
-#define __MSP430F2617__ 1
-#define __MSP430__ 1
-#define CC_CONF_INLINE
-#define BV(x) (1 << x)
-#else
-#define CC_CONF_INLINE inline
-#endif
-
+#define PLATFORM_HAS_LEDS   1
+#define PLATFORM_HAS_BUTTON 1
 
 /* CPU target speed in Hz */
-/* CPU target speed in Hz */
-#define F_CPU 8000000uL // 8MHz by default 
+#define F_CPU 8000000uL /* 8MHz by default */
 //Enric #define F_CPU 3900000uL /*2457600uL*/
 
 /* Our clock resolution, this is the same as Unix HZ. */
@@ -73,9 +59,30 @@
 #define CLIF
 
 #define HAVE_STDINT_H
-#define MSP430_MEMCPY_WORKAROUND 1
 #include "msp430def.h"
 
+/* XXX Temporary place for defines that are lacking in mspgcc4's gpio.h */
+#ifdef __IAR_SYSTEMS_ICC__
+#ifndef P1SEL2_
+#define P1SEL2_              (0x0041u)  /* Port 1 Selection 2*/
+DEFC(   P1SEL2             , P1SEL2_)
+#endif
+#ifndef P5SEL2_
+#define P5SEL2_              (0x0045u)  /* Port 5 Selection 2*/
+DEFC(   P5SEL2             , P5SEL2_)
+#endif
+#else /* __IAR_SYSTEMS_ICC__ */
+#ifdef __GNUC__
+#ifndef P1SEL2_
+  #define P1SEL2_             0x0041  /* Port 1 Selection 2*/
+  sfrb(P1SEL2, P1SEL2_);
+#endif
+#ifndef P5SEL2_
+  #define P5SEL2_             0x0045  /* Port 5 Selection 2*/
+  sfrb(P5SEL2, P5SEL2_);
+#endif
+#endif /* __GNUC__ */
+#endif /* __IAR_SYSTEMS_ICC__ */
 
 /* Types for clocks and uip_stats */
 typedef unsigned short uip_stats_t;
@@ -220,4 +227,4 @@ typedef unsigned long off_t;
 #define CC2420_SPI_DISABLE()    (CC2420_CSN_PORT(OUT) |=  BV(CC2420_CSN_PIN))
 #define CC2420_SPI_IS_ENABLED() ((CC2420_CSN_PORT(OUT) & BV(CC2420_CSN_PIN)) != BV(CC2420_CSN_PIN))
 
-#endif /* __PLATFORM_CONF_H__ */
+#endif /* PLATFORM_CONF_H_ */

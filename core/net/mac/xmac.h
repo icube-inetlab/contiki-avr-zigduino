@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: xmac.h,v 1.9 2010/02/23 20:09:11 nifi Exp $
  */
 
 /**
@@ -38,8 +37,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __XMAC_H__
-#define __XMAC_H__
+#ifndef XMAC_H_
+#define XMAC_H_
 
 #include "sys/rtimer.h"
 #include "net/mac/rdc.h"
@@ -62,4 +61,4 @@ extern const struct rdc_driver xmac_driver;
 
 void xmac_set_announcement_radio_txpower(int txpower);
 
-#endif /* __XMAC_H__ */
+#endif /* XMAC_H_ */

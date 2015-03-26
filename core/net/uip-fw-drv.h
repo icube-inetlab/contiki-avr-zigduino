@@ -30,14 +30,13 @@
  * 
  * Author: Adam Dunkels <adam@sics.se>
  *
- * $Id: uip-fw-drv.h,v 1.1 2007/05/20 21:29:40 oliverschmidt Exp $
  */
-#ifndef __UIP_FW_DRV_H__
-#define __UIP_FW_DRV_H__
+#ifndef UIP_FW_DRV_H_
+#define UIP_FW_DRV_H_
 
 #include "contiki.h"
 #include "net/uip-fw.h"
 
 PROCESS_NAME(uip_fw_process);
 
-#endif /* __UIP_FW_DRV_H__ */
+#endif /* UIP_FW_DRV_H_ */

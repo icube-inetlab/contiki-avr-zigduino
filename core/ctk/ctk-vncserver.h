@@ -29,15 +29,14 @@
  *
  * This file is part of the "ctk" console GUI toolkit for cc65
  *
- * $Id: ctk-vncserver.h,v 1.2 2007/03/21 23:18:49 adamdunkels Exp $
  *
  */
-#ifndef __CTK_VNCSERVER_H__
-#define __CTK_VNCSERVER_H__
+#ifndef CTK_VNCSERVER_H_
+#define CTK_VNCSERVER_H_
 
 #include "contiki.h"
 void ctk_vncserver_init(char *arg);
 
 PROCESS_NAME(ctk_vncserver_process);
 
-#endif /* __CTK_VNCSERVER_H__ */
+#endif /* CTK_VNCSERVER_H_ */

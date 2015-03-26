@@ -30,7 +30,6 @@
  *
  * Author: Adam Dunkels <adam@sics.se>
  *
- * $Id: shell-ping.c,v 1.6 2011/01/12 22:58:34 nifi Exp $
  */
 
 #include <string.h>
@@ -39,17 +38,6 @@
 #include "contiki.h"
 #include "shell.h"
 #include "contiki-net.h"
-
-#define DEBUG 1
-#if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
-#define PRINT6ADDR(addr) PRINTF(" %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x ", ((u8_t *)addr)[0], ((u8_t *)addr)[1], ((u8_t *)addr)[2], ((u8_t *)addr)[3], ((u8_t *)addr)[4], ((u8_t *)addr)[5], ((u8_t *)addr)[6], ((u8_t *)addr)[7], ((u8_t *)addr)[8], ((u8_t *)addr)[9], ((u8_t *)addr)[10], ((u8_t *)addr)[11], ((u8_t *)addr)[12], ((u8_t *)addr)[13], ((u8_t *)addr)[14], ((u8_t *)addr)[15])
-#define PRINTLLADDR(lladdr) PRINTF(" %02x:%02x:%02x:%02x:%02x:%02x ",lladdr->addr[0], lladdr->addr[1], lladdr->addr[2], lladdr->addr[3],lladdr->addr[4], lladdr->addr[5])
-#else
-#define PRINTF(...)
-#define PRINT6ADDR(addr)
-#endif
 
 /*---------------------------------------------------------------------------*/
 PROCESS(shell_ping_process, "ping");
@@ -96,17 +84,11 @@ send_ping(uip_ipaddr_t *dest_addr)
   
   uip_len = UIP_ICMPH_LEN + UIP_ICMP6_ECHO_REQUEST_LEN +
     UIP_IPH_LEN + PING_DATALEN;
-  UIP_IP_BUF->len[0] = (u8_t)((uip_len - 40) >> 8);
-  UIP_IP_BUF->len[1] = (u8_t)((uip_len - 40) & 0x00ff);
+  UIP_IP_BUF->len[0] = (uint8_t)((uip_len - 40) >> 8);
+  UIP_IP_BUF->len[1] = (uint8_t)((uip_len - 40) & 0x00ff);
   
   UIP_ICMP_BUF->icmpchksum = 0;
   UIP_ICMP_BUF->icmpchksum = ~uip_icmp6chksum();
-  
-  PRINTF("Sending Echo Request to");
-  PRINT6ADDR(&UIP_IP_BUF->destipaddr);
-  PRINTF("from");
-  PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
-  PRINTF("\n");
   
   tcpip_ipv6_output();
 }
@@ -133,11 +115,11 @@ send_ping(uip_ipaddr_t *dest_addr)
   UIP_ICMP_BUF->seqno = uip_htons(seqno++);
   
   uip_len = UIP_ICMPH_LEN + UIP_IPH_LEN + PING_DATALEN;
-  UIP_IP_BUF->len[0] = (u8_t)((uip_len) >> 8);
-  UIP_IP_BUF->len[1] = (u8_t)((uip_len) & 0x00ff);
+  UIP_IP_BUF->len[0] = (uint8_t)((uip_len) >> 8);
+  UIP_IP_BUF->len[1] = (uint8_t)((uip_len) & 0x00ff);
   
   UIP_ICMP_BUF->icmpchksum = 0;
-  UIP_ICMP_BUF->icmpchksum = ~uip_chksum((u16_t *)&(UIP_ICMP_BUF->type),
+  UIP_ICMP_BUF->icmpchksum = ~uip_chksum((uint16_t *)&(UIP_ICMP_BUF->type),
 					 UIP_ICMPH_LEN + PING_DATALEN);
 
   /* Calculate IP checksum. */
@@ -161,7 +143,6 @@ PROCESS_THREAD(shell_ping_process, ev, data)
     PROCESS_EXIT();
   }
   uiplib_ipaddrconv(data, &remoteaddr);
-  icmp6_new(NULL);
 
   send_ping(&remoteaddr);
   
@@ -171,18 +152,6 @@ PROCESS_THREAD(shell_ping_process, ev, data)
     etimer_set(&e, CLOCK_SECOND * 10);
     
     PROCESS_WAIT_EVENT();
-  
-#if UIP_CONF_IPV6
-    if(ev == tcpip_icmp6_event) {
-      switch(*((uint8_t *)data)){
-      case ICMP6_ECHO_REPLY:
-	PRINTF("Echo reply received.\n");
-	break;
-      default:
-	PRINTF("Other ICMP6 message received.\n");
-      }
-    }
-#endif
 
     if(etimer_expired(&e)) {
       PROCESS_EXIT();      
@@ -197,7 +166,7 @@ PROCESS_THREAD(shell_ping_process, ev, data)
     } else if(ev == resolv_event_found) {
       /* Either found a hostname, or not. */
       if((char *)data != NULL &&
-	 resolv_lookup((char *)data) != NULL) {
+	 resolv_lookup((char *)data, &ipaddr) == RESOLV_STATUS_CACHED) {
 	uip_ipaddr_copy(serveraddr, ipaddr);
 	telnet_connect(&s, server, serveraddr, nick);
       } else {

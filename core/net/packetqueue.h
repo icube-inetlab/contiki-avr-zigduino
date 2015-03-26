@@ -41,7 +41,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: packetqueue.h,v 1.1 2010/06/14 19:19:16 adamdunkels Exp $
  */
 
 /**
@@ -51,8 +50,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __PACKETQUEUE_H__
-#define __PACKETQUEUE_H__
+#ifndef PACKETQUEUE_H_
+#define PACKETQUEUE_H_
 
 #include "lib/list.h"
 #include "lib/memb.h"
@@ -217,7 +216,7 @@ void *packetqueue_ptr(struct packetqueue_item *i);
  */
 
 
-#endif /* __PACKETQUEUE_H__ */
+#endif /* PACKETQUEUE_H_ */
 
 /** @} */
 /** @} */

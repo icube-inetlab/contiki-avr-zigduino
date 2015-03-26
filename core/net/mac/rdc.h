@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: rdc.h,v 1.1 2010/02/23 20:09:11 nifi Exp $
  */
 
 /**
@@ -39,11 +38,18 @@
  *         Niclas Finne <nfi@sics.se>
  */
 
-#ifndef __RDC_H__
-#define __RDC_H__
+#ifndef RDC_H_
+#define RDC_H_
 
 #include "contiki-conf.h"
 #include "net/mac/mac.h"
+
+/* List of packets to be sent by RDC layer */
+struct rdc_buf_list {
+  struct rdc_buf_list *next;
+  struct queuebuf *buf;
+  void *ptr;
+};
 
 /**
  * The structure of a RDC (radio duty cycling) driver in Contiki.
@@ -56,6 +62,9 @@ struct rdc_driver {
 
   /** Send a packet from the Rime buffer  */
   void (* send)(mac_callback_t sent_callback, void *ptr);
+
+  /** Send a packet list */
+  void (* send_list)(mac_callback_t sent_callback, void *ptr, struct rdc_buf_list *list);
 
   /** Callback for getting notified of incoming packet. */
   void (* input)(void);
@@ -70,4 +79,4 @@ struct rdc_driver {
   unsigned short (* channel_check_interval)(void);
 };
 
-#endif /* __RDC_H__ */
+#endif /* RDC_H_ */

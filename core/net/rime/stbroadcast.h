@@ -48,7 +48,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: stbroadcast.h,v 1.4 2010/06/14 19:19:17 adamdunkels Exp $
  */
 
 /**
@@ -58,8 +57,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __STBROADCAST_H__
-#define __STBROADCAST_H__
+#ifndef STBROADCAST_H_
+#define STBROADCAST_H_
 
 #include "sys/ctimer.h"
 
@@ -148,7 +147,7 @@ void stbroadcast_cancel(struct stbroadcast_conn *c);
  */
 void stbroadcast_set_timer(struct stbroadcast_conn *c, clock_time_t t);
 
-#endif /* __STBROADCAST_H__ */
+#endif /* STBROADCAST_H_ */
 
 /** @} */
 /** @} */

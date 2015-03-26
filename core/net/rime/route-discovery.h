@@ -45,7 +45,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: route-discovery.h,v 1.11 2010/06/18 08:28:56 nifi Exp $
  */
 
 /**
@@ -55,8 +54,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __ROUTE_DISCOVERY_H__
-#define __ROUTE_DISCOVERY_H__
+#ifndef ROUTE_DISCOVERY_H_
+#define ROUTE_DISCOVERY_H_
 
 #include "net/rime/unicast.h"
 #include "net/rime/netflood.h"
@@ -89,6 +88,6 @@ int route_discovery_discover(struct route_discovery_conn *c, const rimeaddr_t *d
 
 void route_discovery_close(struct route_discovery_conn *c);
 
-#endif /* __ROUTE_DISCOVERY_H__ */
+#endif /* ROUTE_DISCOVERY_H_ */
 /** @} */
 /** @} */

@@ -51,7 +51,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: servreg-hack.h,v 1.1 2010/06/15 19:00:28 adamdunkels Exp $
  */
 
 /**
@@ -81,6 +80,7 @@ void servreg_hack_init(void);
 /**
  * \brief      Register that this node provides a service
  * \param service_id The 8-bit ID for the service
+ * \param addr The address associated with the service
  *
  *             This function is used to register a
  *             service. Registering a service means that other nodes
@@ -91,7 +91,7 @@ void servreg_hack_init(void);
  *             reached: this is up to the application that uses the
  *             servreg-hack application.
  */
-void servreg_hack_register(servreg_hack_id_t service_id);
+void servreg_hack_register(servreg_hack_id_t service_id, const uip_ipaddr_t *addr);
 
 
 /**

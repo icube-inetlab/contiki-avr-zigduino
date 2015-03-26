@@ -12,8 +12,8 @@
  *@{
  */
 
-#ifndef __MICRO_COMMON_H__
-#define __MICRO_COMMON_H__
+#ifndef MICRO_COMMON_H_
+#define MICRO_COMMON_H_
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #ifndef __STSTATUS_TYPE__
@@ -21,7 +21,7 @@
   //This is necessary here because halSleepForQsWithOptions returns an
   //StStatus and not adding this typedef to this file breaks a
   //whole lot of builds.
-  typedef int8u StStatus;
+  typedef uint8_t StStatus;
 #endif //__STSTATUS_TYPE__
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
@@ -58,7 +58,7 @@ void halInternalEnableWatchDog(void);
  * 
  * @param magicKey  A value (::MICRO_DISABLE_WATCH_DOG_KEY) that enables the function.
  */
-void halInternalDisableWatchDog(int8u magicKey);
+void halInternalDisableWatchDog(uint8_t magicKey);
 
 /** @brief Determines whether the watchdog has been enabled or disabled.
  *
@@ -90,7 +90,7 @@ boolean halInternalWatchDogEnabled( void );
  */
 enum SleepModes
 #else
-typedef int8u SleepModes;
+typedef uint8_t SleepModes;
 enum
 #endif
 {
@@ -116,7 +116,7 @@ enum
  * @param us  The specified time, in microseconds. 
               Values should be between 1 and 65535 microseconds.
  */
-void halCommonDelayMicroseconds(int16u us);
+void halCommonDelayMicroseconds(uint16_t us);
 
 /** @brief Request the appplication to enter in bootloader mode
  *
@@ -132,7 +132,7 @@ void halCommonDelayMicroseconds(int16u us);
  * default panID (only vaild for RF mode).
  * @return An error code or it will never return.
  */
-StStatus halBootloaderStart(int8u mode, int8u channel, int16u panId);
+StStatus halBootloaderStart(uint8_t mode, uint8_t channel, uint16_t panId);
 
 #ifdef CORTEXM3_STM32F103
 #include "micro/cortexm3/stm32f103ret/micro-specific.h"
@@ -141,7 +141,7 @@ StStatus halBootloaderStart(int8u mode, int8u channel, int16u panId);
 #include "micro/cortexm3/micro-common.h"
 #endif
 
-#endif //__MICRO_COMMON_H__
+#endif //MICRO_COMMON_H_
 
 /** @} END micro group  */
   

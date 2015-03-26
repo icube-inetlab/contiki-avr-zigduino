@@ -39,11 +39,15 @@
  *
  */
 
-#ifndef __UIP_DS6_H__
-#define __UIP_DS6_H__
+#ifndef UIP_DS6_H_
+#define UIP_DS6_H_
 
 #include "net/uip.h"
 #include "sys/stimer.h"
+/* The size of uip_ds6_addr_t depends on UIP_ND6_DEF_MAXDADNS. Include uip-nd6.h to define it. */
+#include "net/uip-nd6.h"
+#include "net/uip-ds6-route.h"
+#include "net/uip-ds6-nbr.h"
 
 /*--------------------------------------------------*/
 /** Configuration. For all tables (Neighbor cache, Prefix List, Routing Table,
@@ -53,14 +57,6 @@
  * - the number of elements assigned by the system (name suffixed by _NBS)
  * - the total number of elements is the sum (name suffixed by _NB)
 */
-/* Neighbor cache */
-#define UIP_DS6_NBR_NBS 0
-#ifndef UIP_CONF_DS6_NBR_NBU
-#define UIP_DS6_NBR_NBU  4
-#else
-#define UIP_DS6_NBR_NBU UIP_CONF_DS6_NBR_NBU
-#endif
-#define UIP_DS6_NBR_NB UIP_DS6_NBR_NBS + UIP_DS6_NBR_NBU
 
 /* Default router list */
 #define UIP_DS6_DEFRT_NBS 0
@@ -79,15 +75,6 @@
 #define UIP_DS6_PREFIX_NBU UIP_CONF_DS6_PREFIX_NBU
 #endif
 #define UIP_DS6_PREFIX_NB UIP_DS6_PREFIX_NBS + UIP_DS6_PREFIX_NBU
-
-/* Routing table */
-#define UIP_DS6_ROUTE_NBS 0
-#ifndef UIP_CONF_DS6_ROUTE_NBU
-#define UIP_DS6_ROUTE_NBU 4
-#else
-#define UIP_DS6_ROUTE_NBU UIP_CONF_DS6_ROUTE_NBU
-#endif
-#define UIP_DS6_ROUTE_NB UIP_DS6_ROUTE_NBS + UIP_DS6_ROUTE_NBU
 
 /* Unicast address list*/
 #define UIP_DS6_ADDR_NBS 1
@@ -124,14 +111,13 @@
 #endif
 #define UIP_DS6_AADDR_NB UIP_DS6_AADDR_NBS + UIP_DS6_AADDR_NBU
 
-
 /*--------------------------------------------------*/
-/** \brief Possible states for the nbr cache entries */
-#define  NBR_INCOMPLETE 0
-#define  NBR_REACHABLE 1
-#define  NBR_STALE 2
-#define  NBR_DELAY 3
-#define  NBR_PROBE 4
+/* Should we use LinkLayer acks in NUD ?*/
+#ifndef UIP_CONF_DS6_LL_NUD
+#define UIP_DS6_LL_NUD 0
+#else
+#define UIP_DS6_LL_NUD UIP_CONF_DS6_LL_NUD
+#endif
 
 /** \brief Possible states for the an address  (RFC 4862) */
 #define ADDR_TENTATIVE 0
@@ -149,36 +135,11 @@
 #define FOUND 0
 #define FREESPACE 1
 #define NOSPACE 2
-
-
 /*--------------------------------------------------*/
+
 #if UIP_CONF_IPV6_QUEUE_PKT
 #include "net/uip-packetqueue.h"
 #endif                          /*UIP_CONF_QUEUE_PKT */
-/** \brief An entry in the nbr cache */
-typedef struct uip_ds6_nbr {
-  uint8_t isused;
-  uip_ipaddr_t ipaddr;
-  uip_lladdr_t lladdr;
-  struct stimer reachable;
-  struct stimer sendns;
-  clock_time_t last_lookup;
-  uint8_t nscount;
-  uint8_t isrouter;
-  uint8_t state;
-#if UIP_CONF_IPV6_QUEUE_PKT
-  struct uip_packetqueue_handle packethandle;
-#define UIP_DS6_NBR_PACKET_LIFETIME CLOCK_SECOND * 4
-#endif                          /*UIP_CONF_QUEUE_PKT */
-} uip_ds6_nbr_t;
-
-/** \brief An entry in the default router list */
-typedef struct uip_ds6_defrt {
-  uint8_t isused;
-  uip_ipaddr_t ipaddr;
-  struct stimer lifetime;
-  uint8_t isinfinite;
-} uip_ds6_defrt_t;
 
 /** \brief A prefix list entry */
 #if UIP_CONF_ROUTER
@@ -187,8 +148,8 @@ typedef struct uip_ds6_prefix {
   uip_ipaddr_t ipaddr;
   uint8_t length;
   uint8_t advertise;
-  u32_t vlifetime;
-  u32_t plifetime;
+  uint32_t vlifetime;
+  uint32_t plifetime;
   uint8_t l_a_reserved; /**< on-link and autonomous flags + 6 reserved bits */
 } uip_ds6_prefix_t;
 #else /* UIP_CONF_ROUTER */
@@ -209,8 +170,10 @@ typedef struct uip_ds6_addr {
   uint8_t type;
   uint8_t isinfinite;
   struct stimer vlifetime;
+#if UIP_ND6_DEF_MAXDADNS > 0
   struct timer dadtimer;
   uint8_t dadnscount;
+#endif /* UIP_ND6_DEF_MAXDADNS > 0 */
 } uip_ds6_addr_t;
 
 /** \brief Anycast address  */
@@ -225,19 +188,6 @@ typedef struct uip_ds6_maddr {
   uip_ipaddr_t ipaddr;
 } uip_ds6_maddr_t;
 
-/** \brief define some additional RPL related route state and
- *  neighbor callback for RPL - if not a DS6_ROUTE_STATE is already set */
-#ifndef UIP_DS6_ROUTE_STATE_TYPE
-#define UIP_DS6_ROUTE_STATE_TYPE rpl_route_entry_t
-/* Needed for the extended route entry state when using ContikiRPL */
-typedef struct rpl_route_entry {
-  uint32_t lifetime;
-  uint32_t saved_lifetime;
-  void *dag;
-  uint8_t learned_from;
-} rpl_route_entry_t;
-#endif /* UIP_DS6_ROUTE_STATE_TYPE */
-
 /* only define the callback if RPL is active */
 #if UIP_CONF_IPV6_RPL
 #ifndef UIP_CONF_DS6_NEIGHBOR_STATE_CHANGED
@@ -245,19 +195,12 @@ typedef struct rpl_route_entry {
 #endif /* UIP_CONF_DS6_NEIGHBOR_STATE_CHANGED */
 #endif /* UIP_CONF_IPV6_RPL */
 
+#if UIP_CONF_IPV6_RPL
+#ifndef UIP_CONF_DS6_LINK_NEIGHBOR_CALLBACK
+#define UIP_CONF_DS6_LINK_NEIGHBOR_CALLBACK rpl_link_neighbor_callback
+#endif /* UIP_CONF_DS6_NEIGHBOR_STATE_CHANGED */
+#endif /* UIP_CONF_IPV6_RPL */
 
-
-/** \brief An entry in the routing table */
-typedef struct uip_ds6_route {
-  uint8_t isused;
-  uip_ipaddr_t ipaddr;
-  uint8_t length;
-  uint8_t metric;
-  uip_ipaddr_t nexthop;
-#ifdef UIP_DS6_ROUTE_STATE_TYPE
-  UIP_DS6_ROUTE_STATE_TYPE state;
-#endif
-} uip_ds6_route_t;
 
 /** \brief  Interface structure (contains all the interface variables) */
 typedef struct uip_ds6_netif {
@@ -304,24 +247,8 @@ uint8_t uip_ds6_list_loop(uip_ds6_element_t *list, uint8_t size,
                           uint8_t ipaddrlen,
                           uip_ds6_element_t **out_element);
 
-/** \name Neighbor Cache basic routines */
-/** @{ */
-uip_ds6_nbr_t *uip_ds6_nbr_add(uip_ipaddr_t *ipaddr, uip_lladdr_t *lladdr,
-                               uint8_t isrouter, uint8_t state);
-void uip_ds6_nbr_rm(uip_ds6_nbr_t *nbr);
-uip_ds6_nbr_t *uip_ds6_nbr_lookup(uip_ipaddr_t *ipaddr);
-
 /** @} */
 
-/** \name Default router list basic routines */
-/** @{ */
-uip_ds6_defrt_t *uip_ds6_defrt_add(uip_ipaddr_t *ipaddr,
-                                   unsigned long interval);
-void uip_ds6_defrt_rm(uip_ds6_defrt_t *defrt);
-uip_ds6_defrt_t *uip_ds6_defrt_lookup(uip_ipaddr_t *ipaddr);
-uip_ipaddr_t *uip_ds6_defrt_choose(void);
-
-/** @} */
 
 /** \name Prefix list basic routines */
 /** @{ */
@@ -354,9 +281,9 @@ uip_ds6_addr_t *uip_ds6_get_global(int8_t state);
 
 /** \name Multicast address list basic routines */
 /** @{ */
-uip_ds6_maddr_t *uip_ds6_maddr_add(uip_ipaddr_t *ipaddr);
+uip_ds6_maddr_t *uip_ds6_maddr_add(const uip_ipaddr_t *ipaddr);
 void uip_ds6_maddr_rm(uip_ds6_maddr_t *maddr);
-uip_ds6_maddr_t *uip_ds6_maddr_lookup(uip_ipaddr_t *ipaddr);
+uip_ds6_maddr_t *uip_ds6_maddr_lookup(const uip_ipaddr_t *ipaddr);
 
 /** @} */
 
@@ -369,30 +296,22 @@ uip_ds6_aaddr_t *uip_ds6_aaddr_lookup(uip_ipaddr_t *ipaddr);
 /** @} */
 
 
-/** \name Routing Table basic routines */
-/** @{ */
-uip_ds6_route_t *uip_ds6_route_lookup(uip_ipaddr_t *destipaddr);
-uip_ds6_route_t *uip_ds6_route_add(uip_ipaddr_t *ipaddr, uint8_t length,
-                                   uip_ipaddr_t *next_hop, uint8_t metric);
-void uip_ds6_route_rm(uip_ds6_route_t *route);
-void uip_ds6_route_rm_by_nexthop(uip_ipaddr_t *nexthop);
-
-/** @} */
-
 /** \brief set the last 64 bits of an IP address based on the MAC address */
-void uip_ds6_set_addr_iid(uip_ipaddr_t * ipaddr, uip_lladdr_t * lladdr);
+void uip_ds6_set_addr_iid(uip_ipaddr_t *ipaddr, uip_lladdr_t *lladdr);
 
 /** \brief Get the number of matching bits of two addresses */
-uint8_t get_match_length(uip_ipaddr_t * src, uip_ipaddr_t * dst);
+uint8_t get_match_length(uip_ipaddr_t *src, uip_ipaddr_t *dst);
 
+#if UIP_ND6_DEF_MAXDADNS >0
 /** \brief Perform Duplicate Address Selection on one address */
-void uip_ds6_dad(uip_ds6_addr_t * ifaddr);
+void uip_ds6_dad(uip_ds6_addr_t *ifaddr);
 
 /** \brief Callback when DAD failed */
-int uip_ds6_dad_failed(uip_ds6_addr_t * ifaddr);
+int uip_ds6_dad_failed(uip_ds6_addr_t *ifaddr);
+#endif /* UIP_ND6_DEF_MAXDADNS */
 
 /** \brief Source address selection, see RFC 3484 */
-void uip_ds6_select_src(uip_ipaddr_t * src, uip_ipaddr_t * dst);
+void uip_ds6_select_src(uip_ipaddr_t *src, uip_ipaddr_t *dst);
 
 #if UIP_CONF_ROUTER
 #if UIP_ND6_SEND_RA
@@ -418,4 +337,4 @@ uint32_t uip_ds6_compute_reachable_time(void); /** \brief compute random reachab
 /** @} */
 /** @} */
 
-#endif /* __UIP_DS6_H__ */
+#endif /* UIP_DS6_H_ */

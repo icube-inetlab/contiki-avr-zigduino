@@ -26,7 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: framer.h,v 1.2 2010/03/01 13:30:23 nifi Exp $
  */
 
 /**
@@ -39,8 +38,10 @@
  *         Joakim Eriksson <joakime@sics.se>
  */
 
-#ifndef __FRAMER_H__
-#define __FRAMER_H__
+#ifndef FRAMER_H_
+#define FRAMER_H_
+
+#define FRAMER_FAILED -1
 
 struct framer {
 
@@ -49,4 +50,4 @@ struct framer {
 
 };
 
-#endif /* __FRAMER_H__ */
+#endif /* FRAMER_H_ */

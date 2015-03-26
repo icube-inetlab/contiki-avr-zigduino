@@ -58,7 +58,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: multihop.h,v 1.6 2009/03/24 07:15:04 adamdunkels Exp $
  */
 
 /**
@@ -68,8 +67,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __MULTIHOP_H__
-#define __MULTIHOP_H__
+#ifndef MULTIHOP_H_
+#define MULTIHOP_H_
 
 #include "net/rime/unicast.h"
 #include "net/rime/rimeaddr.h"
@@ -104,7 +103,8 @@ void multihop_open(struct multihop_conn *c, uint16_t channel,
 	     const struct multihop_callbacks *u);
 void multihop_close(struct multihop_conn *c);
 int multihop_send(struct multihop_conn *c, const rimeaddr_t *to);
+void multihop_resend(struct multihop_conn *c, const rimeaddr_t *nexthop);
 
-#endif /* __MULTIHOP_H__ */
+#endif /* MULTIHOP_H_ */
 /** @} */
 /** @} */

@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: uip-over-mesh.c,v 1.19 2010/03/31 09:38:42 fros4943 Exp $
  */
 
 /**
@@ -40,7 +39,6 @@
 
 #include <stdio.h>
 
-#include "net/hc.h"
 #include "net/uip-fw.h"
 #include "net/uip-over-mesh.h"
 #include "net/rime/route-discovery.h"
@@ -106,7 +104,6 @@ recv_data(struct unicast_conn *c, const rimeaddr_t *from)
     }
   }
 
-  /*  uip_len = hc_inflate(&uip_buf[UIP_LLH_LEN], uip_len);*/
 
   PRINTF("uip-over-mesh: %d.%d: recv_data with len %d\n",
 	 rimeaddr_node_addr.u8[0], rimeaddr_node_addr.u8[1], uip_len);
@@ -196,7 +193,7 @@ uip_over_mesh_make_announced_gateway(void)
 const static struct trickle_callbacks trickle_call = {gateway_announce_recv};
 /*---------------------------------------------------------------------------*/
 void
-uip_over_mesh_init(u16_t channels)
+uip_over_mesh_init(uint16_t channels)
 {
 
   PRINTF("Our address is %d.%d (%d.%d.%d.%d)\n",
@@ -215,7 +212,7 @@ uip_over_mesh_init(u16_t channels)
   route_set_lifetime(30);
 }
 /*---------------------------------------------------------------------------*/
-u8_t
+uint8_t
 uip_over_mesh_send(void)
 {
   rimeaddr_t receiver;
@@ -256,7 +253,6 @@ uip_over_mesh_send(void)
 	 receiver.u8[0], receiver.u8[1],
 	 uip_len);
   
-  /*  uip_len = hc_compress(&uip_buf[UIP_LLH_LEN], uip_len);*/
   
   packetbuf_copyfrom(&uip_buf[UIP_LLH_LEN], uip_len);
 

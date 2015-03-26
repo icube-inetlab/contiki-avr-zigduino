@@ -1,13 +1,7 @@
 /* -*- C -*- */
-/* @(#)$Id: contiki-conf.h,v 1.91 2011/01/09 21:04:14 adamdunkels Exp $ */
 
 #ifndef CONTIKI_CONF_H
 #define CONTIKI_CONF_H
-
-
-#ifdef PROJECT_CONF_H
-#include "project-conf.h"
-#endif /* PROJECT_CONF_H */
 
 #ifdef PLATFORM_CONF_H
 #include PLATFORM_CONF_H
@@ -39,10 +33,23 @@
 #define CC2420_CONF_AUTOACK              1
 #endif /* CC2420_CONF_AUTOACK */
 
+/* Specify whether the RDC layer should enable
+   per-packet power profiling. */
+#define CONTIKIMAC_CONF_COMPOWER         1
+#define XMAC_CONF_COMPOWER               1
+#define CXMAC_CONF_COMPOWER              1
 
 #if WITH_UIP6
 /* Network setup for IPv6 */
 #define NETSTACK_CONF_NETWORK sicslowpan_driver
+
+/* Specify a minimum packet size for 6lowpan compression to be
+   enabled. This is needed for ContikiMAC, which needs packets to be
+   larger than a specified size, if no ContikiMAC header should be
+   used. */
+#define SICSLOWPAN_CONF_COMPRESSION_THRESHOLD 63
+#define CONTIKIMAC_CONF_WITH_CONTIKIMAC_HEADER 0
+
 #define CXMAC_CONF_ANNOUNCEMENTS         0
 #define XMAC_CONF_ANNOUNCEMENTS          0
 
@@ -60,10 +67,6 @@
 #define CXMAC_CONF_ANNOUNCEMENTS         0
 #define XMAC_CONF_ANNOUNCEMENTS          0
 #define CONTIKIMAC_CONF_ANNOUNCEMENTS    0
-
-#define CONTIKIMAC_CONF_COMPOWER         1
-#define XMAC_CONF_COMPOWER               1
-#define CXMAC_CONF_COMPOWER              1
 
 #ifndef COLLECT_NEIGHBOR_CONF_MAX_COLLECT_NEIGHBORS
 #define COLLECT_NEIGHBOR_CONF_MAX_COLLECT_NEIGHBORS     32
@@ -87,9 +90,17 @@
 
 #define PACKETBUF_CONF_ATTRS_INLINE 1
 
-#ifndef RF_CHANNEL
-#define RF_CHANNEL              26
-#endif /* RF_CHANNEL */
+#ifdef RF_CHANNEL
+#define CC2420_CONF_CHANNEL RF_CHANNEL
+#endif
+
+#ifndef CC2420_CONF_CHANNEL
+#define CC2420_CONF_CHANNEL              26
+#endif /* CC2420_CONF_CHANNEL */
+
+#ifndef CC2420_CONF_CCA_THRESH
+#define CC2420_CONF_CCA_THRESH              -45
+#endif /* CC2420_CONF_CCA_THRESH */
 
 #define CONTIKIMAC_CONF_BROADCAST_RATE_LIMIT 0
 
@@ -134,12 +145,12 @@
 #endif /* UIP_CONF_IPV6_RPL */
 
 /* configure number of neighbors and routes */
-#ifndef UIP_CONF_DS6_NBR_NBU
-#define UIP_CONF_DS6_NBR_NBU     30
-#endif /* UIP_CONF_DS6_NBR_NBU */
-#ifndef UIP_CONF_DS6_ROUTE_NBU
-#define UIP_CONF_DS6_ROUTE_NBU   30
-#endif /* UIP_CONF_DS6_ROUTE_NBU */
+#ifndef NBR_TABLE_CONF_MAX_NEIGHBORS
+#define NBR_TABLE_CONF_MAX_NEIGHBORS     20
+#endif /* NBR_TABLE_CONF_MAX_NEIGHBORS */
+#ifndef UIP_CONF_MAX_ROUTES
+#define UIP_CONF_MAX_ROUTES   20
+#endif /* UIP_CONF_MAX_ROUTES */
 
 #define UIP_CONF_ND6_SEND_RA		0
 #define UIP_CONF_ND6_REACHABLE_TIME     600000
@@ -153,7 +164,6 @@
 #define UIP_CONF_IPV6_REASSEMBLY        0
 #define UIP_CONF_NETIF_MAX_ADDRESSES    3
 #define UIP_CONF_ND6_MAX_PREFIXES       3
-#define UIP_CONF_ND6_MAX_NEIGHBORS      4
 #define UIP_CONF_ND6_MAX_DEFROUTERS     2
 #define UIP_CONF_IP_FORWARD             0
 #ifndef UIP_CONF_BUFFER_SIZE
@@ -202,6 +212,12 @@
 #define UIP_CONF_TCP_SPLIT       0
 
 
+
+/* include the project config */
+/* PROJECT_CONF_H might be defined in the project Makefile */
+#ifdef PROJECT_CONF_H
+#include PROJECT_CONF_H
+#endif /* PROJECT_CONF_H */
 
 
 #endif /* CONTIKI_CONF_H */

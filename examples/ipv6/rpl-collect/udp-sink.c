@@ -36,6 +36,12 @@
 
 #include "net/netstack.h"
 #include "dev/button-sensor.h"
+#include "dev/serial-line.h"
+#if CONTIKI_TARGET_Z1
+#include "dev/uart0.h"
+#else
+#include "dev/uart1.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -76,6 +82,13 @@ collect_common_send(void)
 void
 collect_common_net_init(void)
 {
+#if CONTIKI_TARGET_Z1
+  uart0_set_input(serial_line_input_byte);
+#else
+  uart1_set_input(serial_line_input_byte);
+#endif
+  serial_line_init();
+
   PRINTF("I am sink!\n");
 }
 /*---------------------------------------------------------------------------*/
@@ -138,8 +151,7 @@ PROCESS_THREAD(udp_server_process, ev, data)
   root_if = uip_ds6_addr_lookup(&ipaddr);
   if(root_if != NULL) {
     rpl_dag_t *dag;
-    rpl_set_root((uip_ip6addr_t *)&ipaddr);
-    dag = rpl_get_dag(RPL_ANY_INSTANCE);
+    dag = rpl_set_root(RPL_DEFAULT_INSTANCE,(uip_ip6addr_t *)&ipaddr);
     uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
     rpl_set_prefix(dag, &ipaddr, 64);
     PRINTF("created a new RPL dag\n");
@@ -168,7 +180,7 @@ PROCESS_THREAD(udp_server_process, ev, data)
       tcpip_handler();
     } else if (ev == sensors_event && data == &button_sensor) {
       PRINTF("Initiaing global repair\n");
-      rpl_repair_dag(rpl_get_dag(RPL_ANY_INSTANCE));
+      rpl_repair_root(RPL_DEFAULT_INSTANCE);
     }
   }
 

@@ -55,7 +55,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: timesynch.h,v 1.4 2008/07/01 21:02:51 adamdunkels Exp $
  */
 
 /**
@@ -65,8 +64,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __TIMESYNCH_H__
-#define __TIMESYNCH_H__
+#ifndef TIMESYNCH_H_
+#define TIMESYNCH_H_
 
 #include "net/mac/mac.h"
 #include "sys/rtimer.h"
@@ -145,7 +144,7 @@ int timesynch_authority_level(void);
  */
 void timesynch_set_authority_level(int level);
 
-#endif /* __TIMESYNCH_H__ */
+#endif /* TIMESYNCH_H_ */
 
 /** @} */
 /** @} */

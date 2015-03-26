@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: uaodv.h,v 1.3 2007/12/13 10:04:59 fros4943 Exp $
  */
 
 /**
@@ -38,8 +37,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __UAODV_H__
-#define __UAODV_H__
+#ifndef UAODV_H_
+#define UAODV_H_
 
 #include "contiki.h"
 #include "uaodv-rt.h"
@@ -49,4 +48,4 @@ PROCESS_NAME(uaodv_process);
 struct uaodv_rt_entry * uaodv_request_route_to(uip_ipaddr_t *host);
 void uaodv_bad_dest(uip_ipaddr_t *);
 
-#endif /* __UAODV_H__ */
+#endif /* UAODV_H_ */

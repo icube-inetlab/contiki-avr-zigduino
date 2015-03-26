@@ -39,11 +39,10 @@
  *
  * This file is part of the Contiki desktop OS
  *
- * $Id: cc.h,v 1.6 2008/07/02 08:35:29 adamdunkels Exp $
  *
  */
-#ifndef __CC_H__
-#define __CC_H__
+#ifndef CC_H_
+#define CC_H_
 
 #include "contiki-conf.h"
 
@@ -137,4 +136,4 @@
  */
 #define CC_CONCAT(s1, s2) CC_CONCAT2(s1, s2)
 
-#endif /* __CC_H__ */
+#endif /* CC_H_ */

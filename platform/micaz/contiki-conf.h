@@ -39,24 +39,29 @@
  *         Kasun Hewage <kasun.ch@gmail.com>
  */
 
-#ifndef __CONTIKI_CONF_H__
-#define __CONTIKI_CONF_H__
+#ifndef CONTIKI_CONF_H_
+#define CONTIKI_CONF_H_
 
 #define HAVE_STDINT_H
 #include "avrdef.h"
 
 #include "platform-conf.h"
 
-#if WITH_UIP6
 
+#if UIP_CONF_IPV6
+#define WITH_UIP6 1
+#endif
+#if WITH_UIP6
 /* Network setup for IPv6 */
 #define NETSTACK_CONF_NETWORK sicslowpan_driver
-#define NETSTACK_CONF_MAC     csma_driver
-#define NETSTACK_CONF_RDC     nullrdc_driver
+//#define NETSTACK_CONF_MAC     csma_driver
+#define NETSTACK_CONF_MAC     nullmac_driver
+//#define NETSTACK_CONF_RDC     nullrdc_driver
+#define NETSTACK_CONF_RDC     sicslowmac_driver
 #define NETSTACK_CONF_FRAMER  framer_802154
 
 #define CC2420_CONF_AUTOACK              1
-#define MAC_CONF_CHANNEL_CHECK_RATE      8
+#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE     8
 #define RIME_CONF_NO_POLITE_ANNOUCEMENTS 0
 #define CXMAC_CONF_ANNOUNCEMENTS         0
 
@@ -70,7 +75,7 @@
 #define NETSTACK_CONF_FRAMER  framer_802154
 
 #define CC2420_CONF_AUTOACK              1
-#define MAC_CONF_CHANNEL_CHECK_RATE      8
+#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE     8
 
 #define COLLECT_CONF_ANNOUNCEMENTS       1
 #define RIME_CONF_NO_POLITE_ANNOUCEMENTS 1
@@ -79,15 +84,23 @@
 #define CONTIKIMAC_CONF_ANNOUNCEMENTS    0
 #define CONTIKIMAC_CONF_COMPOWER         1
 
-#define COLLECT_NEIGHBOR_CONF_MAX_NEIGHBORS      32
+#define COLLECT_NBR_TABLE_CONF_MAX_NEIGHBORS      32
 
 #endif /* WITH_UIP6 */
 
 #define PACKETBUF_CONF_ATTRS_INLINE 1
 
-#ifndef RF_CHANNEL
-#define RF_CHANNEL              26
-#endif /* RF_CHANNEL */
+#ifdef RF_CHANNEL
+#define CC2420_CONF_CHANNEL RF_CHANNEL
+#endif
+
+#ifndef CC2420_CONF_CHANNEL
+#define CC2420_CONF_CHANNEL              26
+#endif /* CC2420_CONF_CHANNEL */
+
+#ifndef CC2420_CONF_CCA_THRESH
+#define CC2420_CONF_CCA_THRESH              -45
+#endif /* CC2420_CONF_CCA_THRESH */
 
 #define CONTIKIMAC_CONF_BROADCAST_RATE_LIMIT 0
 
@@ -109,15 +122,15 @@
 #define UIP_CONF_LL_802154              1
 #define UIP_CONF_LLH_LEN                0
 
-#define UIP_CONF_ROUTER                 1
+#define UIP_CONF_ROUTER                 0
 #define UIP_CONF_IPV6_RPL               1
 
 /* configure number of neighbors and routes */
-#define UIP_CONF_DS6_NBR_NBU     5
-#define UIP_CONF_DS6_ROUTE_NBU   5
+#define NBR_TABLE_CONF_MAX_NEIGHBORS     5
+#define UIP_CONF_MAX_ROUTES   5
 
 #define RPL_CONF_MAX_PARENTS         4
-#define NEIGHBOR_CONF_MAX_NEIGHBORS  8
+#define NBR_TABLE_CONF_MAX_NEIGHBORS  8
 
 #define UIP_CONF_ND6_SEND_RA		0
 #define UIP_CONF_ND6_REACHABLE_TIME     600000
@@ -129,7 +142,6 @@
 #define UIP_CONF_IPV6_REASSEMBLY        0
 #define UIP_CONF_NETIF_MAX_ADDRESSES    3
 #define UIP_CONF_ND6_MAX_PREFIXES       3
-#define UIP_CONF_ND6_MAX_NEIGHBORS      4
 #define UIP_CONF_ND6_MAX_DEFROUTERS     2
 #define UIP_CONF_IP_FORWARD             0
 #define UIP_CONF_BUFFER_SIZE		    240
@@ -188,14 +200,7 @@
 
 #define UIP_CONF_TCP_SPLIT       0
 
-
-typedef unsigned short clock_time_t;
 typedef unsigned short uip_stats_t;
 typedef unsigned long off_t;
 
-void clock_delay(unsigned int us2);
-void clock_wait(int ms10);
-void clock_set_seconds(unsigned long s);
-unsigned long clock_seconds(void);
-
-#endif /* __CONTIKI_CONF_H__ */
+#endif /* CONTIKI_CONF_H_ */

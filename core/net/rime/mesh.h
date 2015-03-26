@@ -49,7 +49,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: mesh.h,v 1.16 2010/06/14 19:19:17 adamdunkels Exp $
  */
 
 /**
@@ -59,8 +58,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __MESH_H__
-#define __MESH_H__
+#ifndef MESH_H_
+#define MESH_H_
 
 #include "net/queuebuf.h"
 #include "net/rime/multihop.h"
@@ -134,6 +133,14 @@ void mesh_close(struct mesh_conn *c);
  */
 int mesh_send(struct mesh_conn *c, const rimeaddr_t *dest);
 
-#endif /* __MESH_H__ */
+/**
+ * \brief      Test if mesh is ready to send a packet (or packet is queued)
+ * \param c    The mesh connection on which is to be tested
+ * \retval 0   Packet queued
+ * \retval !0  Ready
+ */
+int mesh_ready(struct mesh_conn *c);
+
+#endif /* MESH_H_ */
 /** @} */
 /** @} */

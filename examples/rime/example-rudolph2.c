@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: example-rudolph2.c,v 1.8 2010/11/15 21:50:02 adamdunkels Exp $
  */
 
 /**
@@ -75,7 +74,8 @@ write_chunk(struct rudolph2_conn *c, int offset, int flag,
 #endif /* CONTIKI_TARGET_NETSIM */
 
   if(flag == RUDOLPH2_FLAG_NEWFILE) {
-    printf("+++ rudolph2 new file incoming at %lu\n", clock_time());
+    printf("+++ rudolph2 new file incoming at %lu\n",
+            (unsigned long)clock_time());
     leds_on(LEDS_RED);
     fd = cfs_open("codeprop.out", CFS_WRITE);
   } else {
@@ -141,7 +141,7 @@ const static struct rudolph2_callbacks rudolph2_call = {write_chunk,
 							read_chunk};
 static struct rudolph2_conn rudolph2;
 /*---------------------------------------------------------------------------*/
-#include "node-id.h"
+#include "sys/node-id.h"
 
 PROCESS_THREAD(example_rudolph2_process, ev, data)
 {

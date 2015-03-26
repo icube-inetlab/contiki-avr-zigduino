@@ -56,11 +56,10 @@
  *
  * This file is part of the Contiki desktop environment
  *
- * $Id: dsc.h,v 1.4 2008/10/14 12:46:39 nvt-se Exp $
  *
  */
-#ifndef __DSC_H__
-#define __DSC_H__
+#ifndef DSC_H_
+#define DSC_H_
 
 #include "ctk/ctk.h"
 
@@ -138,4 +137,4 @@ struct dsc {
 
 /** @} */
 
-#endif /* _DSC_H__ */
+#endif /*DSC_H__ */

@@ -28,18 +28,17 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: contikimac.h,v 1.3 2010/02/23 20:09:11 nifi Exp $
  */
 
 /**
  * \file
- *         The Contiki power-saving MAC protocol (ContikiMAC)
+ *         Header file for the ContikiMAC radio duty cycling protocol
  * \author
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __CONTIKIMAC_H__
-#define __CONTIKIMAC_H__
+#ifndef CONTIKIMAC_H
+#define CONTIKIMAC_H
 
 #include "sys/rtimer.h"
 #include "net/mac/rdc.h"
@@ -47,4 +46,4 @@
 
 extern const struct rdc_driver contikimac_driver;
 
-#endif /* __CONTIKIMAC_H__ */
+#endif /* CONTIKIMAC_H */

@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * @(#)$Id: ds2411.c,v 1.5 2010/08/25 18:35:52 nifi Exp $
  */
 /*
  * Device driver for the Dallas Semiconductor DS2411 chip. Heavily
@@ -50,15 +49,12 @@
 
 #include <string.h>
 
-#include <io.h>
-
 #include "contiki.h"
-
 #include "dev/ds2411.h"
 
 unsigned char ds2411_id[8];
 
-#ifdef CONTIKI_TARGET_SKY
+#if defined(CONTIKI_TARGET_SKY) || defined(CONTIKI_TARGET_WSN430)
 /* 1-wire is at p2.4 */
 #define PIN BV(4)
 

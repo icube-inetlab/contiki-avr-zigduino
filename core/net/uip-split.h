@@ -30,7 +30,6 @@
  * 
  * Author: Adam Dunkels <adam@sics.se>
  *
- * $Id: uip-split.h,v 1.1 2006/06/17 22:41:19 adamdunkels Exp $
  */
 /**
  * \addtogroup uip
@@ -69,8 +68,8 @@
  *
  */
 
-#ifndef __UIP_SPLIT_H__
-#define __UIP_SPLIT_H__
+#ifndef UIP_SPLIT_H_
+#define UIP_SPLIT_H_
 
 /**
  * Handle outgoing packets.
@@ -90,7 +89,7 @@
  */
 void uip_split_output(void);
 
-#endif /* __UIP_SPLIT_H__ */
+#endif /* UIP_SPLIT_H_ */
 
 /** @} */
 /** @} */

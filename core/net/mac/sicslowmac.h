@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: sicslowmac.h,v 1.2 2010/02/23 20:09:11 nifi Exp $
  */
 
 /**
@@ -43,12 +42,12 @@
  *         Joakim Eriksson <joakime@sics.se>
  */
 
-#ifndef __SICSLOWMAC_H__
-#define __SICSLOWMAC_H__
+#ifndef SICSLOWMAC_H_
+#define SICSLOWMAC_H_
 
 #include "net/mac/rdc.h"
 #include "dev/radio.h"
 
 extern const struct rdc_driver sicslowmac_driver;
 
-#endif /* __SICSLOWMAC_H__ */
+#endif /* SICSLOWMAC_H_ */

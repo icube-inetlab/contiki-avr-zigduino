@@ -50,7 +50,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: unicast.h,v 1.6 2010/02/23 18:38:05 adamdunkels Exp $
  */
 
 /**
@@ -60,8 +59,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __UNICAST_H__
-#define __UNICAST_H__
+#ifndef UNICAST_H_
+#define UNICAST_H_
 
 #include "net/rime/broadcast.h"
 
@@ -86,6 +85,6 @@ void unicast_close(struct unicast_conn *c);
 
 int unicast_send(struct unicast_conn *c, const rimeaddr_t *receiver);
 
-#endif /* __UNICAST_H__ */
+#endif /* UNICAST_H_ */
 /** @} */
 /** @} */

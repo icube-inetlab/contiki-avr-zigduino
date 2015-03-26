@@ -39,7 +39,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: route.h,v 1.12 2009/08/20 20:27:17 oliverschmidt Exp $
  */
 
 /**
@@ -49,8 +48,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __ROUTE_H__
-#define __ROUTE_H__
+#ifndef ROUTE_H_
+#define ROUTE_H_
 
 #include "net/rime/rimeaddr.h"
 
@@ -79,6 +78,6 @@ void route_set_lifetime(int seconds);
 int route_num(void);
 struct route_entry *route_get(int num);
 
-#endif /* __ROUTE_H__ */
+#endif /* ROUTE_H_ */
 /** @} */
 /** @} */

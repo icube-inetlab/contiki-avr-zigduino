@@ -33,7 +33,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: multihop.c,v 1.7 2009/11/08 19:40:17 adamdunkels Exp $
  */
 
 /**
@@ -94,11 +93,10 @@ data_packet_received(struct unicast_conn *uc, const rimeaddr_t *from)
   } else {
     nexthop = NULL;
     if(c->cb->forward) {
-      nexthop = c->cb->forward(c, &sender, &receiver,
-			       from, packetbuf_attr(PACKETBUF_ATTR_HOPS));
-
       packetbuf_set_attr(PACKETBUF_ATTR_HOPS,
 			 packetbuf_attr(PACKETBUF_ATTR_HOPS) + 1);
+      nexthop = c->cb->forward(c, &sender, &receiver,
+			       from, packetbuf_attr(PACKETBUF_ATTR_HOPS) - 1);
     }
     if(nexthop) {
       PRINTF("forwarding to %d.%d\n", nexthop->u8[0], nexthop->u8[1]);
@@ -133,6 +131,9 @@ multihop_send(struct multihop_conn *c, const rimeaddr_t *to)
     return 0;
   }
   packetbuf_compact();
+  packetbuf_set_addr(PACKETBUF_ADDR_ERECEIVER, to);
+  packetbuf_set_addr(PACKETBUF_ADDR_ESENDER, &rimeaddr_node_addr);
+  packetbuf_set_attr(PACKETBUF_ATTR_HOPS, 1);
   nexthop = c->cb->forward(c, &rimeaddr_node_addr, to, NULL, 0);
   
   if(nexthop == NULL) {
@@ -141,12 +142,15 @@ multihop_send(struct multihop_conn *c, const rimeaddr_t *to)
   } else {
     PRINTF("multihop_send: sending data towards %d.%d\n",
 	   nexthop->u8[0], nexthop->u8[1]);
-    packetbuf_set_addr(PACKETBUF_ADDR_ERECEIVER, to);
-    packetbuf_set_addr(PACKETBUF_ADDR_ESENDER, &rimeaddr_node_addr);
-    packetbuf_set_attr(PACKETBUF_ATTR_HOPS, 1);
     unicast_send(&c->c, nexthop);
     return 1;
   }
+}
+/*---------------------------------------------------------------------------*/
+void
+multihop_resend(struct multihop_conn *c, const rimeaddr_t *nexthop)
+{
+  unicast_send(&c->c, nexthop);
 }
 /*---------------------------------------------------------------------------*/
 /** @} */

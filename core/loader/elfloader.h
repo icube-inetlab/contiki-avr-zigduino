@@ -70,10 +70,9 @@
  *
  * This file is part of the Contiki operating system.
  *
- * @(#)$Id: elfloader.h,v 1.4 2010/04/26 14:02:07 fros4943 Exp $
  */
-#ifndef __ELFLOADER_H__
-#define __ELFLOADER_H__
+#ifndef ELFLOADER_H_
+#define ELFLOADER_H_
 
 #include "cfs/cfs.h"
 
@@ -188,7 +187,7 @@ struct elf32_rela {
 };
 
 
-#endif /* __ELFLOADER_H__ */
+#endif /* ELFLOADER_H_ */
 
 /** @} */
 /** @} */

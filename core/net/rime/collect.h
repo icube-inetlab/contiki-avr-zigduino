@@ -47,7 +47,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: collect.h,v 1.26 2011/01/09 23:48:33 adamdunkels Exp $
  */
 
 /**
@@ -57,8 +56,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __COLLECT_H__
-#define __COLLECT_H__
+#ifndef COLLECT_H_
+#define COLLECT_H_
 
 #include "net/rime/announcement.h"
 #include "net/rime/runicast.h"
@@ -145,6 +144,6 @@ void collect_print_stats(void);
 
 #define COLLECT_MAX_DEPTH (COLLECT_LINK_ESTIMATE_UNIT * 64 - 1)
 
-#endif /* __COLLECT_H__ */
+#endif /* COLLECT_H_ */
 /** @} */
 /** @} */

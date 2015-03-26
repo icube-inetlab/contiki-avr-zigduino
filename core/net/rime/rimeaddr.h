@@ -42,7 +42,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: rimeaddr.h,v 1.6 2009/05/26 13:58:53 nvt-se Exp $
  */
 
 /**
@@ -52,8 +51,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __RIMEADDR_H__
-#define __RIMEADDR_H__
+#ifndef RIMEADDR_H_
+#define RIMEADDR_H_
 
 #include "contiki-conf.h"
 
@@ -127,6 +126,6 @@ extern rimeaddr_t rimeaddr_node_addr;
  */
 extern const rimeaddr_t rimeaddr_null;
 
-#endif /* __RIMEADDR_H__ */
+#endif /* RIMEADDR_H_ */
 /** @} */
 /** @} */

@@ -74,18 +74,10 @@
 #include "net/uip-ds6.h"
 #include "lib/random.h"
 
+#if UIP_CONF_IPV6
 /*------------------------------------------------------------------*/
 #define DEBUG 0
-#if DEBUG
-#include <stdio.h>
-#define PRINTF(...) printf(__VA_ARGS__)
-#define PRINT6ADDR(addr) PRINTF(" %02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x ", ((u8_t *)addr)[0], ((u8_t *)addr)[1], ((u8_t *)addr)[2], ((u8_t *)addr)[3], ((u8_t *)addr)[4], ((u8_t *)addr)[5], ((u8_t *)addr)[6], ((u8_t *)addr)[7], ((u8_t *)addr)[8], ((u8_t *)addr)[9], ((u8_t *)addr)[10], ((u8_t *)addr)[11], ((u8_t *)addr)[12], ((u8_t *)addr)[13], ((u8_t *)addr)[14], ((u8_t *)addr)[15])
-#define PRINTLLADDR(lladdr) PRINTF(" %02x:%02x:%02x:%02x:%02x:%02x ",lladdr->addr[0], lladdr->addr[1], lladdr->addr[2], lladdr->addr[3],lladdr->addr[4], lladdr->addr[5])
-#else
-#define PRINTF(...)
-#define PRINT6ADDR(addr)
-#define PRINTLLADDR(addr)
-#endif
+#include "net/uip-debug.h"
 
 #if UIP_LOGGING
 #include <stdio.h>
@@ -154,16 +146,15 @@ create_llao(uint8_t *llao, uint8_t type) {
 void
 uip_nd6_ns_input(void)
 {
-  PRINTF("Received NS from");
+  uint8_t flags;
+  PRINTF("Received NS from ");
   PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
-  PRINTF("to");
+  PRINTF(" to ");
   PRINT6ADDR(&UIP_IP_BUF->destipaddr);
-  PRINTF("with target address");
+  PRINTF(" with target address");
   PRINT6ADDR((uip_ipaddr_t *) (&UIP_ND6_NS_BUF->tgtipaddr));
   PRINTF("\n");
   UIP_STAT(++uip_stat.nd6.recv);
-
-  u8_t flags;
 
 #if UIP_CONF_IPV6_CHECKS
   if((UIP_IP_BUF->ttl != UIP_ND6_HOP_LIMIT) ||
@@ -200,9 +191,10 @@ uip_nd6_ns_input(void)
 			  (uip_lladdr_t *)&nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
 			  0, NBR_STALE);
         } else {
+          uip_lladdr_t *lladdr = (uip_lladdr_t *)uip_ds6_nbr_get_ll(nbr);
           if(memcmp(&nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
-		    &nbr->lladdr, UIP_LLADDR_LEN) != 0) {
-            memcpy(&nbr->lladdr, &nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
+		    lladdr, UIP_LLADDR_LEN) != 0) {
+            memcpy(lladdr, &nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
 		   UIP_LLADDR_LEN);
             nbr->state = NBR_STALE;
           } else {
@@ -224,6 +216,7 @@ uip_nd6_ns_input(void)
 
   addr = uip_ds6_addr_lookup(&UIP_ND6_NS_BUF->tgtipaddr);
   if(addr != NULL) {
+#if UIP_ND6_DEF_MAXDADNS > 0
     if(uip_is_addr_unspecified(&UIP_IP_BUF->srcipaddr)) {
       /* DAD CASE */
 #if UIP_CONF_IPV6_CHECKS
@@ -242,6 +235,11 @@ uip_nd6_ns_input(void)
         uip_ds6_dad_failed(addr);
         goto discard;
       }
+#else /* UIP_ND6_DEF_MAXDADNS > 0 */
+    if(uip_is_addr_unspecified(&UIP_IP_BUF->srcipaddr)) {
+      /* DAD CASE */
+      goto discard;
+#endif /* UIP_ND6_DEF_MAXDADNS > 0 */
     }
 #if UIP_CONF_IPV6_CHECKS
     if(uip_ds6_is_my_addr(&UIP_IP_BUF->srcipaddr)) {
@@ -282,6 +280,10 @@ uip_nd6_ns_input(void)
 
 
 create_na:
+    /* If the node is a router it should set R flag in NAs */
+#if UIP_CONF_ROUTER
+    flags = flags | UIP_ND6_NA_FLAG_ROUTER;
+#endif
   uip_ext_len = 0;
   UIP_IP_BUF->vtc = 0x60;
   UIP_IP_BUF->tcflow = 0;
@@ -307,11 +309,11 @@ create_na:
     UIP_IPH_LEN + UIP_ICMPH_LEN + UIP_ND6_NA_LEN + UIP_ND6_OPT_LLAO_LEN;
 
   UIP_STAT(++uip_stat.nd6.sent);
-  PRINTF("Sending NA to");
+  PRINTF("Sending NA to ");
   PRINT6ADDR(&UIP_IP_BUF->destipaddr);
-  PRINTF("from");
+  PRINTF(" from ");
   PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
-  PRINTF("with target address");
+  PRINTF(" with target address ");
   PRINT6ADDR(&UIP_ND6_NA_BUF->tgtipaddr);
   PRINTF("\n");
   return;
@@ -354,6 +356,11 @@ uip_nd6_ns_output(uip_ipaddr_t * src, uip_ipaddr_t * dest, uip_ipaddr_t * tgt)
     } else {
       uip_ds6_select_src(&UIP_IP_BUF->srcipaddr, &UIP_IP_BUF->destipaddr);
     }
+    if (uip_is_addr_unspecified(&UIP_IP_BUF->srcipaddr)) {
+      PRINTF("Dropping NS due to no suitable source address\n");
+      uip_len = 0;
+      return;
+    }
     UIP_IP_BUF->len[1] =
       UIP_ICMPH_LEN + UIP_ND6_NS_LEN + UIP_ND6_OPT_LLAO_LEN;
 
@@ -388,6 +395,11 @@ uip_nd6_ns_output(uip_ipaddr_t * src, uip_ipaddr_t * dest, uip_ipaddr_t * tgt)
 void
 uip_nd6_na_input(void)
 {
+  uint8_t is_llchange;
+  uint8_t is_router;
+  uint8_t is_solicited;
+  uint8_t is_override;
+
   PRINTF("Received NA from");
   PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
   PRINTF("to");
@@ -401,11 +413,11 @@ uip_nd6_na_input(void)
    * booleans. the three last one are not 0 or 1 but 0 or 0x80, 0x40, 0x20
    * but it works. Be careful though, do not use tests such as is_router == 1 
    */
-  u8_t is_llchange = 0;
-  u8_t is_router = ((UIP_ND6_NA_BUF->flagsreserved & UIP_ND6_NA_FLAG_ROUTER));
-  u8_t is_solicited =
+  is_llchange = 0;
+  is_router = ((UIP_ND6_NA_BUF->flagsreserved & UIP_ND6_NA_FLAG_ROUTER));
+  is_solicited =
     ((UIP_ND6_NA_BUF->flagsreserved & UIP_ND6_NA_FLAG_SOLICITED));
-  u8_t is_override =
+  is_override =
     ((UIP_ND6_NA_BUF->flagsreserved & UIP_ND6_NA_FLAG_OVERRIDE));
 
 #if UIP_CONF_IPV6_CHECKS
@@ -441,26 +453,30 @@ uip_nd6_na_input(void)
   addr = uip_ds6_addr_lookup(&UIP_ND6_NA_BUF->tgtipaddr);
   /* Message processing, including TLLAO if any */
   if(addr != NULL) {
+#if UIP_ND6_DEF_MAXDADNS > 0
     if(addr->state == ADDR_TENTATIVE) {
       uip_ds6_dad_failed(addr);
     }
+#endif /*UIP_ND6_DEF_MAXDADNS > 0 */
     PRINTF("NA received is bad\n");
     goto discard;
   } else {
+    uip_lladdr_t *lladdr;
     nbr = uip_ds6_nbr_lookup(&UIP_ND6_NA_BUF->tgtipaddr);
+    lladdr = (uip_lladdr_t *)uip_ds6_nbr_get_ll(nbr);
     if(nbr == NULL) {
       goto discard;
     }
     if(nd6_opt_llao != 0) {
       is_llchange =
-        memcmp(&nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET], (void *)(&nbr->lladdr),
+        memcmp(&nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET], (void *)lladdr,
                UIP_LLADDR_LEN);
     }
     if(nbr->state == NBR_INCOMPLETE) {
       if(nd6_opt_llao == NULL) {
         goto discard;
       }
-      memcpy(&nbr->lladdr, &nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
+      memcpy(lladdr, &nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
 	     UIP_LLADDR_LEN);
       if(is_solicited) {
         nbr->state = NBR_REACHABLE;
@@ -483,7 +499,7 @@ uip_nd6_na_input(void)
         if(is_override || (!is_override && nd6_opt_llao != 0 && !is_llchange)
            || nd6_opt_llao == 0) {
           if(nd6_opt_llao != 0) {
-            memcpy(&nbr->lladdr, &nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
+            memcpy(lladdr, &nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
 		   UIP_LLADDR_LEN);
           }
           if(is_solicited) {
@@ -570,7 +586,7 @@ uip_nd6_rs_input(void)
 #endif /*UIP_CONF_IPV6_CHECKS */
     switch (UIP_ND6_OPT_HDR_BUF->type) {
     case UIP_ND6_OPT_SLLAO:
-      nd6_opt_llao = UIP_ND6_OPT_HDR_BUF;
+      nd6_opt_llao = (uint8_t *)UIP_ND6_OPT_HDR_BUF;
       break;
     default:
       PRINTF("ND option not supported in RS\n");
@@ -589,14 +605,18 @@ uip_nd6_rs_input(void)
       if((nbr = uip_ds6_nbr_lookup(&UIP_IP_BUF->srcipaddr)) == NULL) {
         /* we need to add the neighbor */
         uip_ds6_nbr_add(&UIP_IP_BUF->srcipaddr,
-                        &nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET], 0, NBR_STALE);
+                        (uip_lladdr_t *)&nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET], 0, NBR_STALE);
       } else {
         /* If LL address changed, set neighbor state to stale */
         if(memcmp(&nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
-		  &nbr->lladdr, UIP_LLADDR_LEN) != 0) {
-          memcpy(&nbr->lladdr, &nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
-		 UIP_LLADDR_LEN);
-          nbr->state = NBR_STALE;
+            uip_ds6_nbr_get_ll(nbr), UIP_LLADDR_LEN) != 0) {
+          uip_ds6_nbr_t nbr_data = *nbr;
+          uip_ds6_nbr_rm(nbr);
+          nbr = uip_ds6_nbr_add(&UIP_IP_BUF->srcipaddr,
+                                (uip_lladdr_t *)&nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET], 0, NBR_STALE);
+          nbr->reachable = nbr_data.reachable;
+          nbr->sendns = nbr_data.sendns;
+          nbr->nscount = nbr_data.nscount;
         }
         nbr->isrouter = 0;
       }
@@ -650,6 +670,7 @@ uip_nd6_ra_output(uip_ipaddr_t * dest)
   nd6_opt_offset = UIP_ND6_RA_LEN;
 
 
+#if !UIP_CONF_ROUTER
   /* Prefix list */
   for(prefix = uip_ds6_prefix_list;
       prefix < uip_ds6_prefix_list + UIP_DS6_PREFIX_NB; prefix++) {
@@ -666,6 +687,7 @@ uip_nd6_ra_output(uip_ipaddr_t * dest)
       uip_len += UIP_ND6_OPT_PREFIX_INFO_LEN;
     }
   }
+#endif /* !UIP_CONF_ROUTER */
 
   /* Source link-layer option */
   create_llao((uint8_t *)UIP_ND6_OPT_HDR_BUF, UIP_ND6_OPT_SLLAO);
@@ -797,9 +819,10 @@ uip_nd6_ra_input(void)
         if(nbr->state == NBR_INCOMPLETE) {
           nbr->state = NBR_STALE;
         }
+        uip_lladdr_t *lladdr = uip_ds6_nbr_get_ll(nbr);
         if(memcmp(&nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
-		  &nbr->lladdr, UIP_LLADDR_LEN) != 0) {
-          memcpy(&nbr->lladdr, &nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
+		  lladdr, UIP_LLADDR_LEN) != 0) {
+          memcpy(lladdr, &nd6_opt_llao[UIP_ND6_OPT_DATA_OFFSET],
 		 UIP_LLADDR_LEN);
           nbr->state = NBR_STALE;
         }
@@ -948,3 +971,4 @@ discard:
 #endif /* !UIP_CONF_ROUTER */
 
  /** @} */
+#endif /* UIP_CONF_IPV6 */

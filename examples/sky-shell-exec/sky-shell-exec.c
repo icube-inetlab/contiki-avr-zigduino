@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: sky-shell-exec.c,v 1.3 2010/03/29 12:48:39 fros4943 Exp $
  */
 
 #include "contiki.h"
@@ -40,7 +39,6 @@
 #include "net/rime.h"
 #include "dev/cc2420.h"
 #include "dev/leds.h"
-#include "dev/light.h"
 #include "dev/sht11.h"
 #include "dev/battery-sensor.h"
 
@@ -50,9 +48,6 @@
 
 #include <stdio.h>
 #include <string.h>
-
-#include <io.h>
-#include <signal.h>
 
 /*---------------------------------------------------------------------------*/
 PROCESS(sky_shell_process, "Sky Contiki shell");

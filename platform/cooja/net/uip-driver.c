@@ -26,7 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: uip-driver.c,v 1.2 2010/06/14 19:19:17 adamdunkels Exp $
  */
 
 /**
@@ -40,7 +39,6 @@
 #include "net/netstack.h"
 #include "net/uip.h"
 #include "net/tcpip.h"
-#include "net/hc.h"
 #include "net/packetbuf.h"
 #include "net/uip-driver.h"
 #include <string.h>

@@ -47,7 +47,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: broadcast-announcement.h,v 1.2 2010/10/11 23:44:24 adamdunkels Exp $
  */
 
 /**
@@ -57,8 +56,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __BROADCAST_ANNOUNCEMENT_H__
-#define __BROADCAST_ANNOUNCEMENT_H__
+#ifndef BROADCAST_ANNOUNCEMENT_H_
+#define BROADCAST_ANNOUNCEMENT_H_
 
 void broadcast_announcement_init(uint16_t channel,
                                  clock_time_t bump_time,
@@ -67,6 +66,6 @@ void broadcast_announcement_init(uint16_t channel,
 
 clock_time_t broadcast_announcement_beacon_interval(void);
 
-#endif /* __BROADCAST_ANNOUNCEMENT_H__ */
+#endif /* BROADCAST_ANNOUNCEMENT_H_ */
 /** @} */
 /** @} */

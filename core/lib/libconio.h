@@ -29,12 +29,11 @@
  *
  * This file is part of the Contiki desktop environment
  *
- * $Id: libconio.h,v 1.2 2008/10/15 14:17:28 nvt-se Exp $
  *
  */
 
-#ifndef __LIBCONIO_H__
-#define __LIBCONIO_H__
+#ifndef LIBCONIO_H_
+#define LIBCONIO_H_
 
 /* This function must be implemented specifically for the
    architecture: */
@@ -82,4 +81,4 @@ void textcolor(unsigned char c);
 
 
 
-#endif /* __LIBCONIO_H__ */
+#endif /* LIBCONIO_H_ */

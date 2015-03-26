@@ -26,7 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: httpd-simple.h,v 1.1 2010/05/09 12:52:05 nifi Exp $
  */
 
 /**
@@ -38,13 +37,15 @@
  *         Joakim Eriksson <joakime@sics.se>
  */
 
-#ifndef __HTTPD_SIMPLE_H__
-#define __HTTPD_SIMPLE_H__
+#ifndef HTTPD_SIMPLE_H_
+#define HTTPD_SIMPLE_H_
 
 #include "contiki-net.h"
 
+/* The current internal border router webserver ignores the requested file name */
+/* and needs no per-connection output buffer, so save some RAM */
 #ifndef WEBSERVER_CONF_CFS_PATHLEN
-#define HTTPD_PATHLEN 80
+#define HTTPD_PATHLEN 2
 #else /* WEBSERVER_CONF_CFS_CONNS */
 #define HTTPD_PATHLEN WEBSERVER_CONF_CFS_PATHLEN
 #endif /* WEBSERVER_CONF_CFS_CONNS */
@@ -56,8 +57,8 @@ struct httpd_state {
   struct timer timer;
   struct psock sin, sout;
   struct pt outputpt;
-  char inputbuf[HTTPD_PATHLEN + 30];
-  char outputbuf[UIP_TCP_MSS];
+  char inputbuf[HTTPD_PATHLEN + 24];
+/*char outputbuf[UIP_TCP_MSS]; */
   char filename[HTTPD_PATHLEN];
   httpd_simple_script_t script;
   char state;
@@ -70,4 +71,4 @@ httpd_simple_script_t httpd_simple_get_script(const char *name);
 
 #define SEND_STRING(s, str) PSOCK_SEND(s, (uint8_t *)str, strlen(str))
 
-#endif /* __HTTPD_SIMPLE_H__ */
+#endif /* HTTPD_SIMPLE_H_ */

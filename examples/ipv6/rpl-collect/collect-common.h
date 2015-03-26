@@ -26,7 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: collect-common.h,v 1.1 2010/11/03 15:36:38 adamdunkels Exp $
  */
 
 /**
@@ -36,8 +35,8 @@
  *         Niclas Finne <nfi@sics.se>
  */
 
-#ifndef __COLLECT_COMMON_H__
-#define __COLLECT_COMMON_H__
+#ifndef COLLECT_COMMON_H_
+#define COLLECT_COMMON_H_
 
 #include "contiki.h"
 #include "net/rime/rimeaddr.h"
@@ -54,4 +53,4 @@ void collect_common_set_send_active(int active);
 
 PROCESS_NAME(collect_common_process);
 
-#endif /* __COLLECT_COMMON_H__ */
+#endif /* COLLECT_COMMON_H_ */

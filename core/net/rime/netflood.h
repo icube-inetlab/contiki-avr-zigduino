@@ -62,7 +62,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: netflood.h,v 1.7 2010/06/14 19:19:17 adamdunkels Exp $
  */
 
 /**
@@ -72,8 +71,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __NETFLOOD_H__
-#define __NETFLOOD_H__
+#ifndef NETFLOOD_H_
+#define NETFLOOD_H_
 
 #include "net/queuebuf.h"
 #include "net/rime/ipolite.h"
@@ -106,6 +105,6 @@ void netflood_close(struct netflood_conn *c);
 
 int netflood_send(struct netflood_conn *c, uint8_t seqno);
 
-#endif /* __SIBC_H__ */
+#endif /* SIBC_H_ */
 /** @} */
 /** @} */

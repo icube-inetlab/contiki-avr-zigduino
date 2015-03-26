@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: netstack.h,v 1.6 2010/10/03 20:37:32 adamdunkels Exp $
  */
 
 /**
@@ -71,7 +70,7 @@
 #ifdef NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE
 #define NETSTACK_RDC_CHANNEL_CHECK_RATE NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE
 #else /* NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE */
-#define NETSTACK_RDC_CHANNEL_CHECK_RATE 4
+#define NETSTACK_RDC_CHANNEL_CHECK_RATE 8
 #endif /* NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE */
 #endif /* NETSTACK_RDC_CHANNEL_CHECK_RATE */
 

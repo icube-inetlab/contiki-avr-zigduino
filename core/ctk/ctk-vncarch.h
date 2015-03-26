@@ -29,11 +29,10 @@
  *
  * This file is part of the "ctk" console GUI toolkit for cc65
  *
- * $Id: ctk-vncarch.h,v 1.1 2006/06/17 22:41:16 adamdunkels Exp $
  *
  */
-#ifndef __CTK_VNCARCH_H__
-#define __CTK_VNCARCH_H__
+#ifndef CTK_VNCARCH_H_
+#define CTK_VNCARCH_H_
 
 #define CTK_ARCH_KEY_T unsigned char
 
@@ -65,4 +64,4 @@ CTK_ARCH_KEY_T ctk_arch_getkey(void);
 
 
 
-#endif /* __CTK_VNCARCH_H__ */
+#endif /* CTK_VNCARCH_H_ */

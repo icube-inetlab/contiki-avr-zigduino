@@ -81,7 +81,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: polite.h,v 1.10 2010/06/18 08:28:56 nifi Exp $
  */
 
 /**
@@ -91,8 +90,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __POLITE_H__
-#define __POLITE_H__
+#ifndef POLITE_H_
+#define POLITE_H_
 
 #include "net/rime/abc.h"
 #include "net/queuebuf.h"
@@ -187,7 +186,7 @@ int  polite_send(struct polite_conn *c, clock_time_t interval, uint8_t hdrsize);
  */
 void polite_cancel(struct polite_conn *c);
 
-#endif /* __POLITE_H__ */
+#endif /* POLITE_H_ */
 
 /** @} */
 /** @} */

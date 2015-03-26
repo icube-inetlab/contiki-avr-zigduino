@@ -14,3 +14,4 @@ tools/tunslip6
 *.swp
 *.orig
 *.bak
+*.avr-zigduino

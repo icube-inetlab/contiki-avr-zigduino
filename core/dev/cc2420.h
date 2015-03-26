@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: cc2420.h,v 1.14 2010/12/16 22:39:50 adamdunkels Exp $
  */
 
 /**
@@ -39,8 +38,8 @@
  *         Joakim Eriksson <joakime@sics.se>
  */
 
-#ifndef __CC2420_H__
-#define __CC2420_H__
+#ifndef CC2420_H_
+#define CC2420_H_
 
 #include "contiki.h"
 #include "dev/spi.h"
@@ -201,4 +200,4 @@ void cc2420_set_cca_threshold(int value);
     CC2420_SPI_DISABLE();                       \
   } while (0)
 
-#endif /* __CC2420_H__ */
+#endif /* CC2420_H_ */

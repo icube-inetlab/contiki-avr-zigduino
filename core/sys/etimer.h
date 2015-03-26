@@ -58,10 +58,9 @@
  *
  * Author: Adam Dunkels <adam@sics.se>
  *
- * $Id: etimer.h,v 1.3 2008/02/07 23:04:35 oliverschmidt Exp $
  */
-#ifndef __ETIMER_H__
-#define __ETIMER_H__
+#ifndef ETIMER_H_
+#define ETIMER_H_
 
 #include "sys/timer.h"
 #include "sys/process.h"
@@ -237,6 +236,6 @@ clock_time_t etimer_next_expiration_time(void);
 /** @} */
 
 PROCESS_NAME(etimer_process);
-#endif /* __ETIMER_H__ */
+#endif /* ETIMER_H_ */
 /** @} */
 /** @} */

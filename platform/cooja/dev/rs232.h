@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * @(#)$Id: rs232.h,v 1.1 2006/08/21 12:11:19 fros4943 Exp $
  */
 
 /** \addtogroup esb
@@ -46,8 +45,8 @@
  * \author Adam Dunkels <adam@sics.se>
  *
  */
-#ifndef __RS232_H__
-#define __RS232_H__
+#ifndef RS232_H_
+#define RS232_H_
 
 
 #define RS232_19200 1
@@ -113,6 +112,6 @@ void rs232_print(char *text);
  */
 void rs232_send(char c);
 
-#endif /* __RS232_H__ */
+#endif /* RS232_H_ */
 
 /** @} */ /** @} */

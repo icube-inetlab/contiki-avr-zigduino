@@ -58,12 +58,11 @@
  *
  * This file is part of the uIP TCP/IP stack.
  *
- * $Id: uipopt.h,v 1.14 2010/12/24 00:39:04 dak664 Exp $
  *
  */
 
-#ifndef __UIPOPT_H__
-#define __UIPOPT_H__
+#ifndef UIPOPT_H_
+#define UIPOPT_H_
 
 #ifndef UIP_LITTLE_ENDIAN
 #define UIP_LITTLE_ENDIAN  3412
@@ -194,12 +193,12 @@
 #define UIP_CONF_IPV6_QUEUE_PKT       0
 #endif
 
-#ifndef UIP_CONF_IPV6_CHECKS 
+#ifndef UIP_CONF_IPV6_CHECKS
 /** Do we do IPv6 consistency checks (highly recommended, default: yes) */
 #define UIP_CONF_IPV6_CHECKS          1
 #endif
 
-#ifndef UIP_CONF_IPV6_REASSEMBLY 
+#ifndef UIP_CONF_IPV6_REASSEMBLY
 /** Do we do IPv6 fragmentation (default: no) */
 #define UIP_CONF_IPV6_REASSEMBLY      0
 #endif
@@ -209,19 +208,14 @@
 #define UIP_CONF_NETIF_MAX_ADDRESSES  3
 #endif
 
-#ifndef UIP_CONF_ND6_MAX_PREFIXES 
+#ifndef UIP_CONF_DS6_PREFIX_NBU
 /** Default number of IPv6 prefixes associated to the node's interface */
-#define UIP_CONF_ND6_MAX_PREFIXES     3
+#define UIP_CONF_DS6_PREFIX_NBU     2
 #endif
 
-#ifndef UIP_CONF_ND6_MAX_NEIGHBORS 
-/** Default number of neighbors that can be stored in the %neighbor cache */
-#define UIP_CONF_ND6_MAX_NEIGHBORS    4  
-#endif
-
-#ifndef UIP_CONF_ND6_MAX_DEFROUTERS
+#ifndef UIP_CONF_DS6_DEFRT_NBU
 /** Minimum number of default routers */
-#define UIP_CONF_ND6_MAX_DEFROUTERS   2
+#define UIP_CONF_DS6_DEFRT_NBU       2
 #endif
 /** @} */
 
@@ -287,15 +281,15 @@
  */
 
 /**
- * Toggles whether UDP support should be compiled in or not.
+ * Toggles whether TCP support should be compiled in or not.
  *
  * \hideinitializer
  */
 #ifdef UIP_CONF_TCP
 #define UIP_TCP (UIP_CONF_TCP)
-#else /* UIP_CONF_UDP */
+#else /* UIP_CONF_TCP */
 #define UIP_TCP           1
-#endif /* UIP_CONF_UDP */
+#endif /* UIP_CONF_TCP */
 
 /**
  * Determines if support for opening connections from uIP should be
@@ -644,8 +638,8 @@ void uip_log(char *msg);
  #define UIP_APPCALL     httpd_appcall
 
  struct httpd_state {
- u8_t state;
- u16_t count;
+ uint8_t state;
+ uint16_t count;
  char *dataptr;
  char *script;
  };
@@ -678,6 +672,6 @@ void uip_log(char *msg);
  */
 /** @} */
 
-#endif /* __UIPOPT_H__ */
+#endif /* UIPOPT_H_ */
 /** @} */
 /** @} */

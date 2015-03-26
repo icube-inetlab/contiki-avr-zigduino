@@ -26,18 +26,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * @(#)$Id: slip_uart1.c,v 1.8 2008/02/03 20:59:35 adamdunkels Exp $
  */
 
 /*
  * Machine dependent MSP430 SLIP routines for UART1.
  */
 
-#include <io.h>
-#include <signal.h>
-
 #include "contiki.h"
-
 #include "dev/slip.h"
 #include "dev/uart1.h"
 /*---------------------------------------------------------------------------*/

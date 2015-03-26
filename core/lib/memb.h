@@ -30,7 +30,6 @@
  *
  * Author: Adam Dunkels <adam@sics.se>
  *
- * $Id: memb.h,v 1.6 2009/04/06 21:18:04 adamdunkels Exp $
  */
 
 /**
@@ -61,8 +60,8 @@
  *
  */
 
-#ifndef __MEMB_H__
-#define __MEMB_H__
+#ifndef MEMB_H_
+#define MEMB_H_
 
 #include "sys/cc.h"
 
@@ -135,4 +134,4 @@ int memb_inmemb(struct memb *m, void *ptr);
 /** @} */
 /** @} */
 
-#endif /* __MEMB_H__ */
+#endif /* MEMB_H_ */

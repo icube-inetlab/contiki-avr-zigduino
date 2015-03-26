@@ -39,7 +39,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: collect-neighbor.h,v 1.6 2010/10/11 23:38:46 adamdunkels Exp $
  */
 
 /**
@@ -49,8 +48,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __COLLECT_NEIGHBOR_H__
-#define __COLLECT_NEIGHBOR_H__
+#ifndef COLLECT_NEIGHBOR_H_
+#define COLLECT_NEIGHBOR_H_
 
 #include "net/rime/rimeaddr.h"
 #include "net/rime/collect-link-estimate.h"
@@ -101,6 +100,6 @@ uint16_t collect_neighbor_rtmetric_link_estimate(struct collect_neighbor *n);
 uint16_t collect_neighbor_rtmetric(struct collect_neighbor *n);
 
 
-#endif /* __COLLECT_NEIGHBOR_H__ */
+#endif /* COLLECT_NEIGHBOR_H_ */
 /** @} */
 /** @} */

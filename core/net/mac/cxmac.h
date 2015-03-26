@@ -28,7 +28,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: cxmac.h,v 1.5 2010/02/23 20:09:11 nifi Exp $
  */
 
 /**
@@ -38,8 +37,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __CXMAC_H__
-#define __CXMAC_H__
+#ifndef CXMAC_H_
+#define CXMAC_H_
 
 #include "sys/rtimer.h"
 #include "net/mac/rdc.h"
@@ -61,4 +60,4 @@ struct cxmac_config {
 extern const struct rdc_driver cxmac_driver;
 
 
-#endif /* __CXMAC_H__ */
+#endif /* CXMAC_H_ */

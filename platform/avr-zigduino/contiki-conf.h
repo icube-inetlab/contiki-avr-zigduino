@@ -42,31 +42,50 @@
 #define __CONTIKI_CONF_H__
 
 /* MCU and clock rate */
-#define PLATFORM       PLATFORM_AVR
-#define HARWARE_REVISION ATMEGA128RFA1
+
+/* Platform name, type, and MCU clock rate */
+//#define PLATFORM       PLATFORM_AVR
+//#define HARWARE_REVISION ATMEGA128RFA1
+#define PLATFORM_NAME  "RFA1"
+#define PLATFORM_TYPE  ATMEGA128RFA1
 #ifndef F_CPU
-#define F_CPU          8000000UL
+//#define F_CPU          8000000UL
+#define F_CPU          16000000UL
 #endif
 #include <stdint.h>
 
+/*
 typedef int32_t s32_t;
 typedef unsigned char u8_t;
 typedef unsigned short u16_t;
 typedef unsigned long u32_t;
 typedef unsigned short clock_time_t;
-typedef unsigned short uip_stats_t;
 typedef unsigned long off_t;
+*/
+typedef unsigned short uip_stats_t;
 
-void clock_delay(unsigned int us2);
-void clock_wait(int ms10);
-void clock_set_seconds(unsigned long s);
-unsigned long clock_seconds(void);
+#ifndef BV
+#define BV(x) (1<<(x))
+#endif
 
-/* Maximum timer interval for 16 bit clock_time_t */
-#define INFINITE_TIME 0xffff
+/* The AVR tick interrupt usually is done with an 8 bit counter around 128 Hz.
+ * 125 Hz needs slightly more overhead during the interrupt, as does a 32 bit
+ * clock_time_t.
+ */
+ /* Clock ticks per second */
+#define CLOCK_CONF_SECOND 128
 
-/* Clock ticks per second */
-#define CLOCK_CONF_SECOND 125
+typedef unsigned long clock_time_t;
+#define CLOCK_LT(a,b)  ((signed long)((a)-(b)) < 0)
+#define INFINITE_TIME 0xffffffff
+
+/* These routines are not part of the contiki core but can be enabled in cpu/avr/clock.c */
+void clock_delay_msec(uint16_t howlong);
+void clock_delay_usec(uint16_t howlong);
+//void clock_adjust_ticks(clock_time_t howmany);
+
+
+
 
 /* Maximum tick interval is 0xffff/125 = 524 seconds */
 #define RIME_CONF_BROADCAST_ANNOUNCEMENT_MAX_TIME CLOCK_CONF_SECOND * 524UL /* Default uses 600UL */
@@ -112,7 +131,7 @@ unsigned long clock_seconds(void);
 #define SICSLOWPAN_CONF_COMPRESSION SICSLOWPAN_COMPRESSION_HC06
 #else
 /* ip4 should build but is largely untested */
-#define RIMEADDR_CONF_SIZE        2
+#define RIMEADDR_CONF_SIZE        8
 #define NETSTACK_CONF_NETWORK     rime_driver
 #endif /* UIP_CONF_IPV6 */
 
@@ -254,6 +273,9 @@ unsigned long clock_seconds(void);
 #define RF230_MAX_TX_POWER 15
 #define RF230_MIN_RX_POWER 30
  */
+
+#define RF230_MAX_TX_POWER 0
+#define RF230_MIN_RX_POWER 30
 
 #define UIP_CONF_ROUTER                 1
 #define UIP_CONF_ND6_SEND_RA		    0

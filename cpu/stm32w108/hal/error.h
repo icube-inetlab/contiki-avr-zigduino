@@ -7,15 +7,15 @@
  * <!--(C) COPYRIGHT 2010 STMicroelectronics. All rights reserved.        -->
  */
 
-#ifndef __ERRORS_H__
-#define __ERRORS_H__
+#ifndef ERRORS_H_
+#define ERRORS_H_
 
 /**
  * @brief  Return type for St functions.
  */
 #ifndef __STSTATUS_TYPE__
 #define __STSTATUS_TYPE__
-  typedef int8u StStatus;
+  typedef uint8_t StStatus;
 #endif //__STSTATUS_TYPE__
 
 /**
@@ -48,7 +48,7 @@ enum {
 
 #undef DEFINE_ERROR
 
-#endif // __ERRORS_H__
+#endif // ERRORS_H_
 
 /**@} // End of addtogroup
  */

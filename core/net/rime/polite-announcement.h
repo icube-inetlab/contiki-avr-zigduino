@@ -47,7 +47,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: polite-announcement.h,v 1.2 2010/03/19 13:17:31 adamdunkels Exp $
  */
 
 /**
@@ -57,13 +56,13 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __POLITE_ANNOUNCEMENT_H__
-#define __POLITE_ANNOUNCEMENT_H__
+#ifndef POLITE_ANNOUNCEMENT_H_
+#define POLITE_ANNOUNCEMENT_H_
 
 void polite_announcement_init(uint16_t channel,
 			      clock_time_t min,
 			      clock_time_t max);
 
-#endif /* __POLITE_ANNOUNCEMENT_H__ */
+#endif /* POLITE_ANNOUNCEMENT_H_ */
 /** @} */
 /** @} */

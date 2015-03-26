@@ -29,8 +29,8 @@
  *@{
  */
 
-#ifndef __SYSTEM_TIMER_H__
-#define __SYSTEM_TIMER_H__
+#ifndef SYSTEM_TIMER_H_
+#define SYSTEM_TIMER_H_
 
 /**
  * @brief Initializes the system tick.
@@ -38,7 +38,7 @@
  * @return Time to update the async registers after RTC is started (units of 100 
  * microseconds).
  */
-int16u halInternalStartSystemTimer(void);
+uint16_t halInternalStartSystemTimer(void);
 
 
 /**
@@ -48,7 +48,7 @@ int16u halInternalStartSystemTimer(void);
  * @return The least significant 16 bits of the current system time, in system
  * ticks.
  */
-int16u halCommonGetInt16uMillisecondTick(void);
+uint16_t halCommonGetInt16uMillisecondTick(void);
 
 /**
  * @brief Returns the current system time in system ticks, as a 32-bit
@@ -59,7 +59,7 @@ int16u halCommonGetInt16uMillisecondTick(void);
  * @return The least significant 32 bits of the current system time, in 
  * system ticks.
  */
-int32u halCommonGetInt32uMillisecondTick(void);
+uint32_t halCommonGetInt32uMillisecondTick(void);
 
 /**
  * @brief Returns the current system time in quarter second ticks, as a
@@ -70,9 +70,9 @@ int32u halCommonGetInt32uMillisecondTick(void);
  * @return The least significant 16 bits of the current system time, in system
  * ticks multiplied by 256.
  */
-int16u halCommonGetInt16uQuarterSecondTick(void);
+uint16_t halCommonGetInt16uQuarterSecondTick(void);
 
-#endif //__SYSTEM_TIMER_H__
+#endif //SYSTEM_TIMER_H_
 
 /**@} //END addtogroup 
  */

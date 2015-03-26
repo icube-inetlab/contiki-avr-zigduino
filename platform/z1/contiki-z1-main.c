@@ -26,7 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * @(#)$Id: contiki-z1-main.c,v 1.4 2010/08/26 22:08:11 nifi Exp $
  */
 
 #include <stdio.h>
@@ -34,13 +33,6 @@
 #include <stdarg.h> 
 
 #include "contiki.h"
-#ifdef __IAR_SYSTEMS_ICC__
-#include <msp430.h>
-#else
-#include <io.h>
-#include <signal.h>
-#endif
-
 #include "dev/cc2420.h"
 #include "dev/leds.h"
 #include "dev/serial-line.h"
@@ -52,6 +44,8 @@
 #include "net/netstack.h"
 #include "net/mac/frame802154.h"
 #include "dev/button-sensor.h"
+#include "dev/adxl345.h"
+#include "sys/clock.h"
 
 #if WITH_UIP6
 #include "net/uip-ds6.h"
@@ -59,12 +53,10 @@
 
 #include "net/rime.h"
 
-#include "node-id.h"
+#include "sys/node-id.h"
 #include "cfs-coffee-arch.h"
 #include "cfs/cfs-coffee.h"
 #include "sys/autostart.h"
-#include "sys/profile.h"
-
 
 #include "dev/battery-sensor.h"
 #include "dev/button-sensor.h"
@@ -72,6 +64,7 @@
 
 SENSORS(&button_sensor);
 
+extern unsigned char node_mac[8];
 
 #if DCOSYNCH_CONF_ENABLED
 static struct timer mgt_timer;
@@ -127,10 +120,6 @@ force_float_inclusion()
 #endif
 /*---------------------------------------------------------------------------*/
 void uip_log(char *msg) { puts(msg); }
-/*---------------------------------------------------------------------------*/
-#ifndef RF_CHANNEL
-#define RF_CHANNEL              26
-#endif
 /*---------------------------------------------------------------------------*/
 #if 0
 void
@@ -214,7 +203,6 @@ main(int argc, char **argv)
   slip_arch_init(BAUD2UBR(115200));
 #endif /* WITH_UIP */
 
-    
   xmem_init();
 
   rtimer_init();
@@ -225,31 +213,47 @@ main(int argc, char **argv)
   /* Restore node id if such has been stored in external mem */
   node_id_restore();
 
+  /* If no MAC address was burned, we use the node ID. */
+  if(!(node_mac[0] | node_mac[1] | node_mac[2] | node_mac[3] |
+       node_mac[4] | node_mac[5] | node_mac[6] | node_mac[7])) {
+    node_mac[0] = 0xc1;  /* Hardcoded for Z1 */
+    node_mac[1] = 0x0c;  /* Hardcoded for Revision C */
+    node_mac[2] = 0x00;  /* Hardcoded to arbitrary even number so that
+                            the 802.15.4 MAC address is compatible with
+                            an Ethernet MAC address - byte 0 (byte 2 in
+                            the DS ID) */
+    node_mac[3] = 0x00;  /* Hardcoded */
+    node_mac[4] = 0x00;  /* Hardcoded */
+    node_mac[5] = 0x00;  /* Hardcoded */
+    node_mac[6] = node_id >> 8;
+    node_mac[7] = node_id & 0xff;
+  }
+
   /* Overwrite node MAC if desired at compile time */
-#ifdef MACID 
+#ifdef MACID
   #warning "***** CHANGING DEFAULT MAC *****"
-  node_mac[0] = 0xC1;  // Hardcoded for Z1
-  node_mac[1] = 0x0C;  // Hardcoded for Revision C
-  node_mac[2] = 0x00;  // Hardcoded to arbitrary even number so that the 802.15.4 MAC address 
-                       // is compatible with an Ethernet MAC address - byte 0 (byte 2 in the DS ID)
-  node_mac[3] = 0x00;  // Hardcoded 
-  node_mac[4] = 0x00;  // Hardcoded 
-  node_mac[5] = 0x00;  // Hardcoded
+  node_mac[0] = 0xc1;  /* Hardcoded for Z1 */
+  node_mac[1] = 0x0c;  /* Hardcoded for Revision C */
+  node_mac[2] = 0x00;  /* Hardcoded to arbitrary even number so that
+                          the 802.15.4 MAC address is compatible with
+                          an Ethernet MAC address - byte 0 (byte 2 in
+                          the DS ID) */
+  node_mac[3] = 0x00;  /* Hardcoded */
+  node_mac[4] = 0x00;  /* Hardcoded */
+  node_mac[5] = 0x00;  /* Hardcoded */
   node_mac[6] = MACID >> 8;
   node_mac[7] = MACID & 0xff;
 #endif
 
-
-  /* for setting "hardcoded" IEEE 802.15.4 MAC addresses */
 #ifdef IEEE_802154_MAC_ADDRESS
+  /* for setting "hardcoded" IEEE 802.15.4 MAC addresses */
   {
     uint8_t ieee[] = IEEE_802154_MAC_ADDRESS;
     memcpy(node_mac, ieee, sizeof(uip_lladdr.addr));
     node_mac[7] = node_id & 0xff;
   }
-#endif
+#endif /* IEEE_802154_MAC_ADDRESS */
 
-  
    /*
    * Initialize Contiki and our processes.
    */
@@ -279,7 +283,6 @@ main(int argc, char **argv)
     
     cc2420_set_pan_addr(IEEE802154_PANID, shortaddr, longaddr);
   }
-  cc2420_set_channel(RF_CHANNEL);
 
   leds_off(LEDS_ALL);
 
@@ -296,7 +299,7 @@ main(int argc, char **argv)
   memcpy(&uip_lladdr.addr, node_mac, sizeof(uip_lladdr.addr));
   /* Setup nullmac-like MAC for 802.15.4 */
 /*   sicslowpan_init(sicslowmac_init(&cc2420_driver)); */
-/*   printf(" %s channel %u\n", sicslowmac_driver.name, RF_CHANNEL); */
+/*   printf(" %s channel %u\n", sicslowmac_driver.name, CC2420_CONF_CHANNEL); */
 
   /* Setup X-MAC for 802.15.4 */
   queuebuf_init();
@@ -309,7 +312,7 @@ main(int argc, char **argv)
          NETSTACK_MAC.name, NETSTACK_RDC.name,
          CLOCK_SECOND / (NETSTACK_RDC.channel_check_interval() == 0 ? 1:
                          NETSTACK_RDC.channel_check_interval()),
-         RF_CHANNEL);
+         CC2420_CONF_CHANNEL);
 
   process_start(&tcpip_process, NULL);
 
@@ -350,17 +353,13 @@ main(int argc, char **argv)
          NETSTACK_MAC.name, NETSTACK_RDC.name,
          CLOCK_SECOND / (NETSTACK_RDC.channel_check_interval() == 0? 1:
                          NETSTACK_RDC.channel_check_interval()),
-         RF_CHANNEL);
+         CC2420_CONF_CHANNEL);
 #endif /* WITH_UIP6 */
 
 #if !WITH_UIP && !WITH_UIP6
   uart0_set_input(serial_line_input_byte);
   serial_line_init();
 #endif
-
-#if PROFILE_CONF_ON
-  profile_init();
-#endif /* PROFILE_CONF_ON */
 
   leds_off(LEDS_GREEN);
 
@@ -414,17 +413,11 @@ main(int argc, char **argv)
   /*  watchdog_stop();*/
   while(1) {
     int r;
-#if PROFILE_CONF_ON
-    profile_episode_start();
-#endif /* PROFILE_CONF_ON */
     do {
       /* Reset watchdog. */
       watchdog_periodic();
       r = process_run();
     } while(r > 0);
-#if PROFILE_CONF_ON
-    profile_episode_end();
-#endif /* PROFILE_CONF_ON */
 
     /*
      * Idle processing.

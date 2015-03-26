@@ -45,7 +45,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: trickle.h,v 1.13 2010/06/14 19:19:17 adamdunkels Exp $
  */
 
 /**
@@ -55,8 +54,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __TRICKLE_H__
-#define __TRICKLE_H__
+#ifndef TRICKLE_H_
+#define TRICKLE_H_
 
 #include "sys/ctimer.h"
 
@@ -90,6 +89,6 @@ void trickle_close(struct trickle_conn *c);
 
 void trickle_send(struct trickle_conn *c);
 
-#endif /* __TRICKLE_H__ */
+#endif /* TRICKLE_H_ */
 /** @} */
 /** @} */

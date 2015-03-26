@@ -41,12 +41,17 @@
 
 /* Network setup for IPv6 */
 #define NETSTACK_CONF_NETWORK sicslowpan_driver
-/* #define NETSTACK_CONF_MAC nullmac_driver */
-/* #define NETSTACK_CONF_RDC sicslowmac_driver */
 #define NETSTACK_CONF_MAC     csma_driver
 #define NETSTACK_CONF_RDC     contikimac_driver
 #define NETSTACK_CONF_RADIO   cc2420_driver
 #define NETSTACK_CONF_FRAMER  framer_802154
+
+/* Specify a minimum packet size for 6lowpan compression to be
+   enabled. This is needed for ContikiMAC, which needs packets to be
+   larger than a specified size, if no ContikiMAC header should be
+   used. */
+#define SICSLOWPAN_CONF_COMPRESSION_THRESHOLD 63
+#define CONTIKIMAC_CONF_WITH_CONTIKIMAC_HEADER 0
 
 #define CC2420_CONF_AUTOACK              1
 #define NETSTACK_RDC_CHANNEL_CHECK_RATE  8
@@ -62,14 +67,12 @@
 /* Network setup for non-IPv6 (rime). */
 
 #define NETSTACK_CONF_NETWORK rime_driver
-#define NETSTACK_CONF_MAC     nullmac_driver
-/* #define NETSTACK_CONF_RDC     contikimac_driver */
-#define NETSTACK_CONF_RDC     nullrdc_driver
-#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE 128 
+#define NETSTACK_CONF_MAC     csma_driver
+#define NETSTACK_CONF_RDC     contikimac_driver
+#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE 8
 #define NETSTACK_CONF_FRAMER  framer_802154
 
-#define CC2420_CONF_AUTOACK              0
-#define MAC_CONF_CHANNEL_CHECK_RATE      8
+#define CC2420_CONF_AUTOACK              1
 
 #define COLLECT_CONF_ANNOUNCEMENTS       1
 #define RIME_CONF_NO_POLITE_ANNOUCEMENTS 0
@@ -81,7 +84,7 @@
 #define XMAC_CONF_COMPOWER               1
 #define CXMAC_CONF_COMPOWER              1
 
-#define COLLECT_NEIGHBOR_CONF_MAX_NEIGHBORS      32
+#define COLLECT_NBR_TABLE_CONF_MAX_NEIGHBORS      32
 
 #define QUEUEBUF_CONF_NUM          8
 
@@ -89,9 +92,17 @@
 
 #define PACKETBUF_CONF_ATTRS_INLINE 1
 
-#ifndef RF_CHANNEL
-#define RF_CHANNEL              26
-#endif /* RF_CHANNEL */
+#ifdef RF_CHANNEL
+#define CC2420_CONF_CHANNEL RF_CHANNEL
+#endif
+
+#ifndef CC2420_CONF_CHANNEL
+#define CC2420_CONF_CHANNEL              26
+#endif /* CC2420_CONF_CHANNEL */
+
+#ifndef CC2420_CONF_CCA_THRESH
+#define CC2420_CONF_CCA_THRESH              -45
+#endif /* CC2420_CONF_CCA_THRESH */
 
 #define IEEE802154_CONF_PANID       0xABCD
 
@@ -102,7 +113,7 @@
 #define CFS_CONF_OFFSET_TYPE	long
 
 #define PROFILE_CONF_ON 0
-#define ENERGEST_CONF_ON 0
+#define ENERGEST_CONF_ON 1
 
 #define ELFLOADER_CONF_TEXT_IN_ROM 0
 #define ELFLOADER_CONF_DATAMEMORY_SIZE 0x400
@@ -131,9 +142,9 @@
 #define UIP_CONF_IPV6_RPL               1
 
 /* Handle 10 neighbors */
-#define UIP_CONF_DS6_NBR_NBU     15
+#define NBR_TABLE_CONF_MAX_NEIGHBORS     15
 /* Handle 10 routes    */
-#define UIP_CONF_DS6_ROUTE_NBU   15
+#define UIP_CONF_MAX_ROUTES   15
 
 #define UIP_CONF_ND6_SEND_RA		0
 #define UIP_CONF_ND6_REACHABLE_TIME     600000
@@ -145,7 +156,6 @@
 #define UIP_CONF_IPV6_REASSEMBLY        0
 #define UIP_CONF_NETIF_MAX_ADDRESSES    3
 #define UIP_CONF_ND6_MAX_PREFIXES       3
-#define UIP_CONF_ND6_MAX_NEIGHBORS      4
 #define UIP_CONF_ND6_MAX_DEFROUTERS     2
 #define UIP_CONF_IP_FORWARD             0
 #define UIP_CONF_BUFFER_SIZE		140
@@ -186,7 +196,7 @@
 
 
 #ifdef PROJECT_CONF_H
-#include "project-conf.h"
+#include PROJECT_CONF_H
 #endif /* PROJECT_CONF_H */
 
 

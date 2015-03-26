@@ -47,7 +47,6 @@
  *
  * This file is part of the Contiki operating system.
  *
- * $Id: rudolph1.h,v 1.9 2010/06/18 08:28:56 nifi Exp $
  */
 
 /**
@@ -57,8 +56,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef __RUDOLPH1_H__
-#define __RUDOLPH1_H__
+#ifndef RUDOLPH1_H_
+#define RUDOLPH1_H_
 
 #include "net/rime/trickle.h"
 #include "net/rime/ipolite.h"
@@ -97,6 +96,6 @@ void rudolph1_close(struct rudolph1_conn *c);
 void rudolph1_send(struct rudolph1_conn *c, clock_time_t send_interval);
 void rudolph1_stop(struct rudolph1_conn *c);
 
-#endif /* __RUDOLPH1_H__ */
+#endif /* RUDOLPH1_H_ */
 /** @} */
 /** @} */
