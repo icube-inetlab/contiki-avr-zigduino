@@ -86,7 +86,7 @@ SENSORS(&button_sensor);
 /*----------------------Configuration of EEPROM---------------------------*/
 /* Use existing EEPROM if it passes the integrity test, else reinitialize with build values */
 
-uint8_t mac_address[8] EEMEM;
+uint8_t mac_address[8] EEMEM = {0x02, 0x11, 0x22, 0xff, 0xfe, 0x33, 0x44, 0x55};
 
 
 /* Defined but not used
@@ -107,13 +107,12 @@ static uint8_t get_channel_from_eeprom()
 }
 */
 
-/*
 static bool get_mac_from_eeprom(uint8_t* macptr)
 {
   eeprom_read_block ((void *)macptr,  &mac_address, 8);
   return true;
 }
-*/
+
 
 /*-------------------------Low level initialization------------------------*/
 /*------Done in a subroutine to keep main routine stack usage small--------*/
@@ -144,9 +143,6 @@ void initialize(void)
   if(MCUSR & (1<<WDRF )) PRINTA("Watchdog reset!\n");
   if(MCUSR & (1<<JTRF )) PRINTA("JTAG reset!\n");
 
-
-
-
 #if ANNOUNCE_BOOT
   PRINTA("\n*******Booting %s*******\n",CONTIKI_VERSION_STRING);
 #endif
@@ -174,15 +170,14 @@ void initialize(void)
   NETSTACK_RADIO.init();
 
   /* Set addresses BEFORE starting tcpip process */
-
   rimeaddr_t addr;
   memset(&addr, 0, sizeof(rimeaddr_t));
+  get_mac_from_eeprom(addr.u8);
+  addr.u8[0] = 0xab;
+  rimeaddr_set_node_addr(&addr);
 
-  addr.u8[4] = 0xff;
-  addr.u8[5] = 0xff;
-  
 // Is this required with IPv6, I wonder?
-#if 1
+#if 0
   rf230_set_pan_addr(
     IEEE802154_PANID,
     0,

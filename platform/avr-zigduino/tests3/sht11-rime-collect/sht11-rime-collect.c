@@ -99,10 +99,19 @@ PROCESS_THREAD(sensors_sample_process, ev, data)
       clock_delay_msec(20);
 	  unsigned int raw_humidity = sht11_humidity();
       
-      temp = sht11_TemperatureC(raw_temp);
-      humidity = sht11_Humidity(raw_temp,raw_humidity);
+      //temp = sht11_TemperatureC(raw_temp);
+      //humidity = sht11_Humidity(raw_temp,raw_humidity);
       
-	  printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
+      float tc=sht11_TemperatureC(raw_temp);
+      float hc=sht11_Humidity(raw_temp,raw_humidity);
+      
+      temp = tc;
+      humidity = hc;
+      
+      //printf("temp:%u.%u\n",(int)tc,((int)(tc*10))%10);
+	  printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)tc,((int)(tc*10))%10 , (int)hc,((int)(hc*10))%10);
+      
+	  //printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
       /* Reset the etimer so it will generate another event after the exact same time. */
       etimer_reset(&timer);
     }
