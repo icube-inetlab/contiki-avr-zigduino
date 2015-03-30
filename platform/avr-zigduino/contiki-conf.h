@@ -44,12 +44,9 @@
 /* MCU and clock rate */
 
 /* Platform name, type, and MCU clock rate */
-//#define PLATFORM       PLATFORM_AVR
-//#define HARWARE_REVISION ATMEGA128RFA1
 #define PLATFORM_NAME  "RFA1"
 #define PLATFORM_TYPE  ATMEGA128RFA1
 #ifndef F_CPU
-//#define F_CPU          8000000UL
 #define F_CPU          16000000UL
 #endif
 #include <stdint.h>
@@ -83,9 +80,6 @@ typedef unsigned long clock_time_t;
 void clock_delay_msec(uint16_t howlong);
 void clock_delay_usec(uint16_t howlong);
 //void clock_adjust_ticks(clock_time_t howmany);
-
-
-
 
 /* Maximum tick interval is 0xffff/125 = 524 seconds */
 #define RIME_CONF_BROADCAST_ANNOUNCEMENT_MAX_TIME CLOCK_CONF_SECOND * 524UL /* Default uses 600UL */
@@ -129,8 +123,7 @@ void clock_delay_usec(uint16_t howlong);
 
 #define NETSTACK_CONF_NETWORK       sicslowpan_driver
 #define SICSLOWPAN_CONF_COMPRESSION SICSLOWPAN_COMPRESSION_HC06
-#else
-/* ip4 should build but is largely untested */
+#else /* ip4 should build but is largely untested */
 #define RIMEADDR_CONF_SIZE        8
 #define NETSTACK_CONF_NETWORK     rime_driver
 #endif /* UIP_CONF_IPV6 */
@@ -143,7 +136,6 @@ void clock_delay_usec(uint16_t howlong);
 #define UIP_CONF_DS6_ADDR_NBU     3
 #define UIP_CONF_DS6_MADDR_NBU    0
 #define UIP_CONF_DS6_AADDR_NBU    0
-
 #define UIP_CONF_LL_802154        1
 #define UIP_CONF_LLH_LEN          0
 
@@ -163,7 +155,7 @@ void clock_delay_usec(uint16_t howlong);
 
 /* Take the default TCP maximum segment size for efficiency and simpler wireshark captures */
 /* Use this to prevent 6LowPAN fragmentation (whether or not fragmentation is enabled) */
-//#define UIP_CONF_TCP_MSS       48
+#define UIP_CONF_TCP_MSS       48
 
 /* 30 bytes per TCP connection */
 /* 6LoWPAN does not do well with concurrent TCP streams, as new browser GETs collide with packets coming */
@@ -178,21 +170,17 @@ void clock_delay_usec(uint16_t howlong);
 
 /* 25 bytes per UDP connection */
 #define UIP_CONF_UDP_CONNS      10
-
 #define UIP_CONF_IP_FORWARD      0
 #define UIP_CONF_FWCACHE_SIZE    0
-
 #define UIP_CONF_IPV6_CHECKS     1
 #define UIP_CONF_IPV6_QUEUE_PKT  1
 #define UIP_CONF_IPV6_REASSEMBLY 0
-
 #define UIP_CONF_UDP_CHECKSUMS   1
 #define UIP_CONF_TCP_SPLIT       1
 #define UIP_CONF_DHCP_LIGHT      1
 
 
-#if 1 /* No radio cycling */
-
+#if 0 /* No radio cycling */
 #define NETSTACK_CONF_MAC         nullmac_driver
 #define NETSTACK_CONF_RDC         sicslowmac_driver
 #define NETSTACK_CONF_FRAMER      framer_802154
@@ -214,7 +202,6 @@ void clock_delay_usec(uint16_t howlong);
 #define UIP_CONF_WAIT_TIMEOUT     20
 
 #elif 1  /* Contiki-mac radio cycling */
-//#define NETSTACK_CONF_MAC         nullmac_driver
 #define NETSTACK_CONF_MAC         csma_driver
 #define NETSTACK_CONF_RDC         contikimac_driver
 #define NETSTACK_CONF_FRAMER      framer_802154
@@ -259,39 +246,39 @@ void clock_delay_usec(uint16_t howlong);
 /* ************************************************************************** */
 //#pragma mark RPL Settings
 /* ************************************************************************** */
-#if UIP_CONF_IPV6_RPL
+//#if UIP_CONF_IPV6_RPL
 
-/* Define MAX_*X_POWER to reduce tx power and ignore weak rx packets for testing a miniature multihop network.
- * Leave undefined for full power and sensitivity.
- * tx=0 (3dbm, default) to 15 (-17.2dbm)
- * RF230_CONF_AUTOACK sets the extended mode using the energy-detect register with rx=0 (-91dBm) to 84 (-7dBm)
- *   else the rssi register is used having range 0 (91dBm) to 28 (-10dBm)
- *   For simplicity RF230_MIN_RX_POWER is based on the energy-detect value and divided by 3 when autoack is not set.
- * On the RF230 a reduced rx power threshold will not prevent autoack if enabled and requested.
- * These numbers applied to both Raven and Jackdaw give a maximum communication distance of about 15 cm
- * and a 10 meter range to a full-sensitivity RF230 sniffer.
-#define RF230_MAX_TX_POWER 15
-#define RF230_MIN_RX_POWER 30
- */
+///* Define MAX_*X_POWER to reduce tx power and ignore weak rx packets for testing a miniature multihop network.
+ //* Leave undefined for full power and sensitivity.
+ //* tx=0 (3dbm, default) to 15 (-17.2dbm)
+ //* RF230_CONF_AUTOACK sets the extended mode using the energy-detect register with rx=0 (-91dBm) to 84 (-7dBm)
+ //*   else the rssi register is used having range 0 (91dBm) to 28 (-10dBm)
+ //*   For simplicity RF230_MIN_RX_POWER is based on the energy-detect value and divided by 3 when autoack is not set.
+ //* On the RF230 a reduced rx power threshold will not prevent autoack if enabled and requested.
+ //* These numbers applied to both Raven and Jackdaw give a maximum communication distance of about 15 cm
+ //* and a 10 meter range to a full-sensitivity RF230 sniffer.
+//#define RF230_MAX_TX_POWER 15
+//#define RF230_MIN_RX_POWER 30
+ //*/
 
-#define RF230_MAX_TX_POWER 0
-#define RF230_MIN_RX_POWER 30
+//#define RF230_MAX_TX_POWER 0
+//#define RF230_MIN_RX_POWER 30
 
-#define UIP_CONF_ROUTER                 1
-#define UIP_CONF_ND6_SEND_RA		    0
-#define UIP_CONF_ND6_REACHABLE_TIME     600000
-#define UIP_CONF_ND6_RETRANS_TIMER      10000
+//#define UIP_CONF_ROUTER                 1
+//#define UIP_CONF_ND6_SEND_RA		    0
+//#define UIP_CONF_ND6_REACHABLE_TIME     600000
+//#define UIP_CONF_ND6_RETRANS_TIMER      10000
 
-#undef UIP_CONF_UDP_CONNS
-#define UIP_CONF_UDP_CONNS       12
-#undef UIP_CONF_FWCACHE_SIZE
-#define UIP_CONF_FWCACHE_SIZE    30
-#define UIP_CONF_BROADCAST       1
-#define UIP_ARCH_IPCHKSUM        1
-#define UIP_CONF_PINGADDRCONF    0
-#define UIP_CONF_LOGGING         0
+//#undef UIP_CONF_UDP_CONNS
+//#define UIP_CONF_UDP_CONNS       12
+//#undef UIP_CONF_FWCACHE_SIZE
+//#define UIP_CONF_FWCACHE_SIZE    30
+//#define UIP_CONF_BROADCAST       1
+//#define UIP_ARCH_IPCHKSUM        1
+//#define UIP_CONF_PINGADDRCONF    0
+//#define UIP_CONF_LOGGING         0
 
-#endif /* RPL */
+//#endif /* RPL */
 
 #define CCIF
 #define CLIF
@@ -304,10 +291,10 @@ void clock_delay_usec(uint16_t howlong);
 
 /* Override ridiculously small buffer sizes */
 
-#undef UIP_CONF_BUFFER_SIZE
-#define UIP_CONF_BUFFER_SIZE    1300
+//#undef UIP_CONF_BUFFER_SIZE
+//#define UIP_CONF_BUFFER_SIZE    1300
 
-#undef UIP_CONF_RECEIVE_WINDOW
-#define UIP_CONF_RECEIVE_WINDOW  1250
+//#undef UIP_CONF_RECEIVE_WINDOW
+//#define UIP_CONF_RECEIVE_WINDOW  1250
 
 #endif /* __CONTIKI_CONF_H__ */

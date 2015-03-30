@@ -22,6 +22,8 @@
 #include "net/rime/collect.h"
 #include "net/netstack.h"
 
+#define SINK 4
+
 float temp=0;
 float humidity=0;
 static struct collect_conn tc;
@@ -145,14 +147,22 @@ PROCESS_THREAD(example_collect_process, ev, data)
 	static struct etimer et;
 
 	PROCESS_BEGIN();
-	printf("[INIT] Node %d.%d must begin\n", rimeaddr_node_addr.u8[0], rimeaddr_node_addr.u8[1]);
+	printf("[INIT] Node %d must begin\n", rimeaddr_node_addr.u8[7]);
+	printf("[INIT] MAC address %x:%x:%x:%x:%x:%x:%x:%x\n",
+			rimeaddr_node_addr.u8[0],
+			rimeaddr_node_addr.u8[1],
+			rimeaddr_node_addr.u8[2],
+			rimeaddr_node_addr.u8[3],
+			rimeaddr_node_addr.u8[4],
+			rimeaddr_node_addr.u8[5],
+			rimeaddr_node_addr.u8[6],
+			rimeaddr_node_addr.u8[7]);
 	
 	collect_open(&tc, 130, COLLECT_ROUTER, &callbacks);
 
-	if(rimeaddr_node_addr.u8[4] == 0xff &&
-		 rimeaddr_node_addr.u8[5] == 0xff )
+	if(rimeaddr_node_addr.u8[7] == SINK)
 	{
-		printf("I am sink\n");
+		printf("[INIT] I am sink\n");
 		collect_set_sink(&tc, 1);
 	}
 
@@ -174,8 +184,8 @@ PROCESS_THREAD(example_collect_process, ev, data)
 			printf("temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
 
 			printf("node_sending;uid=%d.%d;payload=temp:%u.%u:humidity:%u.%u\n", 
-				rimeaddr_node_addr.u8[4], 
-				rimeaddr_node_addr.u8[5], 
+				rimeaddr_node_addr.u8[6], 
+				rimeaddr_node_addr.u8[7], 
 				(int)temp,((int)(temp*10))%10, 
 				(int)humidity,((int)(humidity*10))%10);
 			packetbuf_clear();

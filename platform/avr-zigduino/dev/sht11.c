@@ -37,7 +37,7 @@
 #include <stdio.h>
 #include "sht11.h"
 #include "sht11-arch.h"
-#include "delay.h"
+//#include "delay.h"
 // Pour le _NOP() :
 #include <avr/cpufunc.h>
 
@@ -282,7 +282,8 @@ scmd(unsigned cmd)
       t0 = sread(1);
       t1 = sread(1);
       PRINTF("SHT11: scmd - read %d, %d\n", t0, t1);
-      Delay_1ms(50);
+      //Delay_1ms(50);
+      clock_delay_msec(50);
       return (t0 << 8) | t1;
   }
 

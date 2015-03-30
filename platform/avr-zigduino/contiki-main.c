@@ -43,7 +43,6 @@
 
 #include "loader/symbols-def.h"
 #include "loader/symtab.h"
-//#include "dev/clock-avr.h"
 #include "radio/rf230bb/rf230bb.h"
 #include "net/mac/frame802154.h"
 #include "net/mac/framer-802154.h"
@@ -53,9 +52,9 @@
 #error Zigduino has only been tested with RF230BB
 #endif /*RF230BB*/
 
-#if !UIP_CONF_IPV6
+//#if !UIP_CONF_IPV6
 //#error Zigduino has only been tested with IPv6
-#endif
+//#endif
 
 #include "contiki.h"
 #include "contiki-net.h"
@@ -87,9 +86,6 @@ SENSORS(&button_sensor);
 /* Use existing EEPROM if it passes the integrity test, else reinitialize with build values */
 
 uint8_t mac_address[8] EEMEM = {0x02, 0x11, 0x22, 0xff, 0xfe, 0x33, 0x44, 0x55};
-
-
-/* Defined but not used
 uint8_t rf_channel[2] EEMEM = {26, ~26};
 
 static uint8_t get_channel_from_eeprom()
@@ -105,7 +101,6 @@ static uint8_t get_channel_from_eeprom()
 
   return 26;
 }
-*/
 
 static bool get_mac_from_eeprom(uint8_t* macptr)
 {
@@ -173,20 +168,13 @@ void initialize(void)
   rimeaddr_t addr;
   memset(&addr, 0, sizeof(rimeaddr_t));
   get_mac_from_eeprom(addr.u8);
-  addr.u8[0] = 0xab;
   rimeaddr_set_node_addr(&addr);
-
-// Is this required with IPv6, I wonder?
-#if 0
-  rf230_set_pan_addr(
-    IEEE802154_PANID,
-    0,
-    (uint8_t *)&addr.u8
-  );
-  rf230_set_channel(26);
-
-  rimeaddr_set_node_addr(&addr);
-#endif
+  
+  /* Set channel */
+  //uint8_t radio_channel = get_channel_from_eeprom();
+  //rf230_set_channel(radio_channel);
+  rf230_set_channel(25);
+  rf230_set_txpower(2);
 
   PRINTF("MAC address %x:%x:%x:%x:%x:%x:%x:%x\n",addr.u8[0],addr.u8[1],addr.u8[2],addr.u8[3],addr.u8[4],addr.u8[5],addr.u8[6],addr.u8[7]);
 
@@ -197,48 +185,22 @@ void initialize(void)
   NETSTACK_NETWORK.init();
 
 #if ANNOUNCE_BOOT
-  PRINTA("%s %s, channel %u , check rate %u Hz tx power %u\n",NETSTACK_MAC.name, NETSTACK_RDC.name, rf230_get_channel(),
+  PRINTA("Driver: %s + %s + %s\nChannel: %u , Check rate %u Hz, TX Power %u\n",NETSTACK_MAC.name, NETSTACK_RDC.name, NETSTACK_NETWORK.name, rf230_get_channel(),
     CLOCK_SECOND / (NETSTACK_RDC.channel_check_interval() == 0 ? 1:NETSTACK_RDC.channel_check_interval()),
     rf230_get_txpower());
-#if UIP_CONF_IPV6_RPL
-  PRINTA("RPL Enabled\n");
-#endif
-#if UIP_CONF_ROUTER
-  PRINTA("Routing Enabled\n");
-#endif
 #endif /* ANNOUNCE_BOOT */
-
-/*
-#if ANNOUNCE_BOOT
-  PRINTA("%s %s, channel %u",NETSTACK_MAC.name, NETSTACK_RDC.name,rf230_get_channel());
-  if (NETSTACK_RDC.channel_check_interval)  //function pointer is zero for sicslowmac
-  {
-    unsigned short tmp;
-    tmp=CLOCK_SECOND / (NETSTACK_RDC.channel_check_interval == 0 ? 1:\
-                        NETSTACK_RDC.channel_check_interval());
-    if (tmp<65535) PRINTA(", check rate %u Hz",tmp);
-  }
-  PRINTA("\n");
-#endif
-*/
-
-#if UIP_CONF_ROUTER
-//#warning Zigduino has not been tested with UIP_CONF_ROUTER
-#if ANNOUNCE_BOOT
-  PRINTA("Routing Enabled\n");
-#endif
-#endif
 
   /* Sensors process means all processes will get an event posted whenever sensors change.
      Not always desired, so may want to put this on a compile switch. */
   //process_start(&sensors_process, NULL);
   //SENSORS_ACTIVATE(button_sensor);
 
-  //process_start(&tcpip_process, NULL);
 
+#if UIP_CONF_IPV6
+  process_start(&tcpip_process, NULL);
   //Give ourselves a prefix
-  //init_net();
-
+  init_net();
+#endif
   
   printf("Autostart other processes\n");
   /* Autostart other processes */
@@ -262,7 +224,6 @@ extern char rf230_interrupt_flag, rf230processflag;
 int
 main(void)
 {
-
   initialize();
 
   while(1)
