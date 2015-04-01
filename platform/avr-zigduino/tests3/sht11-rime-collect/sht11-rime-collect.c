@@ -22,7 +22,7 @@
 #include "net/rime/collect.h"
 #include "net/netstack.h"
 
-#define SINK 4
+#define SINK 15
 
 float temp=0;
 float humidity=0;
@@ -101,19 +101,19 @@ PROCESS_THREAD(sensors_sample_process, ev, data)
       clock_delay_msec(20);
 	  unsigned int raw_humidity = sht11_humidity();
       
-      //temp = sht11_TemperatureC(raw_temp);
-      //humidity = sht11_Humidity(raw_temp,raw_humidity);
+      temp = sht11_TemperatureC(raw_temp);
+      humidity = sht11_Humidity(raw_temp,raw_humidity);
       
-      float tc=sht11_TemperatureC(raw_temp);
-      float hc=sht11_Humidity(raw_temp,raw_humidity);
+      //float tc=sht11_TemperatureC(raw_temp);
+      //float hc=sht11_Humidity(raw_temp,raw_humidity);
       
-      temp = tc;
-      humidity = hc;
+      //temp = tc;
+      //humidity = hc;
       
       //printf("temp:%u.%u\n",(int)tc,((int)(tc*10))%10);
-	  printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)tc,((int)(tc*10))%10 , (int)hc,((int)(hc*10))%10);
-      
-	  //printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
+	  //printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)tc,((int)(tc*10))%10 , (int)hc,((int)(hc*10))%10);
+	  //printf("Acquire RAW temp:%d humidity:%d\n",raw_temp,raw_humidity);
+	  printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
       /* Reset the etimer so it will generate another event after the exact same time. */
       etimer_reset(&timer);
     }
@@ -132,7 +132,7 @@ static void
 recv(const rimeaddr_t *originator, uint8_t seqno, uint8_t hops)
 {
   printf("sink_received;from=%d.%d;seqno=%d;hops=%d;len=%d;payload=%s;\n",
-         originator->u8[4], originator->u8[5],
+         originator->u8[6], originator->u8[7],
          seqno, hops,
          packetbuf_datalen(),
          (char *)packetbuf_dataptr());
@@ -181,7 +181,7 @@ PROCESS_THREAD(example_collect_process, ev, data)
 
 		if(etimer_expired(&et)) {
 
-			printf("temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
+			//printf("temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
 
 			printf("node_sending;uid=%d.%d;payload=temp:%u.%u:humidity:%u.%u\n", 
 				rimeaddr_node_addr.u8[6], 
