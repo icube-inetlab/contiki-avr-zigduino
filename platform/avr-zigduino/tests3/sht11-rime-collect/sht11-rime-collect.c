@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2011-2012 SmeshLink Technology Corporation.
- * All rights reserved.
- *
- * $Id: sht11-sensors-sample.c $
- */
-
-/**
- * \file
- *         This application shows how read data of temperature and humidity
- *         using sht11 sensors interfaces.
- * \author
- *         SmeshLink
- */
-
 #include "contiki.h"
 #include <stdio.h>
 #include "dev/sht11.h"
@@ -22,15 +7,17 @@
 #include "net/rime/collect.h"
 #include "net/netstack.h"
 
+/* sink node id */
 #define SINK 15
+/* sampling sensors every 10 seconds */
+#define SAMPLE_INTERVAL_SEC 10
+/* average over 15 minutes */
+#define AVERAGE_TIME_SEC 30
 
 float temp=0;
 float humidity=0;
 static struct collect_conn tc;
 
-/*---------------------------------------------------------------------------*/
-PROCESS(sensors_sample_process, "Sensors sample process");
-//AUTOSTART_PROCESSES(&sensors_sample_process);
 float sht11_TemperatureC(int rawdata)
 {
   int _val;                // Raw value returned from sensor
@@ -74,55 +61,6 @@ float sht11_Humidity(int temprawdata,int humidityrawdata)
 
   return (_correctedHumidity);
 }
-/*---------------------------------------------------------------------------*/
-PROCESS_THREAD(sensors_sample_process, ev, data)
-{
-  /* Variables are declared static to ensure their values are kept between kernel calls. */
-  static struct etimer timer;
-  
-  /* Any process must start with this. */
-  PROCESS_BEGIN();
-
-  /* Set the etimer to generate an event in one second. */
-  etimer_set(&timer, CLOCK_CONF_SECOND*5);
-
-  sht11_init();
-
-  while(1) {
-    /* Wait for an event. */
-    PROCESS_WAIT_EVENT();
-
-    /* Got the timer's event~ */
-    if (ev == PROCESS_EVENT_TIMER) {
-      /* Read temperature value. */
-      clock_delay_msec(20);
-      unsigned int raw_temp = sht11_temp();
-      /* Read humidity value. */
-      clock_delay_msec(20);
-	  unsigned int raw_humidity = sht11_humidity();
-      
-      temp = sht11_TemperatureC(raw_temp);
-      humidity = sht11_Humidity(raw_temp,raw_humidity);
-      
-      //float tc=sht11_TemperatureC(raw_temp);
-      //float hc=sht11_Humidity(raw_temp,raw_humidity);
-      
-      //temp = tc;
-      //humidity = hc;
-      
-      //printf("temp:%u.%u\n",(int)tc,((int)(tc*10))%10);
-	  //printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)tc,((int)(tc*10))%10 , (int)hc,((int)(hc*10))%10);
-	  //printf("Acquire RAW temp:%d humidity:%d\n",raw_temp,raw_humidity);
-	  printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
-      /* Reset the etimer so it will generate another event after the exact same time. */
-      etimer_reset(&timer);
-    }
-  } // while (1)
-
-  /* Any process must end with this, even if it is never reached. */
-  PROCESS_END();
-}
-/*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*/
 PROCESS(example_collect_process, "Test collect process");
@@ -144,6 +82,11 @@ PROCESS_THREAD(example_collect_process, ev, data)
 {
 	static struct etimer periodic;
 	static struct etimer et;
+	
+	static float sum_temp=0;
+	static float sum_humidity=0;
+	static int count=0;
+	static int total_samples=AVERAGE_TIME_SEC/SAMPLE_INTERVAL_SEC;
 
 	PROCESS_BEGIN();
 	printf("[INIT] Node %d must begin\n", rimeaddr_node_addr.u8[7]);
@@ -170,12 +113,9 @@ PROCESS_THREAD(example_collect_process, ev, data)
 	PROCESS_WAIT_UNTIL(etimer_expired(&periodic));
 
 	while(1) {
+		/* Sample sensors every X seconds. */
+		etimer_set(&et, CLOCK_SECOND * SAMPLE_INTERVAL_SEC);
 		printf("New cycle\n");
-		
-		/* Send a packet every 30 seconds. */
-		etimer_set(&et, CLOCK_SECOND * 5);
-		
-		printf("New cycle timer expired\n");
 
 		PROCESS_WAIT_EVENT();
 		if(etimer_expired(&et)) {
@@ -191,21 +131,37 @@ PROCESS_THREAD(example_collect_process, ev, data)
 			humidity = sht11_Humidity(raw_temp,raw_humidity);
 			  
 			printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
-			/* Reset the etimer so it will generate another event after the exact same time. */
-
-			printf("node_sending;uid=%d.%d;payload=temp:%u.%u:humidity:%u.%u\n", 
-					rimeaddr_node_addr.u8[6], 
-					rimeaddr_node_addr.u8[7], 
-					(int)temp,((int)(temp*10))%10, 
-					(int)humidity,((int)(humidity*10))%10);
-			packetbuf_clear();
+			
+			sum_temp += temp;
+			sum_humidity += humidity;
+			count++;
+			
+			printf("count=%d/%d\n", count, total_samples);
+			
+			if (count == total_samples)
+			{
 				
-			packetbuf_set_datalen(sprintf(packetbuf_dataptr(),
-					"temp:%u.%u:humidity:%u.%u", 
-					(int)temp,((int)(temp*10))%10,
-					(int)humidity,((int)(humidity*10))%10) 
-					+ 1);
-			collect_send(&tc, 15);
+				printf("node_sending;uid=%d.%d;payload=temp:%u.%u:humidity:%u.%u\n", 
+						rimeaddr_node_addr.u8[6], 
+						rimeaddr_node_addr.u8[7], 
+						(int)(sum_temp / total_samples),
+						((int)((sum_temp / total_samples)*10))%10, 
+						(int) (sum_humidity / total_samples),
+						((int)((sum_humidity / total_samples)*10))%10);
+				packetbuf_clear();
+					
+				packetbuf_set_datalen(sprintf(packetbuf_dataptr(),
+						"temp:%u.%u:humidity:%u.%u", 
+						(int)(sum_temp / total_samples),
+						((int)((sum_temp / total_samples)*10))%10, 
+						(int) (sum_humidity / total_samples),
+						((int)((sum_humidity / total_samples)*10))%10)
+						+ 1);
+				collect_send(&tc, 15);
+				count=0;
+				sum_temp=0;
+				sum_humidity=0;
+			}
 		}
 	}
 	
