@@ -79,7 +79,7 @@ typedef unsigned long clock_time_t;
 /* These routines are not part of the contiki core but can be enabled in cpu/avr/clock.c */
 void clock_delay_msec(uint16_t howlong);
 void clock_delay_usec(uint16_t howlong);
-//void clock_adjust_ticks(clock_time_t howmany);
+void clock_adjust_ticks(clock_time_t howmany);
 
 /* Maximum tick interval is 0xffff/125 = 524 seconds */
 #define RIME_CONF_BROADCAST_ANNOUNCEMENT_MAX_TIME CLOCK_CONF_SECOND * 524UL /* Default uses 600UL */
