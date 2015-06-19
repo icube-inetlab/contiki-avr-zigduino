@@ -85,7 +85,13 @@ SENSORS(&button_sensor);
 /*----------------------Configuration of EEPROM---------------------------*/
 /* Use existing EEPROM if it passes the integrity test, else reinitialize with build values */
 
+#if RIMEADDR_SIZE == 8
 uint8_t mac_address[8] EEMEM = {0x02, 0x11, 0x22, 0xff, 0xfe, 0x33, 0x44, 0x55};
+#else
+uint8_t short_mac_address[2] EEMEM = {0x01, 0xff};
+#endif
+
+/*
 uint8_t rf_channel[2] EEMEM = {26, ~26};
 
 static uint8_t get_channel_from_eeprom()
@@ -101,13 +107,43 @@ static uint8_t get_channel_from_eeprom()
 
   return 26;
 }
+*/
 
 static bool get_mac_from_eeprom(uint8_t* macptr)
 {
+#if RIMEADDR_SIZE == 8
   eeprom_read_block ((void *)macptr,  &mac_address, 8);
+#else
+  printf("reading short_mac in eeprom\n");
+  uint8_t small_addr[2];
+  small_addr[0] = eeprom_read_byte( &short_mac_address[0]+8);
+  small_addr[1] = eeprom_read_byte( &short_mac_address[1]+8);
+  macptr[0]=small_addr[0];
+  macptr[1]=small_addr[1];
+  printf("read %02x:%02x\n", small_addr[0],small_addr[1]);
+  
+#endif
   return true;
 }
 
+void print_rime_addr()
+{
+#if RIMEADDR_SIZE == 8
+    printf("Rime Addr: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n",
+            rimeaddr_node_addr.u8[0],
+            rimeaddr_node_addr.u8[1],
+            rimeaddr_node_addr.u8[2],
+            rimeaddr_node_addr.u8[3],
+            rimeaddr_node_addr.u8[4],
+            rimeaddr_node_addr.u8[5],
+            rimeaddr_node_addr.u8[6],
+            rimeaddr_node_addr.u8[7]);
+#else
+    printf("Rime Addr: %02x:%02x\n",
+            rimeaddr_node_addr.u8[0],
+            rimeaddr_node_addr.u8[1]);
+#endif
+}
 
 /*-------------------------Low level initialization------------------------*/
 /*------Done in a subroutine to keep main routine stack usage small--------*/
@@ -173,10 +209,11 @@ void initialize(void)
   /* Set channel */
   //uint8_t radio_channel = get_channel_from_eeprom();
   //rf230_set_channel(radio_channel);
-  rf230_set_channel(25);
-  rf230_set_txpower(2);
+  
+  rf230_set_channel(26);
+  rf230_set_txpower(TX_PWR_MAX);
 
-  PRINTF("MAC address %x:%x:%x:%x:%x:%x:%x:%x\n",addr.u8[0],addr.u8[1],addr.u8[2],addr.u8[3],addr.u8[4],addr.u8[5],addr.u8[6],addr.u8[7]);
+  print_rime_addr();
 
   /* Initialize stack protocols */
   queuebuf_init();
