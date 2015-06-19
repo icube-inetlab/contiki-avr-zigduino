@@ -198,25 +198,11 @@ PROCESS_THREAD(example_collect_process, ev, data)
 		etimer_set(&et, CLOCK_SECOND * SAMPLE_INTERVAL_SEC);
 		printf("New cycle\n");
 
+		micro_sleep(4);
+
 		PROCESS_WAIT_EVENT();
 		if(etimer_expired(&et)) {
-			sht11_init();
-			/* Read temperature value. */
-			clock_delay_msec(20);
-			unsigned int raw_temp = sht11_temp();
-			/* Read humidity value. */
-			clock_delay_msec(20);
-			unsigned int raw_humidity = sht11_humidity();
-			  
-			temp = sht11_TemperatureC(raw_temp);
-			humidity = sht11_Humidity(raw_temp,raw_humidity);
-			  
-			printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
-			
-			sum_temp += temp;
-			sum_humidity += humidity;
-			count++;
-			
+			count++;	
 			printf("count=%d/%d\n", count, total_samples);
 			
 			if (count == total_samples)
