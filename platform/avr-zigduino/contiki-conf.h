@@ -82,6 +82,7 @@ void clock_delay_usec(uint16_t howlong);
 void clock_adjust_ticks(clock_time_t howmany);
 
 /* Maximum tick interval is 0xffff/125 = 524 seconds */
+//#define RIMEADDR_CONF_SIZE 2
 #define RIME_CONF_BROADCAST_ANNOUNCEMENT_MAX_TIME CLOCK_CONF_SECOND * 524UL /* Default uses 600UL */
 #define COLLECT_CONF_BROADCAST_ANNOUNCEMENT_MAX_TIME CLOCK_CONF_SECOND * 524UL /* Default uses 600UL */
 
@@ -132,7 +133,7 @@ void clock_adjust_ticks(clock_time_t howmany);
 #define NETSTACK_CONF_NETWORK       sicslowpan_driver
 #define SICSLOWPAN_CONF_COMPRESSION SICSLOWPAN_COMPRESSION_HC06
 #else /* ip4 should build but is largely untested */
-#define RIMEADDR_CONF_SIZE        8
+#define RIMEADDR_CONF_SIZE        2
 #define NETSTACK_CONF_NETWORK     rime_driver
 #endif /* UIP_CONF_IPV6 */
 
