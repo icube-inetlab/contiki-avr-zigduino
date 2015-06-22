@@ -112,6 +112,8 @@ void clock_adjust_ticks(clock_time_t howmany);
 //#define RDC_CONF_HARDWARE_CSMA   1
 /* Allow MCU sleeping between channel checks */
 //#define RDC_CONF_MCU_SLEEP         1
+/* Improve radio range with contiki-mac ? */
+#define RF230_CONF_CCA_THRES -85
 
 /* Network setup. The new NETSTACK interface requires RF230BB (as does ip4) */
 #if RF230BB
