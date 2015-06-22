@@ -160,13 +160,13 @@ PROCESS_THREAD(example_collect_process, ev, data)
 			sum_humidity += humidity;	
 #endif
 
-#ifdef NETWORK_STATS
 			count++;
 			printf("count=%d/%d\n", count, total_samples);
+#ifdef NETWORK_STATS
 			parent = collect_parent(&tc);
 #if RIMEADDR_SIZE == 8	
 			paddr[0]=parent->u8[6];
-			paddr[1]=parent->u8[7]
+			paddr[1]=parent->u8[7];
 #else
 			paddr[0]=parent->u8[0];
 			paddr[1]=parent->u8[1];
@@ -188,7 +188,7 @@ PROCESS_THREAD(example_collect_process, ev, data)
 				num_neighbors,beacon_interval);
 
             packetbuf_clear();
-            packetbuf_set_datalen(sprintf(packetbuf_dataptr(), "payload=parent:%d.%d:depth:%d:etx:%d:rtmetric:%d:neighbors:%d:beacon:%d",
+            packetbuf_set_datalen(sprintf(packetbuf_dataptr(), "parent:%d.%d:depth:%d:etx:%d:rtmetric:%d:neighbors:%d:beacon:%d",
               paddr[0],paddr[1],depth,parent_etx,tc.rtmetric,
               num_neighbors,beacon_interval) + 1);
             collect_send(&tc, 15);
