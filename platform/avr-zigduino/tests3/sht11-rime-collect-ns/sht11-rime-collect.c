@@ -12,8 +12,8 @@
 #define SINK 10
 /* sampling sensors every 10 seconds */
 #define SAMPLE_INTERVAL_SEC 10
-/* average over 15 minutes */
-#define AVERAGE_TIME_SEC 30
+/* sampling average in seconds */
+#define AVERAGE_TIME_SEC 60
 /* true if SHT75 is plugged*/
 #define SENSOR
 #define NETWORK_STATS
@@ -159,56 +159,61 @@ PROCESS_THREAD(example_collect_process, ev, data)
 			sum_temp += temp;
 			sum_humidity += humidity;	
 #endif
-
 			count++;
 			printf("count=%d/%d\n", count, total_samples);
+
 #ifdef NETWORK_STATS
-			parent = collect_parent(&tc);
+			// send network stats every 3*SAMPLE_INTERVAL_SEC sec.
+			if (count%3 == 0 && count != total_samples)
+			{
+				parent = collect_parent(&tc);
 #if RIMEADDR_SIZE == 8	
-			paddr[0]=parent->u8[6];
-			paddr[1]=parent->u8[7];
+				paddr[0]=parent->u8[6];
+				paddr[1]=parent->u8[7];
 #else
-			paddr[0]=parent->u8[0];
-			paddr[1]=parent->u8[1];
+				paddr[0]=parent->u8[0];
+				paddr[1]=parent->u8[1];
 #endif
 			
-            depth = collect_depth(&tc);
-            n = collect_neighbor_list_find(&tc.neighbor_list,
-                                   &tc.parent);
-            if(n != NULL) {
-               parent_etx = collect_neighbor_link_estimate(n);
-            } else {
-               parent_etx = 0;
-            }
-            num_neighbors = collect_neighbor_list_num(&tc.neighbor_list);
-            beacon_interval = broadcast_announcement_beacon_interval() / CLOCK_SECOND;
-            
-            printf("node_sending;payload=parent:%d.%d:depth:%d:etx:%d:rtmetric:%d:neighbors:%d:beacon:%d\n",
-				paddr[0],paddr[1],depth,parent_etx,tc.rtmetric,
-				num_neighbors,beacon_interval);
+				depth = collect_depth(&tc);
+				n = collect_neighbor_list_find(&tc.neighbor_list,
+									   &tc.parent);
+				if(n != NULL) {
+				   parent_etx = collect_neighbor_link_estimate(n);
+				} else {
+				   parent_etx = 0;
+				}
+				num_neighbors = collect_neighbor_list_num(&tc.neighbor_list);
+				beacon_interval = broadcast_announcement_beacon_interval() / CLOCK_SECOND;
+				
+				printf("node_sending;payload=parent:%d.%d:depth:%d:etx:%d:rtmetric:%d:neighbors:%d:beacon:%d\n",
+					paddr[0],paddr[1],depth,parent_etx,tc.rtmetric,
+					num_neighbors,beacon_interval);
 
-            packetbuf_clear();
-            packetbuf_set_datalen(sprintf(packetbuf_dataptr(), "parent:%d.%d:depth:%d:etx:%d:rtmetric:%d:neighbors:%d:beacon:%d",
-              paddr[0],paddr[1],depth,parent_etx,tc.rtmetric,
-              num_neighbors,beacon_interval) + 1);
-            collect_send(&tc, 15);
+				packetbuf_clear();
+				packetbuf_set_datalen(sprintf(packetbuf_dataptr(), "parent:%d.%d:depth:%d:etx:%d:rtmetric:%d:neighbors:%d:beacon:%d",
+				  paddr[0],paddr[1],depth,parent_etx,tc.rtmetric,
+				  num_neighbors,beacon_interval) + 1);
+				collect_send(&tc, 15);
+			}
 #endif
+
 			if (count == total_samples)
-			{
+			{				
 #ifdef SENSOR				
 				printf("node_sending;uid=%d.%d;payload=temp:%u.%u:humidity:%u.%u\n",
 #if RIMEADDR_SIZE == 8
-						rimeaddr_node_addr.u8[6], 
-						rimeaddr_node_addr.u8[7], 
+				rimeaddr_node_addr.u8[6], 
+				rimeaddr_node_addr.u8[7], 
 #else
-						rimeaddr_node_addr.u8[0], 
-						rimeaddr_node_addr.u8[1],
+				rimeaddr_node_addr.u8[0], 
+				rimeaddr_node_addr.u8[1],
 #endif 				
-						(int)(sum_temp / total_samples),
-						((int)((sum_temp / total_samples)*10))%10, 
-						(int) (sum_humidity / total_samples),
-						((int)((sum_humidity / total_samples)*10))%10);
-						
+				(int)(sum_temp / total_samples),
+				((int)((sum_temp / total_samples)*10))%10, 
+				(int) (sum_humidity / total_samples),
+				((int)((sum_humidity / total_samples)*10))%10);
+				
 				packetbuf_clear();
 				packetbuf_set_datalen(sprintf(packetbuf_dataptr(),
 						"temp:%u.%u:humidity:%u.%u", 
@@ -225,6 +230,8 @@ PROCESS_THREAD(example_collect_process, ev, data)
 				sum_humidity=0;
 #endif
 			}
+
+
 		}
 	}
 	
