@@ -1,6 +1,7 @@
 #include "contiki.h"
 #include <stdio.h>
 #include "dev/sht11.h"
+#include "dev/i2c-drv.h"
 
 #include "lib/random.h"
 #include "net/rime.h"
@@ -9,7 +10,7 @@
 #include "net/netstack.h"
 
 /* sink node id */
-#define SINK 10
+#define SINK 12
 /* sampling sensors every 10 seconds */
 #define SAMPLE_INTERVAL_SEC 10
 /* sampling average in seconds */
@@ -96,6 +97,11 @@ PROCESS_THREAD(example_collect_process, ev, data)
 #ifdef SENSOR
 	static float sum_temp=0;
 	static float sum_humidity=0;
+	
+	uint8_t data_h=0;
+	uint8_t data_l=0;
+	uint16_t mask_h = 0xFF00;
+	uint16_t mask_l = 0x00FF;
 #endif
 
 #ifdef NETWORK_STATS
@@ -153,6 +159,56 @@ PROCESS_THREAD(example_collect_process, ev, data)
 			  
 			temp = sht11_TemperatureC(raw_temp);
 			humidity = sht11_Humidity(raw_temp,raw_humidity);
+			
+			printf("raw_temp %u\n",raw_temp);
+			uint16_t data_h16 = mask_h & raw_temp;
+			data_h = (uint8_t) (data_h16 >> 8);
+			printf("read data_h %u\n", data_h);
+			
+			data_l = mask_l & raw_temp;
+			printf("read data_l %u\n", data_l);
+			
+			i2c_start(0xA0); /* A0 = Write instrution*/
+			i2c_write(0x0);
+			i2c_write(0x5);
+			i2c_write(data_h);
+			i2c_stop();
+			
+			/* wait a little between i2c instruction */
+			clock_delay_msec(5);
+			
+			i2c_start(0xA0); 
+			i2c_write(0x0);
+			i2c_write(0x6);
+			i2c_write(data_l);
+			i2c_stop();
+			
+			/* wait a little between i2c instruction */
+			clock_delay_msec(5);
+			
+			i2c_start(0xA0);
+			i2c_write(0x0);
+			i2c_write(0x5);
+			i2c_rep_start(0xA1);  /* A1 = request read */
+			i2c_read_nack(&data_h);
+			i2c_stop();
+			
+			
+			/* wait a little between i2c instruction */
+			clock_delay_msec(5);
+
+			i2c_start(0xA0);
+			i2c_write(0x0);
+			i2c_write(0x6);
+			i2c_rep_start(0xA1);  /* A1 = request read */
+			i2c_read_nack(&data_l);
+			i2c_stop();
+			
+			raw_temp = (data_h << 8) + data_l;   
+			
+			printf("read data_h %u\n", data_h);
+			printf("read data_l %u\n", data_l);
+			printf("read i2c %u\n", raw_temp);
 			  
 			printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
 
