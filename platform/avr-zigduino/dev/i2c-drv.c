@@ -135,3 +135,35 @@
   PORTC |= ((1<<PC0) | (1<<PC1));
  
  }
+
+void i2c_eeprom_write_byte(uint8_t deviceaddress, uint16_t eeaddress, uint8_t data )
+{
+	uint8_t rdata= data;
+	
+	deviceaddress = deviceaddress << 1;
+	i2c_start(deviceaddress); /* xxxxxxx0 = Write instrution*/		
+	i2c_write((uint8_t)(eeaddress>>8));      // MSB
+	i2c_write((uint8_t)(eeaddress & 0xFF));  // LSB
+	i2c_write(rdata);
+	i2c_stop();
+	//printf("deviceaddress : %X \n", deviceaddress);
+}
+
+uint8_t i2c_eeprom_read_byte( uint8_t deviceaddress, uint16_t eeaddress )
+{
+
+	uint8_t rdata= 0xFF;
+	
+	deviceaddress = deviceaddress << 1;
+	i2c_start(deviceaddress); /* xxxxxxx0 = Write instrution*/		
+	i2c_write((uint8_t)(eeaddress>>8));      // MSB
+	i2c_write((uint8_t)(eeaddress & 0xFF));  // LSB
+
+	i2c_rep_start((uint8_t)(deviceaddress + 1));  /* xxxxxxx1 = request read */
+	i2c_read_nack(&rdata);
+	i2c_stop();
+	//printf("deviceaddress : %X \n", deviceaddress + 1);
+	return rdata;
+}
+
+

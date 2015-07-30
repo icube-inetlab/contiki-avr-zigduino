@@ -67,5 +67,8 @@
  int8_t i2c_read_ack(uint8_t *data);
  int8_t i2c_read_nack(uint8_t *data);
  
+void i2c_eeprom_write_byte(uint8_t deviceaddress, uint16_t eeaddress, uint8_t data );
+uint8_t i2c_eeprom_read_byte( uint8_t deviceaddress, uint16_t eeaddress );
+
  
  #endif /* I2CDRV_H_ */
