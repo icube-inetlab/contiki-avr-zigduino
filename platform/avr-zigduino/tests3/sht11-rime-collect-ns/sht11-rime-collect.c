@@ -1,9 +1,8 @@
 #include "contiki.h"
 #include <stdio.h>
-
 #include "dev/sht11.h"
 #include "dev/i2c-drv.h"
-#include "dev/spi.h"
+#include "fonct_drv.h"
 
 #include "lib/random.h"
 #include "net/rime.h"
@@ -21,18 +20,17 @@
 #define SENSOR
 #define NETWORK_STATS
 
-char val_tempsDate[15];
-uint8_t time_In_Eeprom[6];
+float temp=0;
+float humidity=0;
+static struct collect_conn tc;
+
 uint8_t nodeNumber;
 uint16_t nodeNumber_addr = 0x0;
+//uint8_t time_In_Eeprom[6];
 
 uint8_t base_add_EEP1 = 0x50;  // EEprom1 device address	
 uint16_t addr = 0x1FF; // start acquisition address 0x200 - 1
 
-
-float temp=0;
-float humidity=0;
-static struct collect_conn tc;
 
 float sht11_TemperatureC(int rawdata)
 {
@@ -79,134 +77,6 @@ float sht11_Humidity(int temprawdata,int humidityrawdata)
 }
 
 
-/******************************* spi ***************************/
-void spi_init() {
-    pin_Mode_SS_OUTPUT(); // chip select 
-    // start the SPI library: 
-    SPI_begin(); 
-    SPI_setBitOrder(MSBFIRST); 
-    SPI_setDataMode(SPI_MODE1); // both mode 1 & 3 should work 
-
-}
-
-//****************************************************************
-void RTC_init(void){ 
-                  
-         uint8_t ad;
-          
-	  // start the SPI library:
-	  //spi_init();   //SPI.begin();
-	  //SPI.setBitOrder(MSBFIRST); 
-	  //SPI.setDataMode(SPI_MODE1); // both mode 1 & 3 should work 
-	  //set control register 
-	  digital_Write_SS_Low(); // 
-	  SPI_transfer(0x8E);// 
-	  //0x25 = disable Osciallator, Battery and SQ wave , temp compensation, Alarms enabled 10S
-	  SPI_transfer(0x25);//  
-	  digital_Write_SS_HIGH();//
-	  
-          clock_delay_msec(10);//     
-         
-          digital_Write_SS_Low();//
-	  ad=0x8F;
-          SPI_transfer(0x8F);//A1F = 0;  Flag Alarm1
-	  ad=0;
-          SPI_transfer(0x0);//SPI.transfer(0x0); 
-          digital_Write_SS_HIGH();//digitalWrite(cs, HIGH); 
-         
-          clock_delay_msec(10);//delay(10); 
-
-
-
-         
-        //Turn on internal pullup for INT/SQW pin 
-/*
-          alarmPin_In();    //pinMode(alarmPin, INPUT); 
-          alarmPin_High();  //digitalWrite(alarmPin, HIGH);   
-          SetAlarm();
-*/
-}
-
-
-//=====================================
-void SetTimeDate(int d, int mo, int y, int h, int mi, int s){ 
-	int TimeDate [7]={s,mi,h,0,d,mo,y};
-	uint8_t ad;
-	int i, a, b;
-
-	for(i=0; i<=6;i++){
-		if(i==3)
-			i++;
-		b= TimeDate[i]/10;
-		a= TimeDate[i]-b*10;
-		if(i==2){
-			if (b==2)
-				b= 0x02;  //B00000010;
-			else if (b==1)
-				b= 0x01;//B00000001;
-		}	
-		TimeDate[i]= a+(b<<4);
-		  
-		digital_Write_SS_Low();//digitalWrite(cs, LOW);
-		ad = i+0x80;
-		SPI_transfer(i+0x80);//SPI.transfer(i+0x80); 
-		ad =(uint8_t) TimeDate[i];
-		SPI_transfer(ad);//SPI.transfer(TimeDate[i]);        
-		digital_Write_SS_HIGH();//digitalWrite(cs, HIGH);
-  }
-}
-//=====================================
-char * ReadTimeDate(void){
-
-	//uint8_t ad;
-	int i, a, b;
- 	uint8_t n;
-	int TimeDate [7]; //second,minute,hour,null,day,month,year	
-	
-	for(i=0; i<=6;i++){
-		if(i==3)
-			i++;
-		digital_Write_SS_Low();
-		SPI_transfer(i+0x00);
-		n = SPI_transfer(0x00);        
-		digital_Write_SS_HIGH();
-		a=n & 0x0F;//B00001111;    
-		if(i==2){	
-			b=(n & 0x30)>>4; //  B00110000  24 hour mode
-			if(b== 0x02)     // B00000010
-				b=20;        
-			else if(b==0x01)     // B00000001 
-				b=10;
-			TimeDate[i]=a+b;
-		}
-		else if(i==4){
-			b=(n & 0x30)>>4;  //B00110000
-			TimeDate[i]=a+b*10;
-		}
-		else if(i==5){
-			b=(n & 0x10)>>4;      //B00010000
-			TimeDate[i]=a+b*10;
-		}
-		else if(i==6){
-			b=(n &0x0F0 )>>4;          //B11110000
-			TimeDate[i]=a+b*10;
-		}
-		else{	
-			b=(n & 0x70)>>4;          //B01110000
-			TimeDate[i]=a+b*10;	
-			}
-	}
-	sprintf(val_tempsDate,"%d/%d/%d %d:%d:%d", TimeDate[4],TimeDate[5],TimeDate[6],TimeDate[2],TimeDate[1],TimeDate[0]);
-	time_In_Eeprom[0]= TimeDate[4]; // day
-	time_In_Eeprom[1]= TimeDate[5]; // month
-	time_In_Eeprom[2]= TimeDate[6]; // year
-	time_In_Eeprom[3]= TimeDate[2]; // hour
-	time_In_Eeprom[4]= TimeDate[1]; // minute
-	time_In_Eeprom[5]= TimeDate[0]; // second
-
-  return(val_tempsDate);
-}
-//====================================================
 
 /*---------------------------------------------------------------------------*/
 PROCESS(example_collect_process, "Test collect process");
@@ -235,21 +105,18 @@ PROCESS_THREAD(example_collect_process, ev, data)
 	static int count=0;
 	static int total_samples=AVERAGE_TIME_SEC/SAMPLE_INTERVAL_SEC;
 
-	int i;
 
 #ifdef SENSOR
 	static float sum_temp=0;
 	static float sum_humidity=0;
-	
+
 	static uint32_t sum_raw_t=0;
 	static uint32_t sum_raw_h=0;
 	
 	uint8_t data_h=0;
 	uint8_t data_l=0;
-
 	uint16_t mask_h = 0xFF00;
 	uint16_t mask_l = 0x00FF;
-	
 #endif
 
 #ifdef NETWORK_STATS
@@ -264,16 +131,20 @@ PROCESS_THREAD(example_collect_process, ev, data)
 #endif
 
 	PROCESS_BEGIN();
-	
+	printf("[INIT] Node %d must begin\n", 
+#if RIMEADDR_SIZE == 8	
+	rimeaddr_node_addr.u8[7]
+#else
+	rimeaddr_node_addr.u8[1]
+#endif	
+	);
+
 #if RIMEADDR_SIZE == 8	
 	nodeNumber = rimeaddr_node_addr.u8[7];
 #else
 	nodeNumber = rimeaddr_node_addr.u8[1];
 #endif	
-	printf("[INIT] Node %d must begin\n", nodeNumber);
-
-	i2c_eeprom_write_byte(base_add_EEP1,nodeNumber_addr, nodeNumber); clock_delay_msec(5);
-
+	
 	collect_open(&tc, 130, COLLECT_ROUTER, &callbacks);
 
 #if RIMEADDR_SIZE == 8	
@@ -292,8 +163,10 @@ PROCESS_THREAD(example_collect_process, ev, data)
 
 /**************************  Date and Time *********************/
 	spi_init();
-	RTC_init();
-	SetTimeDate(29,7,15,13,20,0); 
+	/* RTC must be set outside */
+		//RTC_init();
+		//SetTimeDate(29,7,15,13,20,0); 
+
 	printf("UTC date and time ---start : %s\n",ReadTimeDate());
 	
 
@@ -301,9 +174,9 @@ PROCESS_THREAD(example_collect_process, ev, data)
 
 //-------------------------- Read Node number in eeprom ----------------------
 
-	//i2c_eeprom_write_byte(base_add_EEP1,nodeNumber_addr, nodeNumber); clock_delay_msec(5);
+	
 	printf(" EEprom node number = %u\n", i2c_eeprom_read_byte(base_add_EEP1, nodeNumber_addr)); // read eeprom 
-	//clock_delay_msec(5); 
+	
 //--------------------------------------------------------------
 
 
@@ -311,7 +184,8 @@ PROCESS_THREAD(example_collect_process, ev, data)
 		/* Sample sensors every X seconds. */
 		etimer_set(&et, CLOCK_SECOND * SAMPLE_INTERVAL_SEC);
 		printf("New cycle\n");
-		printf(" EEprom node number = %u\n", i2c_eeprom_read_byte(base_add_EEP1, nodeNumber_addr)); 			//clock_delay_msec(5);
+
+		printf(" EEprom node number = %u\n", i2c_eeprom_read_byte(base_add_EEP1, nodeNumber_addr));
 
 		PROCESS_WAIT_EVENT();
 		if(etimer_expired(&et)) {
@@ -319,7 +193,6 @@ PROCESS_THREAD(example_collect_process, ev, data)
 #ifdef SENSOR
 			// Read Time
 			printf("UTC date and time : %s\n",ReadTimeDate());
-			//clock_delay_msec(20);
 
 			sht11_init();
 			/* Read temperature value. */
@@ -340,11 +213,12 @@ PROCESS_THREAD(example_collect_process, ev, data)
 			
 			raw_temp = (data_h << 8) + data_l;   
 			printf("read i2c %u\n", raw_temp);
-			
+			  
 			printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
-			
+
 			sum_raw_t += raw_temp;
 			sum_raw_h += raw_humidity;
+
 
 			sum_temp += temp;
 			sum_humidity += humidity;	
@@ -389,8 +263,9 @@ PROCESS_THREAD(example_collect_process, ev, data)
 #endif
 
 			if (count == total_samples)
-			{
-						
+			{				
+			
+
 				data_h16 = (uint16_t)(sum_raw_t / total_samples);
 				data_l = mask_l & data_h16;
 				data_h = (uint8_t) (data_h16 >> 8);
@@ -435,16 +310,20 @@ PROCESS_THREAD(example_collect_process, ev, data)
 				printf("read eeprom humidity : %u\n", raw_humidity);
 
 			/***********************************************************************/
-
 			/************  write date and time in eeprom ***************************/
+				int i;
 				for(i=0;i<6; i++)
 				{
 					addr++;
 					i2c_eeprom_write_byte(base_add_EEP1,addr, time_In_Eeprom[i]); 
-					clock_delay_msec(5);			
+					clock_delay_msec(5);
+					printf("%d/",time_In_Eeprom[i]);
 				}
+				printf("\n");
 			/***********************************************************************/	
-#ifdef SENSOR				
+
+#ifdef SENSOR
+	
 				printf("node_sending;uid=%d.%d;payload=temp:%u.%u:humidity:%u.%u\n",
 #if RIMEADDR_SIZE == 8
 				rimeaddr_node_addr.u8[6], 
@@ -467,16 +346,15 @@ PROCESS_THREAD(example_collect_process, ev, data)
 						((int)((sum_humidity / total_samples)*10))%10)
 						+ 1);
 				collect_send(&tc, 15);
-
-
 #endif				
 				count=0;
 #ifdef SENSOR			
 				sum_temp=0;
 				sum_humidity=0;
-				
+
 				sum_raw_h=0;
 				sum_raw_t=0;
+
 #endif
 			}
 
