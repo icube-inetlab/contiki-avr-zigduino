@@ -276,6 +276,7 @@ PROCESS_THREAD(example_collect_process, ev, data)
 			// !!! wait a little between i2c instruction !!! 
 
 				// temp
+				if (addr>=65500) addr = 0x01ff;
 				addr++;
 				i2c_eeprom_write_byte(base_add_EEP1,addr, data_l); clock_delay_msec(5);
 				data_l = 0;
