@@ -11,7 +11,7 @@
 #include "net/netstack.h"
 
 /* sink node id */
-#define SINK 12
+#define SINK 21
 /* sampling sensors every 10 seconds */
 #define SAMPLE_INTERVAL_SEC 10
 /* sampling average in seconds */
@@ -23,77 +23,77 @@
 float temp=0;
 float humidity=0;
 static struct collect_conn tc;
-
 uint8_t nodeNumber;
-uint16_t nodeNumber_addr = 0x0;
+
+#ifdef SENSOR
+uint16_t nodeNumber_addr=0x0;
+/* EEprom1 device address */
+uint8_t base_add_EEP1=0x50;
+/* start acquisition address 0x200 - 1 */
+uint16_t addr=0x1FF;
 //uint8_t time_In_Eeprom[6];
-
-uint8_t base_add_EEP1 = 0x50;  // EEprom1 device address	
-uint16_t addr = 0x1FF; // start acquisition address 0x200 - 1
-
+#endif
 
 float sht11_TemperatureC(int rawdata)
 {
-  int _val;                // Raw value returned from sensor
-  float _temperature;      // Temperature derived from raw value
+	/* Raw value returned from sensor */
+	int _val;                
+	/* Temperature derived from raw value */
+	float _temperature;
+	/* Conversion coefficients from SHT11 datasheet */
+	const float D1 = -39.6;
+	const float D2 =   0.01;
 
-  // Conversion coefficients from SHT11 datasheet
-  const float D1 = -39.6;
-  const float D2 =   0.01;
-
-  // Fetch raw value
-  _val = rawdata;
-
-  // Convert raw value to degrees Celsius
-  _temperature = (_val * D2) + D1;
-
-  return (_temperature);
+	/* Fetch raw value */
+	_val = rawdata;
+	/* Convert raw value to degrees Celsius */
+	_temperature = (_val * D2) + D1;
+	return (_temperature);
 }
 
 float sht11_Humidity(int temprawdata,int humidityrawdata)
 {
-  int _val;                    // Raw humidity value returned from sensor
-  float _linearHumidity;       // Humidity with linear correction applied
-  float _correctedHumidity;    // Temperature-corrected humidity
-  float _temperature;          // Raw temperature value
+	/* Raw humidity value returned from sensor */
+	int _val;
+	/* Humidity with linear correction applied */
+	float _linearHumidity;
+	/* Temperature-corrected humidity */    
+	float _correctedHumidity;
+	/* Raw temperature value */
+	float _temperature;
 
-  // Conversion coefficients from SHT15 datasheet
-  const float C1 = -4.0;       // for 12 Bit
-  const float C2 =  0.0405;    // for 12 Bit
-  const float C3 = -0.0000028; // for 12 Bit
-  const float T1 =  0.01;      // for 14 Bit @ 5V
-  const float T2 =  0.00008;   // for 14 Bit @ 5V
+	/* Conversion coefficients from SHT15 datasheet */
+	const float C1 = -4.0;       // for 12 Bit
+	const float C2 =  0.0405;    // for 12 Bit
+	const float C3 = -0.0000028; // for 12 Bit
+	const float T1 =  0.01;      // for 14 Bit @ 5V
+	const float T2 =  0.00008;   // for 14 Bit @ 5V
 
-  _val = humidityrawdata;
-   _linearHumidity = C1 + C2 * _val + C3 * _val * _val;
-
-  // Get current temperature for humidity correction
-  _temperature = sht11_TemperatureC(temprawdata);
-
-  // Correct humidity value for current temperature
-  _correctedHumidity = (_temperature - 25.0 ) * (T1 + T2 * _val) + _linearHumidity;
-
-  return (_correctedHumidity);
+	_val = humidityrawdata;
+	_linearHumidity = C1 + C2 * _val + C3 * _val * _val;
+	/* Get current temperature for humidity correction */
+	_temperature = sht11_TemperatureC(temprawdata);
+	/* Correct humidity value for current temperature */
+	_correctedHumidity = (_temperature - 25.0 ) * (T1 + T2 * _val) + _linearHumidity;
+	return (_correctedHumidity);
 }
 
-
-
 /*---------------------------------------------------------------------------*/
-PROCESS(example_collect_process, "Test collect process");
+PROCESS(example_collect_process, "Ubiquity Collect process");
 AUTOSTART_PROCESSES(&example_collect_process);
 /*---------------------------------------------------------------------------*/
 static void
 recv(const rimeaddr_t *originator, uint8_t seqno, uint8_t hops)
 {
-  printf("sink_received;from=%d.%d;seqno=%d;hops=%d;len=%d;payload=%s;\n",
+	printf("sink_received;from=%d.%d;seqno=%d;hops=%d;len=%d;payload=%s;\n",
 #if RIMEADDR_SIZE == 8	
-         originator->u8[6], originator->u8[7],
+		originator->u8[6], originator->u8[7],
 #else
-		 originator->u8[0], originator->u8[1],
+		originator->u8[0], originator->u8[1],
 #endif
-         seqno, hops,
-         packetbuf_datalen(),
-         (char *)packetbuf_dataptr());
+		seqno, hops,
+		packetbuf_datalen(),
+		(char *)packetbuf_dataptr());
 }
 /*---------------------------------------------------------------------------*/
 static const struct collect_callbacks callbacks = { recv };
@@ -113,14 +113,20 @@ PROCESS_THREAD(example_collect_process, ev, data)
 	static uint32_t sum_raw_t=0;
 	static uint32_t sum_raw_h=0;
 	
+	uint16_t data_h16=0;
 	uint8_t data_h=0;
 	uint8_t data_l=0;
-	uint16_t mask_h = 0xFF00;
-	uint16_t mask_l = 0x00FF;
+	//uint16_t mask_h=0xFF00;
+	uint16_t mask_l=0x00FF;
+	
+	uint8_t temp_h=0;
+	uint8_t temp_l=0;
+	uint8_t humidity_h=0;
+	uint8_t humidity_l=0;	
 #endif
 
 #ifdef NETWORK_STATS
-	// test metrics
+	/* Networks metrics */
 	const rimeaddr_t *parent;
 	uint8_t paddr[2];
 	int depth;
@@ -162,31 +168,25 @@ PROCESS_THREAD(example_collect_process, ev, data)
 	PROCESS_WAIT_UNTIL(etimer_expired(&periodic));
 
 /**************************  Date and Time *********************/
+#ifdef SENSOR
 	spi_init();
 	/* RTC must be set outside */
-		//RTC_init();
-		//SetTimeDate(29,7,15,13,20,0); 
-
 	printf("UTC date and time ---start : %s\n",ReadTimeDate());
-	
 
 /***************************************************************/
 
-//-------------------------- Read Node number in eeprom ----------------------
-
-	
-	printf(" EEprom node number = %u\n", i2c_eeprom_read_byte(base_add_EEP1, nodeNumber_addr)); // read eeprom 
-	
-//--------------------------------------------------------------
-
+	/* Read Node number in eeprom */
+	printf(" EEprom node number = %u\n", i2c_eeprom_read_byte(base_add_EEP1, nodeNumber_addr));
+#endif		
 
 	while(1) {
 		/* Sample sensors every X seconds. */
 		etimer_set(&et, CLOCK_SECOND * SAMPLE_INTERVAL_SEC);
 		printf("New cycle\n");
 
+#ifdef SENSOR
 		printf(" EEprom node number = %u\n", i2c_eeprom_read_byte(base_add_EEP1, nodeNumber_addr));
-
+#endif
 		PROCESS_WAIT_EVENT();
 		if(etimer_expired(&et)) {
 
@@ -206,19 +206,10 @@ PROCESS_THREAD(example_collect_process, ev, data)
 			humidity = sht11_Humidity(raw_temp,raw_humidity);
 			
 			printf("raw_temp %u\n",raw_temp);
-
-			uint16_t data_h16 = mask_h & raw_temp;
-			data_h = (uint8_t) (data_h16 >> 8);
-			data_l = mask_l & raw_temp;
-			
-			raw_temp = (data_h << 8) + data_l;   
-			printf("read i2c %u\n", raw_temp);
-			  
 			printf("Acquire temp:%u.%u humidity:%u.%u\n",(int)temp,((int)(temp*10))%10 , (int)humidity,((int)(humidity*10))%10);
 
 			sum_raw_t += raw_temp;
 			sum_raw_h += raw_humidity;
-
 
 			sum_temp += temp;
 			sum_humidity += humidity;	
@@ -227,8 +218,8 @@ PROCESS_THREAD(example_collect_process, ev, data)
 			printf("count=%d/%d\n", count, total_samples);
 
 #ifdef NETWORK_STATS
-			// send network stats every 3*SAMPLE_INTERVAL_SEC sec.
-			if (count%3 == 0 && count != total_samples)
+			// send network stats every 1*SAMPLE_INTERVAL_SEC sec.
+			if (count%1 == 0 && count != total_samples)
 			{
 				parent = collect_parent(&tc);
 #if RIMEADDR_SIZE == 8	
@@ -265,17 +256,16 @@ PROCESS_THREAD(example_collect_process, ev, data)
 			if (count == total_samples)
 			{				
 			
-
+#ifdef SENSOR
 				data_h16 = (uint16_t)(sum_raw_t / total_samples);
 				data_l = mask_l & data_h16;
 				data_h = (uint8_t) (data_h16 >> 8);
 				
 
-			/********* write data in eepromm  and read data from eeprom ***********/
+/********* write data in eepromm  and read data from eeprom ***********/
 				
-			// !!! wait a little between i2c instruction !!! 
-
-				// temp
+				/* !!! wait a little between i2c instruction !!! */
+				/* temperature */
 				if (addr>=65500) addr = 0x01ff;
 				addr++;
 				i2c_eeprom_write_byte(base_add_EEP1,addr, data_l); clock_delay_msec(5);
@@ -290,12 +280,10 @@ PROCESS_THREAD(example_collect_process, ev, data)
 				raw_temp = (data_h << 8) + data_l;   
 				printf("read eeprom temp : %u\n", raw_temp);
 
-
-				// humidity
+				/* humidity */
 				data_h16 = (uint16_t)(sum_raw_h / total_samples);
 				data_l = mask_l & data_h16;
 				data_h = (uint8_t) (data_h16 >> 8);
-
 
 				addr++;
 				i2c_eeprom_write_byte(base_add_EEP1,addr, data_l); clock_delay_msec(5);
@@ -310,8 +298,9 @@ PROCESS_THREAD(example_collect_process, ev, data)
 				raw_humidity = (data_h << 8) + data_l;   
 				printf("read eeprom humidity : %u\n", raw_humidity);
 
-			/***********************************************************************/
-			/************  write date and time in eeprom ***************************/
+/***********************************************************************/
+
+/************  write date and time in eeprom ***************************/
 				int i;
 				for(i=0;i<6; i++)
 				{
@@ -321,31 +310,34 @@ PROCESS_THREAD(example_collect_process, ev, data)
 					printf("%d/",time_In_Eeprom[i]);
 				}
 				printf("\n");
-			/***********************************************************************/	
+/***********************************************************************/	
+#endif
 
 #ifdef SENSOR
 	
+				temp = sht11_TemperatureC(raw_temp);
+				humidity = sht11_Humidity(raw_temp,raw_humidity);
+				
+				temp_h = (int)temp;
+				temp_l = ((int)(temp*10))%10;
+				humidity_h = (int)humidity;
+				humidity_l = ((int)(humidity*10))%10;
+								
 				printf("node_sending;uid=%d.%d;payload=temp:%u.%u:humidity:%u.%u\n",
 #if RIMEADDR_SIZE == 8
-				rimeaddr_node_addr.u8[6], 
-				rimeaddr_node_addr.u8[7], 
+					rimeaddr_node_addr.u8[6], 
+					rimeaddr_node_addr.u8[7], 
 #else
-				rimeaddr_node_addr.u8[0], 
-				rimeaddr_node_addr.u8[1],
+					rimeaddr_node_addr.u8[0], 
+					rimeaddr_node_addr.u8[1],
 #endif 				
-				(int)(sum_temp / total_samples),
-				((int)((sum_temp / total_samples)*10))%10, 
-				(int) (sum_humidity / total_samples),
-				((int)((sum_humidity / total_samples)*10))%10);
-				
+					temp_h, temp_l, humidity_h, humidity_l);
+
 				packetbuf_clear();
 				packetbuf_set_datalen(sprintf(packetbuf_dataptr(),
-						"temp:%u.%u:humidity:%u.%u", 
-						(int)(sum_temp / total_samples),
-						((int)((sum_temp / total_samples)*10))%10, 
-						(int) (sum_humidity / total_samples),
-						((int)((sum_humidity / total_samples)*10))%10)
-						+ 1);
+					"temp:%u.%u:humidity:%u.%u", 
+					temp_h, temp_l, humidity_h, humidity_l) 
+					+ 1);
 				collect_send(&tc, 15);
 #endif				
 				count=0;
@@ -358,8 +350,6 @@ PROCESS_THREAD(example_collect_process, ev, data)
 
 #endif
 			}
-
-
 		}
 	}
 	
