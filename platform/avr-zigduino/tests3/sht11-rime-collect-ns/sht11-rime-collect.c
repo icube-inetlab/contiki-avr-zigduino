@@ -182,13 +182,12 @@ PROCESS_THREAD(example_collect_process, ev, data)
 	while(1) {
 		/* Sample sensors every X seconds. */
 		etimer_set(&et, CLOCK_SECOND * SAMPLE_INTERVAL_SEC);
-		printf("New cycle\n");
+		printf("Cycle Begin\n");
 
 #ifdef SENSOR
 		printf(" EEprom node number = %u\n", i2c_eeprom_read_byte(base_add_EEP1, nodeNumber_addr));
 #endif
-		PROCESS_WAIT_EVENT();
-		if(etimer_expired(&et)) {
+
 
 #ifdef SENSOR
 			// Read Time
@@ -350,7 +349,12 @@ PROCESS_THREAD(example_collect_process, ev, data)
 
 #endif
 			}
-		}
+			
+		PROCESS_WAIT_EVENT();
+		if(etimer_expired(&et)) {
+			printf("Cycle End\n");
+		} //end fire event
+		
 	}
 	
 	PROCESS_END();
