@@ -173,6 +173,8 @@ void initialize(void)
   if(MCUSR & (1<<BORF )) PRINTA("Brownout reset!\n");
   if(MCUSR & (1<<WDRF )) PRINTA("Watchdog reset!\n");
   if(MCUSR & (1<<JTRF )) PRINTA("JTAG reset!\n");
+  // Clear all MCUSR registers immediately for 'next use'
+  MCUSR = 0;
 
 #if ANNOUNCE_BOOT
   PRINTA("\n*******Booting %s*******\n",CONTIKI_VERSION_STRING);
