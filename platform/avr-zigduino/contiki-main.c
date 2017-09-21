@@ -166,6 +166,49 @@ rng_get_uint8(void) {
   return j;
 }
 
+
+#if RIMEADDR_SIZE == 8
+uint8_t mac_address[8] EEMEM = {0x02, 0x11, 0x22, 0xff, 0xfe, 0x33, 0x44, 0x55};
+#else
+uint8_t short_mac_address[2] EEMEM = {0x01, 0xff};
+#endif
+
+static bool get_mac_from_eeprom(uint8_t* macptr)
+{
+#if RIMEADDR_SIZE == 8
+  eeprom_read_block ((void *)macptr,  &mac_address, 8);
+#else
+  printf("reading short_mac in eeprom\n");
+  uint8_t small_addr[2];
+  small_addr[0] = eeprom_read_byte( &short_mac_address[0]+8);
+  small_addr[1] = eeprom_read_byte( &short_mac_address[1]+8);
+  macptr[0]=small_addr[0];
+  macptr[1]=small_addr[1];
+  printf("read %02x:%02x\n", small_addr[0],small_addr[1]);
+
+#endif
+  return true;
+}
+
+void print_rime_addr()
+{
+#if RIMEADDR_SIZE == 8
+    printf("Rime Addr: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n",
+            rimeaddr_node_addr.u8[0],
+            rimeaddr_node_addr.u8[1],
+            rimeaddr_node_addr.u8[2],
+            rimeaddr_node_addr.u8[3],
+            rimeaddr_node_addr.u8[4],
+            rimeaddr_node_addr.u8[5],
+            rimeaddr_node_addr.u8[6],
+            rimeaddr_node_addr.u8[7]);
+#else
+    printf("Rime Addr: %02x:%02x\n",
+            rimeaddr_node_addr.u8[0],
+            rimeaddr_node_addr.u8[1]);
+#endif
+}
+
 /*-------------------------Low level initialization------------------------*/
 /*------Done in a subroutine to keep main routine stack usage small--------*/
 void initialize(void)
@@ -264,10 +307,13 @@ uint8_t i;
       PRINTA("Random EUI64 address generated\n");
   }
 
-  // FIXME: NODE ID HARDCODED
-  addr.u8[1]=5;
-  addr.u8[0]=0;
- 
+
+    /* Set addresses BEFORE starting tcpip process */
+  memset(&addr, 0, sizeof(rimeaddr_t));
+  get_mac_from_eeprom(addr.u8);
+  rimeaddr_set_node_addr(&addr);
+  rimeaddr_set_node_addr(&addr);
+
 #if UIP_CONF_IPV6 
   memcpy(&uip_lladdr.addr, &addr.u8, sizeof(rimeaddr_t));
 #elif WITH_NODE_ID
@@ -275,8 +321,8 @@ uint8_t i;
   addr.u8[1]=node_id&0xff;
   addr.u8[0]=(node_id&0xff00)>>8;
   PRINTA("Node ID from eeprom: %X\n",node_id);
-#endif  
-  rimeaddr_set_node_addr(&addr); 
+#endif
+
 
   rf230_set_pan_addr(params_get_panid(),params_get_panaddr(),(uint8_t *)&addr.u8);
   rf230_set_channel(params_get_channel());
