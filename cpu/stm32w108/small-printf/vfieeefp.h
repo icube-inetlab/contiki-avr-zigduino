@@ -32,8 +32,8 @@
 	dmg@research.att.com or research!dmg
  */
 
-#ifndef VFIEEEFP_H_
-#define VFIEEEFP_H_
+#ifndef __VFIEEEFP_H__
+#define __VFIEEEFP_H__
 
 /* 
  * This header file is a modification of mprec.h that only contains floating
@@ -295,5 +295,5 @@ union double_union
 #endif
 #endif
 
-#endif /* VFIEEEFP_H_ */
+#endif /* __VFIEEEFP_H__ */
 /** @} */

@@ -40,8 +40,8 @@
   POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef CDC_TASK_H_
-#define CDC_TASK_H_
+#ifndef _CDC_TASK_H_
+#define _CDC_TASK_H_
 
 /**
  \addtogroup cdctask
@@ -70,5 +70,5 @@ PROCESS_NAME(cdc_process);
 
 /** @} */
 
-#endif /*CDC_TASK_H_ */
+#endif /* _CDC_TASK_H_ */
 

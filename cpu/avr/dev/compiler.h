@@ -1,5 +1,5 @@
-#ifndef COMPILER_H_
-#define COMPILER_H_
+#ifndef __COMPILER_H__
+#define __COMPILER_H__
 
 #ifdef __IMAGECRAFT__
 
@@ -36,4 +36,4 @@
 
 
 
-#endif /* COMPILER_H_ */
+#endif /* __COMPILER_H__ */

@@ -1,44 +1,33 @@
-CONTIKI_TARGET_DIRS = . dev apps net loader
+CONTIKI_TARGET_DIRS = . apps net loader
 
 CONTIKI_CORE=contiki-main
 CONTIKI_TARGET_MAIN = ${CONTIKI_CORE}.o
-CONTIKI_TARGET_SOURCEFILES += $(CONTIKI_CORE).c leds-arch.c adc.c button-sensor.c sensors.c temperature-sensor.c battery-sensor.c delay.c 
-CONTIKI_TARGET_SOURCEFILES += sht11.c
-CONTIKI_TARGET_SOURCEFILES += i2c-drv.c
-CONTIKI_TARGET_SOURCEFILES += spi.c
-CONTIKI_TARGET_SOURCEFILES += fonct_drv.c
+CONTIKI_TARGET_SOURCEFILES += contiki-main.c params.c
+#Needed for slip
+CONTIKI_TARGET_SOURCEFILES += button-sensor.c sensors.c slip_uart0.c slip.c
 
+CONTIKIAVR=$(CONTIKI)/cpu/avr
+CONTIKIBOARD=.
 
-CONTIKI_AVR=$(CONTIKI)/cpu/avr
-CONTIKI_PLAT_DEFS = -DF_CPU=16000000UL -DAUTO_CRC_PADDING=2
-#CONTIKI_PLAT_DEFS = -DF_CPU=8000000UL -DAUTO_CRC_PADDING=2
-
-# Bring in Arduino core, or leave this blank if no core
-# ARDUINO_CORE = $(HOME)/git/Zigduino-1.0/hardware/arduino/cores/zigduino
-ifneq ($(ARDUINO_CORE), ) 
-CFLAGS += -I$(ARDUINO_CORE) -DARDUINO_CORE=1
-PROJECTDIRS += $(ARDUINO_CORE)
-#PROJECT_SOURCEFILES += wiring_digital.c pins_arduino.c WInterrupts.c wiring_analog.c wiring.c
-PROJECT_SOURCEFILES += wiring_digital.c WInterrupts.c wiring_analog.c wiring.c
-endif
-
-ifeq ($(WITH_SLIP),1)
-CONTIKI_TARGET_SOURCEFILES += slip_uart0.c slip.c 
-CFLAGS += -DWITH_SLIP=$(WITH_SLIP) 
-endif
+CONTIKI_PLAT_DEFS = -DF_CPU=16000000UL -DAUTO_CRC_PADDING=2 -DUIP_CONF_IPV6=1 -DROUTES
 
 MCU=atmega128rfa1
 
 AVRDUDE_PROGRAMMER=arduino
-AVRDUDE_PORT ?= /dev/ttyUSB0
-AVRDUDE_OPTIONS= -V -F -D -b 57600
 
-SERIAL_DUMP = $(CONTIKI)/tools/sky/serialdump-linux
+# For usb devices, you may either use PORT=usb, or (e.g. if you have more than one
+# programmer connected) you can use the following trick to find out the serial number:
+#
+# The example is for an JTAGICE mkII used to program an ATmega128:
+# avrdude -v -P usb:xxxx -c jtag2 -p atmega128
+# AVRDUDE_PORT=usb
 
-login:
-	$(SERIAL_DUMP) $(AVRDUDE_PORT)
 
-upload: $(CONTIKI_PROJECT).$(TARGET).u
+# Additional avrdude options
+# Verify off
+AVRDUDE_OPTIONS=-V
+AVRDUDE_MCU=m128rfa1
 
-include $(CONTIKI_AVR)/Makefile.avr
-include $(CONTIKI_AVR)/radio/Makefile.radio
+
+include $(CONTIKIAVR)/Makefile.avr
+include $(CONTIKIAVR)/radio/Makefile.radio

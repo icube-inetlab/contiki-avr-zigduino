@@ -41,8 +41,8 @@
  *           (rtimer-arch implementation for cc2430 and then cc253x)
  */
 
-#ifndef RTIMER_ARCH_H_
-#define RTIMER_ARCH_H_
+#ifndef __RTIMER_ARCH_H__
+#define __RTIMER_ARCH_H__
 
 #include "contiki-conf.h"
 #include "cc253x.h"
@@ -57,4 +57,4 @@
 
 void rtimer_isr(void) __interrupt(T1_VECTOR);
 
-#endif /* RTIMER_ARCH_H_ */
+#endif /* __RTIMER_ARCH_H__ */

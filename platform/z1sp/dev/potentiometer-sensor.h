@@ -34,8 +34,8 @@
  *           $Revision: 1.0 $
  */
 
-#ifndef POTENTIOMETER_SENSOR_H_
-#define POTENTIOMETER_SENSOR_H_
+#ifndef __POTENTIOMETER_SENSOR_H__
+#define __POTENTIOMETER_SENSOR_H__
 
 #include "lib/sensors.h"
 
@@ -43,4 +43,4 @@ extern const struct sensors_sensor potentiometer_sensor;
 
 #define POTENTIOMETER_SENSOR "Potentiometer"
 
-#endif /* POTENTIOMETER_SENSOR_H_ */
+#endif /* __POTENTIOMETER_SENSOR_H__ */

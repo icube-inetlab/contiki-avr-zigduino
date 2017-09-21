@@ -45,8 +45,8 @@
 */
 /*---------------------------------------------------------------------------*/
 
-#ifndef CONTACT_SENSOR_H_
-#define CONTACT_SENSOR_H_
+#ifndef __CONTACT_SENSOR_H__
+#define __CONTACT_SENSOR_H__
 
 #include "lib/sensors.h"
 
@@ -54,5 +54,5 @@ extern const struct sensors_sensor contact_sensor;
 
 #define CONTACT_SENSOR "Contact"
 
-#endif /* CONTACT_SENSOR_H_ */
+#endif /* __CONTACT_SENSOR_H__ */
 /** @} */

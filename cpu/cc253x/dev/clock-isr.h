@@ -35,12 +35,12 @@
  * \author
  *         George Oikonomou - <oikonomou@users.sourceforge.net>
  */
-#ifndef CLOCK_ISR_H_
-#define CLOCK_ISR_H_
+#ifndef __CLOCK_ISR_H__
+#define __CLOCK_ISR_H__
 
 #include "contiki-conf.h"
 #include "cc253x.h"
 
 void clock_isr(void) __interrupt(ST_VECTOR);
 
-#endif /* CLOCK_ISR_H_ */
+#endif /* __CLOCK_ISR_H__ */

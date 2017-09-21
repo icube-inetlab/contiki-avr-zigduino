@@ -31,11 +31,11 @@
  *
  *
  */
-#ifndef VNC_DSC_H_
-#define VNC_DSC_H_
+#ifndef __VNC_DSC_H__
+#define __VNC_DSC_H__
 
 #include "sys/dsc.h"
 
 DSC_HEADER(vnc_dsc);
 
-#endif /* VNC_DSC_H_ */
+#endif /* __VNC_DSC_H__ */

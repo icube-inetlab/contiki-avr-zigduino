@@ -1,1 +1,0 @@
-make clean && make MASTER=0 && make hello-world.avr-zigduino.u  AVRDUDE_PORT=/dev/ttyUSB1

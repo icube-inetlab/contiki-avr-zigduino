@@ -54,8 +54,8 @@
  *  (see STM32W108 errata).
  */
 
-#ifndef TEMPERATURE_SENSOR_H_
-#define TEMPERATURE_SENSOR_H_
+#ifndef __TEMPERATURE_SENSOR_H__
+#define __TEMPERATURE_SENSOR_H__
 
 #include "lib/sensors.h"
 
@@ -63,5 +63,5 @@ extern const struct sensors_sensor temperature_sensor;
 
 #define TEMPERATURE_SENSOR "Temperature"
 
-#endif /* TEMPERATURE_SENSOR_H_ */
+#endif /* __TEMPERATURE_SENSOR_H__ */
 /** @} */

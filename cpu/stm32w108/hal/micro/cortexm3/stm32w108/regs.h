@@ -1,5 +1,5 @@
-#ifndef REGS_H_
-#define REGS_H_                                           1
+#ifndef __REGS_H__
+#define __REGS_H__                                           1
 
 
 #define ReadRegister(a) a
@@ -11541,4 +11541,4 @@
 #define DATA_VENDOR_SIZE                                     (DATA_VENDOR_END - DATA_VENDOR_BASE + 1)
 
 
-#endif  /*REGS_H_*/
+#endif  /*__REGS_H__*/

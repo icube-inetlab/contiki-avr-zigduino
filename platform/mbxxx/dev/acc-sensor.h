@@ -44,8 +44,8 @@
 */
 /*---------------------------------------------------------------------------*/
 
-#ifndef ACC_SENSOR_H_
-#define ACC_SENSOR_H_
+#ifndef __ACC_SENSOR_H__
+#define __ACC_SENSOR_H__
 
 #include "lib/sensors.h"
 #include "mems.h"
@@ -79,5 +79,5 @@ extern const struct sensors_sensor acc_sensor;
 #define ACC_Y_AXIS    2
 #define ACC_Z_AXIS    3
 
-#endif /* ACC_SENSOR_H_ */
+#endif /* __ACC_SENSOR_H__ */
 /** @} */

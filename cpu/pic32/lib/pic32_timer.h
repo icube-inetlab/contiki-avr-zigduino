@@ -55,8 +55,8 @@
  * the 3xx and 4xx families of the pic32mx.
  */
 
-#ifndef INCLUDE_PIC32_TIMER_H_
-#define INCLUDE_PIC32_TIMER_H_
+#ifndef __INCLUDE_PIC32_TIMER_H__
+#define __INCLUDE_PIC32_TIMER_H__
 
 #ifdef __USE_TIMER__
 
@@ -138,6 +138,6 @@ TIMERN_32_DEF(45)
 
 #endif /* __USE_TIMER__ */
 
-#endif /* INCLUDE_PIC32_TIMER_H_ */
+#endif /* __INCLUDE_PIC32_TIMER_H__ */
 
 /** @} */

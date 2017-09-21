@@ -41,8 +41,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef UART1_H_
-#define UART1_H_
+#ifndef __UART1_H__
+#define __UART1_H__
 
 #define BAUD2UBR(baud) baud
 
@@ -54,5 +54,5 @@ void uart1_init(unsigned long ubr);
 
  /* uint8_t uart1_active(void); */
 
-#endif /* UART1_H_ */
+#endif /* __UART1_H__ */
 /** @} */

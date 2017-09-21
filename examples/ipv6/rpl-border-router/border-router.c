@@ -142,10 +142,10 @@ ipaddr_add(const uip_ipaddr_t *addr)
   }
 }
 /*---------------------------------------------------------------------------*/
-
 static
 PT_THREAD(generate_routes(struct httpd_state *s))
 {
+  static int i;
   static uip_ds6_route_t *r;
   static uip_ds6_nbr_t *nbr;
 #if BUF_USES_STACK
@@ -164,7 +164,7 @@ PT_THREAD(generate_routes(struct httpd_state *s))
 #else
   blen = 0;
 #endif
-  ADD("Neighbors<pre>\n");
+  ADD("Neighbors<pre>");
 
   for(nbr = nbr_table_head(ds6_neighbors);
       nbr != NULL;
@@ -213,7 +213,7 @@ PT_THREAD(generate_routes(struct httpd_state *s))
       }
 #endif
   }
-  ADD("</pre>\nRoutes<pre>\n");
+  ADD("</pre>Routes<pre>");
   SEND_STRING(&s->sout, buf);
 #if BUF_USES_STACK
   bufptr = buf; bufend = bufptr + sizeof(buf);
@@ -249,7 +249,7 @@ PT_THREAD(generate_routes(struct httpd_state *s))
     ADD("/%u (via ", r->length);
     ipaddr_add(uip_ds6_route_nexthop(r));
     if(1 || (r->state.lifetime < 600)) {
-      ADD(") %us\n", (unsigned int)r->state.lifetime); // iotlab printf does not have %lu
+      ADD(") %lus\n", r->state.lifetime);
     } else {
       ADD(")\n");
     }
@@ -334,8 +334,6 @@ PROCESS_THREAD(border_router_process, ev, data)
   rpl_dag_t *dag;
 
   PROCESS_BEGIN();
-
-  print_local_addresses();
 
 /* While waiting for the prefix to be sent through the SLIP connection, the future
  * border router can join an existing DAG as a parent or child, or acquire a default 

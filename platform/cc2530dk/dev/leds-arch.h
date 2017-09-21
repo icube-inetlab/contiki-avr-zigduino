@@ -38,8 +38,8 @@
  */
 
 
-#ifndef LEDS_ARCH_H_
-#define LEDS_ARCH_H_
+#ifndef __LEDS_ARCH_H__
+#define __LEDS_ARCH_H__
 
 #include "dev/port.h"
 
@@ -50,4 +50,4 @@
 #define LED4_DIR_INPUT()      PORT_DIR_INPUT(LED4_PORT, LED4_PIN)
 #define LED4_DIR_OUTPUT()     PORT_DIR_OUTPUT(LED4_PORT, LED4_PIN)
 
-#endif /* LEDS_ARCH_H_ */
+#endif /* __LEDS_ARCH_H__ */

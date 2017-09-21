@@ -32,10 +32,10 @@
  *
  */
 
-#ifndef INIT_NET_H_
-#define INIT_NET_H_
+#ifndef __INIT_NET_H__
+#define __INIT_NET_H__
 
 void
 init_net(void);
 
-#endif /* INIT_NET_H_ */
+#endif /* __INIT_NET_H__ */

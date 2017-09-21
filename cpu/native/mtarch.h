@@ -32,11 +32,11 @@
  *
  */
 
-#ifndef MTARCH_H_
-#define MTARCH_H_
+#ifndef __MTARCH_H__
+#define __MTARCH_H__
 
 struct mtarch_thread {
   void *mt_thread;
 };
 
-#endif /* MTARCH_H_ */
+#endif /* __MTARCH_H__ */

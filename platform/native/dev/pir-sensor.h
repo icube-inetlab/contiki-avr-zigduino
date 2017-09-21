@@ -1,5 +1,5 @@
-#ifndef PIR_SENSOR_H_
-#define PIR_SENSOR_H_
+#ifndef __PIR_SENSOR_H__
+#define __PIR_SENSOR_H__
 
 #include "lib/sensors.h"
 
@@ -9,4 +9,4 @@ extern const struct sensors_sensor pir_sensor;
 
 void pir_sensor_changed(int strength);
 
-#endif /* PIR_SENSOR_H_ */
+#endif /* __PIR_SENSOR_H__ */

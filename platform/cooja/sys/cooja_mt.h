@@ -35,8 +35,8 @@
  * This file is ripped from mt.h of the Contiki Multi-threading library.
  * Fredrik Osterlind <fros@sics.se>
  */
-#ifndef COOJA_MT_H_
-#define COOJA_MT_H_
+#ifndef __COOJA_MT_H__
+#define __COOJA_MT_H__
 
 #include "contiki.h"
 
@@ -248,4 +248,4 @@ void cooja_mt_exit(void);
 
 /** @} */
 /** @} */
-#endif /* MT_H_ */
+#endif /* __MT_H__ */

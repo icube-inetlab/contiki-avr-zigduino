@@ -47,8 +47,8 @@
  * \date   2012-03-21
  */
 
-#ifndef DEBUG_UART_H_
-#define DEBUG_UART_H_
+#ifndef __DEBUG_UART_H__
+#define __DEBUG_UART_H__
 
 #include <pic32_uart.h>
 

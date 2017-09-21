@@ -1,7 +1,7 @@
 
 
-#ifndef WEBSERVER_AJAX_CONF_H_
-#define WEBSERVER_AJAX_CONF_H_
+#ifndef __WEBSERVER_AJAX_CONF_H__
+#define __WEBSERVER_AJAX_CONF_H__
 
 #undef WITH_RIME
 #define WITH_RIME 1
@@ -21,4 +21,4 @@
 #define UIP_CONF_UDP_CHECKSUMS    1
 
 
-#endif /* WEBSERVER_AJAX_CONF_H_ */
+#endif /* __WEBSERVER_AJAX_CONF_H__ */

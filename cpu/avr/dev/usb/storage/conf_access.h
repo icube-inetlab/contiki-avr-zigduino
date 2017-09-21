@@ -45,8 +45,8 @@
  @{
 */
 
-#ifndef CONF_ACCESS_H_
-#define CONF_ACCESS_H_
+#ifndef _CONF_ACCESS_H_
+#define _CONF_ACCESS_H_
 
 
 // Active the Logical Unit
@@ -192,6 +192,6 @@
 #define  GLOBAL_WR_PROTECT    DISABLED // To manage a global write protection
 
 
-#endif  //!CONF_ACCESS_H_
+#endif  //! _CONF_ACCESS_H_
 
 /** @} */

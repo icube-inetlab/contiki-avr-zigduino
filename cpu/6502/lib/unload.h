@@ -32,11 +32,11 @@
  *
  */
 
-#ifndef UNLOAD_H_
-#define UNLOAD_H_
+#ifndef __UNLOAD_H__
+#define __UNLOAD_H__
 
 #define LOADER_UNLOAD unload
 
 void unload(void);
 
-#endif /* UNLOAD_H_ */
+#endif /* __UNLOAD_H__ */

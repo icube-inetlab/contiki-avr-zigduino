@@ -38,8 +38,8 @@
  *         Marcus Lundén, SICS <mlunden@sics.se>
  */
 
-#ifndef TMP102_H_
-#define TMP102_H_
+#ifndef __TMP102_H__
+#define __TMP102_H__
 #include <stdio.h>
 #include "i2cmaster.h"
 
@@ -100,7 +100,7 @@ int16_t tmp102_read_temp_x100();
 
 
 /* -------------------------------------------------------------------------- */
-#endif /* ifndef TMP102_H_ */
+#endif /* ifndef __TMP102_H__ */
 
 
 

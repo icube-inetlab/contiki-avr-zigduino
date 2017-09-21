@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef VNC_SERVER_H_
-#define VNC_SERVER_H_
+#ifndef __VNC_SERVER_H__
+#define __VNC_SERVER_H__
 
 
 /*struct vnc_server_updatearea {
@@ -292,4 +292,4 @@ struct rfb_client_cut_text {
   uint8_t len[4];
 };
 
-#endif /* VNC_SERVER_H_ */
+#endif /* __VNC_SERVER_H__ */

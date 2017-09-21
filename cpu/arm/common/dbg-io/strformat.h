@@ -1,5 +1,5 @@
-#ifndef STRFORMAT_H_
-#define STRFORMAT_H_
+#ifndef __STRFORMAT_H__
+#define __STRFORMAT_H__
 
 #include <stdarg.h>
 
@@ -22,4 +22,4 @@ int format_str(const StrFormatContext *ctxt, const char *format, ...)
 int
 format_str_v(const StrFormatContext *ctxt, const char *format, va_list ap);
 
-#endif /* STRFORMAT_H_ */
+#endif /* __STRFORMAT_H__ */

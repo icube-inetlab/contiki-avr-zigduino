@@ -36,8 +36,8 @@
  *         Joakim Eriksson <joakime@sics.se>
  */
 
-#ifndef BRIDGE_CONF_H_
-#define BRIDGE_CONF_H_
+#ifndef __BRIDGE_CONF_H__
+#define __BRIDGE_CONF_H__
 
 #undef WITH_RIME
 #define WITH_RIME 0
@@ -61,4 +61,4 @@
 #define RADIO_RXBUFS            15
 
 
-#endif /* BRIDGE_CONF_H_ */
+#endif /* __BRIDGE_CONF_H__ */

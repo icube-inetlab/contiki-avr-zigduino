@@ -3,8 +3,8 @@
  *
  * <!--(C) COPYRIGHT 2010 STMicroelectronics. All rights reserved.        -->
  */
-#ifndef MEMMAP_H_
-#define MEMMAP_H_
+#ifndef __MEMMAP_H__
+#define __MEMMAP_H__
 
 // Include the chip specific definitions
 #ifndef LOADER
@@ -62,5 +62,5 @@ typedef struct {
 // Hal only references the FAT
 #include "memmap-fat.h"
 
-#endif //MEMMMAP_H_
+#endif //__MEMMMAP_H__
 

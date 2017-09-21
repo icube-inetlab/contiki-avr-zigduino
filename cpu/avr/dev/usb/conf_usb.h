@@ -40,8 +40,8 @@
   POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef CONF_USB_H_
-#define CONF_USB_H_
+#ifndef _CONF_USB_H_
+#define _CONF_USB_H_
 
 
 
@@ -153,4 +153,4 @@ extern void suspend_action(void);
 
 /** @}  */
 
-#endif //CONF_USB_H_
+#endif // _CONF_USB_H_

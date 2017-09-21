@@ -4,8 +4,8 @@
  * <!--(C) COPYRIGHT 2010 STMicroelectronics. All rights reserved.        -->
  */
  
-#ifndef MFG_TOKEN_H_
-#define MFG_TOKEN_H_
+#ifndef __MFG_TOKEN_H__
+#define __MFG_TOKEN_H__
  
 
 // The manufacturing tokens live in the Info Blocks, while all other tokens
@@ -160,4 +160,4 @@ void halInternalSetMfgTokenData(uint16_t token, void *data, uint8_t len);
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 
-#endif //MFG_TOKEN_H_
+#endif //__MFG_TOKEN_H__

@@ -30,8 +30,8 @@
  * 
  */
 
-#ifndef ETHERNET_DRV_H_
-#define ETHERNET_DRV_H_
+#ifndef __ETHERNET_DRV_H__
+#define __ETHERNET_DRV_H__
 
 #include "contiki.h"
 
@@ -44,4 +44,4 @@ PROCESS_NAME(ethernet_process);
 
 uint8_t ethernet_output(void);
 
-#endif /* ETHERNET_DRV_H_ */
+#endif /* __ETHERNET_DRV_H__ */

@@ -38,11 +38,11 @@
  *
  */
 
-#ifndef SLEEP_H_
-#define SLEEP_H_
+#ifndef __SLEEP_H__
+#define __SLEEP_H__
 
 /* Prototypes */
 void sleep_now(int howlong);
 void sleep_wakeup(void);
 
-#endif /* SLEEP_H_ */
+#endif /* __SLEEP_H__ */

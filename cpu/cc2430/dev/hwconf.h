@@ -29,8 +29,8 @@
  * This file is part of the Contiki operating system.
  *
  */
-#ifndef HWCONF_H_
-#define HWCONF_H_
+#ifndef __HWCONF_H__
+#define __HWCONF_H__
 
 #include "sys/cc.h"
 
@@ -145,4 +145,4 @@ static CC_INLINE void  name##_IRQ_FLAG_OFF() {  \
   P2IFG = 0;                                    \
 }
 
-#endif /* HWCONF_H_ */
+#endif /* __HWCONF_H__ */

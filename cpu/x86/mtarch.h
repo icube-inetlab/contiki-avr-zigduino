@@ -28,8 +28,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef MTARCH_H_
-#define MTARCH_H_
+#ifndef __MTARCH_H__
+#define __MTARCH_H__
 
 #ifndef MTARCH_STACKSIZE
 #define MTARCH_STACKSIZE 1024
@@ -45,5 +45,5 @@ struct mt_thread;
 
 int mtarch_stack_usage(struct mt_thread *t);
 
-#endif /* MTARCH_H_ */
+#endif /* __MTARCH_H__ */
 	

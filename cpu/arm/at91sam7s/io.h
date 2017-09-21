@@ -1,5 +1,5 @@
-#ifndef IO_H_7UTLUP9AG6__
-#define IO_H_7UTLUP9AG6__
+#ifndef __IO_H__7UTLUP9AG6__
+#define __IO_H__7UTLUP9AG6__
 
 #include <AT91SAM7S64.h>
 
@@ -12,4 +12,4 @@ int splhigh(void);
 
 void splx(int saved);
 
-#endif /* IO_H_7UTLUP9AG6__ */
+#endif /* __IO_H__7UTLUP9AG6__ */

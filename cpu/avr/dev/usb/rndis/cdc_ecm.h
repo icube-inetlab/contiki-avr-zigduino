@@ -1,6 +1,6 @@
 
-#ifndef CDC_ECM_H_
-#define CDC_ECM_H_
+#ifndef __CDC_ECM_H__
+#define __CDC_ECM_H__
 
 #include "contiki.h"
 #include <stdint.h>
@@ -15,4 +15,4 @@ extern void cdc_ecm_set_ethernet_packet_filter(void);
 extern void cdc_ecm_configure_endpoints();
 extern void cdc_ecm_set_active(uint8_t value);
 
-#endif // CDC_ECM_H_
+#endif // __CDC_ECM_H__

@@ -4,12 +4,12 @@
  * <!--(C) COPYRIGHT 2010 STMicroelectronics. All rights reserved.        -->
  */
 
-#ifndef MEMMAP_H_
+#ifndef __MEMMAP_H__
   #error This header should not be included directly, use hal/micro/cortexm3/memmap.h
 #endif
 
-#ifndef STM32W108_MEMMAP_H_
-#define STM32W108_MEMMAP_H_
+#ifndef __STM32W108_MEMMAP_H__
+#define __STM32W108_MEMMAP_H__
 
 #define RAM_BOTTOM          (0x20000000u)
 #define RAM_SIZE_B          (0x2000)
@@ -54,4 +54,4 @@
 #define PAGE_TO_PROG_ADDR(x)    ((((uint32_t)(x)) << 10)|MFB_BOTTOM)
 
 
-#endif //STM32W108_MEMMAP_H_
+#endif //__STM32W108_MEMMAP_H__

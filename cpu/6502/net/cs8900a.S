@@ -56,7 +56,7 @@ bufsize:.res	2		; Size
 
 	.zeropage
 
-sp:	.res	2		; Stack pointer (Do not trash !)
+sp:	.res   	2		; Stack pointer (Do not trash !)
 reg:	.res	2		; Address of rxtxreg
 ptr:	.res	2		; Indirect addressing pointer
 len:	.res	2		; Frame length
@@ -73,6 +73,8 @@ fixup:	.byte	fixup02-fixup01, fixup03-fixup02, fixup04-fixup03
 	.byte	fixup14-fixup13, fixup15-fixup14, fixup16-fixup15
 	.byte	fixup17-fixup16, fixup18-fixup17, fixup19-fixup18
 	.byte	fixup20-fixup19, fixup21-fixup20, fixup22-fixup21
+	.byte	fixup23-fixup22, fixup24-fixup23, fixup25-fixup24
+	.byte	fixup26-fixup25
 
 fixups	= * - fixup
 
@@ -110,7 +112,7 @@ init:
 	lda reg+1
 	sta (ptr),y
 	dey
-
+	
 	; Advance to next fixup location
 	inx
 	cpx #fixups
@@ -134,10 +136,11 @@ fixup02:sta isq+1
 	; Accept valid unicast + broadcast frames
 	; PACKETPP = $0104, PPDATA = $0D05
 	lda #$04
-	jsr packetpp_a1
+	jsr packetpp_01
 	lda #$05
 	ldx #$0D
-	jsr ppdata_ax
+fixup03:sta ppdata
+fixup04:stx ppdata+1
 
 	; Set MAC address
 	; PACKETPP = $0158, PPDATA = MAC[0], MAC[1]
@@ -145,10 +148,11 @@ fixup02:sta isq+1
 	; PACKETPP = $015C, PPDATA = MAC[4], MAC[5]
 	ldy #$58
 :	tya
-	jsr packetpp_a1
+	jsr packetpp_01
 	lda mac-$58,y
 	ldx mac-$58+1,y
-	jsr ppdata_ax
+fixup05:sta ppdata
+fixup06:stx ppdata+1
 	iny
 	iny
 	cpy #$58+6
@@ -157,10 +161,11 @@ fixup02:sta isq+1
 	; Turn on transmission and reception of frames
 	; PACKETPP = $0112, PPDATA = $00D3
 	lda #$12
-	jsr packetpp_a1
+	jsr packetpp_01
 	lda #$D3
 	ldx #$00
-	jsr ppdata_ax
+fixup07:sta ppdata
+fixup08:stx ppdata+1
 	rts
 
 ;---------------------------------------------------------------------
@@ -170,11 +175,11 @@ poll:
 	; are any valid unicast frames avaliable
 	; PACKETPP = $0124, PPDATA & $0D00 ?
 	lda #$24
-	jsr packetpp_a1
-fixup03:lda ppdata+1
+	jsr packetpp_01
+fixup09:lda ppdata+1
 	and #$0D
 	bne :+
-
+	
 	; No frame ready
 	tax
 	rts
@@ -185,13 +190,13 @@ fixup03:lda ppdata+1
 	; Read receiver event and discard it
 	; RXTXREG
 :
-fixup04:ldx rxtxreg+1
-fixup05:lda rxtxreg
-
+fixup10:ldx rxtxreg+1
+fixup11:lda rxtxreg
+  
 	; Read frame length
 	; cnt = len = RXTXREG
-fixup06:ldx rxtxreg+1
-fixup07:lda rxtxreg
+fixup12:ldx rxtxreg+1
+fixup13:lda rxtxreg
 	sta len
 	stx len+1
 	sta cnt
@@ -218,10 +223,10 @@ fixup07:lda rxtxreg
 	; Read bytes into buffer
 :	jsr adjustptr
 :
-fixup08:lda rxtxreg
+fixup14:lda rxtxreg
 	sta (ptr),y
 	iny
-fixup09:lda rxtxreg+1
+fixup15:lda rxtxreg+1
 	sta (ptr),y
 	iny
 	bne :-
@@ -244,12 +249,12 @@ send:
 	; Transmit command
 	lda #$C9
 	ldx #$00
-fixup10:sta txcmd
-fixup11:stx txcmd+1
+fixup16:sta txcmd
+fixup17:stx txcmd+1
 	lda cnt
 	ldx cnt+1
-fixup12:sta txlen
-fixup13:stx txlen+1
+fixup18:sta txlen
+fixup19:stx txlen+1
 
 	; Adjust odd frame length
 	jsr adjustcnt
@@ -260,8 +265,8 @@ fixup13:stx txlen+1
 	; Check for avaliable buffer space
 	; PACKETPP = $0138, PPDATA & $0100 ?
 :	lda #$38
-	jsr packetpp_a1
-fixup14:lda ppdata+1
+	jsr packetpp_01
+fixup20:lda ppdata+1
 	and #$01
 	bne :+
 
@@ -279,10 +284,10 @@ fixup14:lda ppdata+1
 	; Write bytes from buffer
 :	jsr adjustptr
 :	lda (ptr),y
-fixup15:sta rxtxreg
+fixup21:sta rxtxreg
 	iny
 	lda (ptr),y
-fixup16:sta rxtxreg+1
+fixup22:sta rxtxreg+1
 	iny
 	bne :-
 	inc ptr+1
@@ -297,17 +302,10 @@ exit:
 
 ;---------------------------------------------------------------------
 
-packetpp_a1:
+packetpp_01:
 	ldx #$01
-fixup17:sta packetpp
-fixup18:stx packetpp+1
-	rts
-
-;---------------------------------------------------------------------
-
-ppdata_ax:
-fixup19:sta ppdata
-fixup20:stx ppdata+1
+fixup23:sta packetpp
+fixup24:stx packetpp+1
 	rts
 
 ;---------------------------------------------------------------------
@@ -315,10 +313,10 @@ fixup20:stx ppdata+1
 skipframe:
 	; PACKETPP = $0102, PPDATA = PPDATA | $0040
 	lda #$02
-	jsr packetpp_a1
-fixup21:lda ppdata
+	jsr packetpp_01
+fixup25:lda ppdata
 	ora #$40
-fixup22:sta ppdata
+fixup26:sta ppdata
 	rts
 
 ;---------------------------------------------------------------------

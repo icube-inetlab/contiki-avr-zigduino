@@ -36,8 +36,8 @@
  *         Joakim Eriksson <joakime@sics.se>
  */
 
-#ifndef PLATFORM_CONF_H_
-#define PLATFORM_CONF_H_
+#ifndef __PLATFORM_CONF_H__
+#define __PLATFORM_CONF_H__
 
 /*
  * Definitions below are dictated by the hardware and not really
@@ -131,4 +131,4 @@ void clock_adjust_ticks(clock_time_t howmany);
 
 #define CSN            0
 
-#endif /* PLATFORM_CONF_H_ */
+#endif /* __PLATFORM_CONF_H__ */

@@ -3,6 +3,7 @@ TOOLSDIR=../../tools
 
 EXAMPLES = \
 hello-world/avr-raven \
+hello-world/esb \
 hello-world/exp5438 \
 hello-world/micaz \
 hello-world/minimal-net \

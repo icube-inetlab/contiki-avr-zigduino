@@ -31,6 +31,7 @@
  */
 
 #include "radio-uip-uaodv.h"
+#include "net/hc.h"
 #include "net/uip.h"
 #include "net/uaodv.h"
 #include "net/uaodv-rt.h"

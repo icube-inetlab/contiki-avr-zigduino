@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef RTIMER_ARCH_H_
-#define RTIMER_ARCH_H_
+#ifndef __RTIMER_ARCH_H__
+#define __RTIMER_ARCH_H__
 
 #include <avr/interrupt.h>
 
@@ -68,4 +68,4 @@
 #endif
 
 void rtimer_arch_sleep(rtimer_clock_t howlong);
-#endif /* RTIMER_ARCH_H_ */
+#endif /* __RTIMER_ARCH_H__ */

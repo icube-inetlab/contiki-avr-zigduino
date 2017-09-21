@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef CONTIKI_SETTINGS_H_
-#define CONTIKI_SETTINGS_H_
+#ifndef __CONTIKI_SETTINGS_H__
+#define __CONTIKI_SETTINGS_H__
 
 /** @file   settings.h
  *  @brief  Settings Manager
@@ -109,6 +109,11 @@
 #include <string.h>
 #include "dev/eeprom.h"
 #include "sys/cc.h"
+
+/* Make sure CC_INLINE is defined for platforms that don't otherwise define it */
+#ifndef CC_INLINE
+#define CC_INLINE inline
+#endif
 
 /*****************************************************************************/
 // MARK: - Types
@@ -366,4 +371,4 @@ settings_set_uint64(settings_key_t key, uint64_t value)
 
 #endif /* !SETTINGS_CONF_SKIP_CONVENIENCE_FUNCS */
 
-#endif /* !defined(CONTIKI_SETTINGS_H_) */
+#endif /* !defined(__CONTIKI_SETTINGS_H__) */

@@ -12,8 +12,8 @@
  *@{
  */
 
-#ifndef MICRO_COMMON_H_
-#define MICRO_COMMON_H_
+#ifndef __MICRO_COMMON_H__
+#define __MICRO_COMMON_H__
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #ifndef __STSTATUS_TYPE__
@@ -141,7 +141,7 @@ StStatus halBootloaderStart(uint8_t mode, uint8_t channel, uint16_t panId);
 #include "micro/cortexm3/micro-common.h"
 #endif
 
-#endif //MICRO_COMMON_H_
+#endif //__MICRO_COMMON_H__
 
 /** @} END micro group  */
   

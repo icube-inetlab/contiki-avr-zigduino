@@ -31,8 +31,8 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
-#ifndef HTTPD_FS_H_
-#define HTTPD_FS_H_
+#ifndef __HTTPD_FS_H__
+#define __HTTPD_FS_H__
 
 #include "contiki-net.h"
 
@@ -83,4 +83,4 @@ uint16_t httpd_fs_open(const char *name, struct httpd_fs_file *file);
 #define httpd_fs_getchar(x)  pgm_read_byte(x)
 #endif
 
-#endif /* HTTPD_FS_H_ */
+#endif /* __HTTPD_FS_H__ */

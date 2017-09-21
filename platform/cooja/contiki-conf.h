@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef CONTIKI_CONF_H_
-#define CONTIKI_CONF_H_
+#ifndef __CONTIKI_CONF_H__
+#define __CONTIKI_CONF_H__
 
 #define PROFILE_CONF_ON 0
 #define ENERGEST_CONF_ON 0
@@ -49,7 +49,7 @@
 
 #if WITH_UIP
 #if WITH_UIP6
-#error WITH_UIP && WITH_UIP6: Bad configuration
+#error WITH_UIP && WITH_IP6: Bad configuration
 #endif /* WITH_UIP6 */
 #endif /* WITH_UIP */
 
@@ -243,4 +243,4 @@ typedef unsigned long rtimer_clock_t;
 #include PROJECT_CONF_H
 #endif /* PROJECT_CONF_H */
 
-#endif /* CONTIKI_CONF_H_ */
+#endif /* __CONTIKI_CONF_H__ */

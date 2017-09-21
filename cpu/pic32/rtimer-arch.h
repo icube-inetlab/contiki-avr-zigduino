@@ -47,8 +47,8 @@
  * \date   2012-04-11
  */
 
-#ifndef RTIMER_ARCH_H_
-#define RTIMER_ARCH_H_
+#ifndef __RTIMER_ARCH_H__
+#define __RTIMER_ARCH_H__
 
 #include "contiki-conf.h"
 
@@ -58,6 +58,6 @@ rtimer_clock_t rtimer_arch_now(void);
 
 #define RTIMER_ARCH_SECOND 312500
 
-#endif /* RTIMER_ARCH_H_ */
+#endif /* __RTIMER_ARCH_H__ */
 
 /** @} */

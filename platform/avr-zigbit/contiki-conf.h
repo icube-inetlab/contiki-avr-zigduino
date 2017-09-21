@@ -39,8 +39,8 @@
  *         Simon Barner <barner@in.tum.de>
  */
 
-#ifndef CONTIKI_CONF_H_
-#define CONTIKI_CONF_H_
+#ifndef __CONTIKI_CONF_H__
+#define __CONTIKI_CONF_H__
 
 /* Platform name, type, and MCU clock rate */
 #define PLATFORM_NAME  "Zigbit"
@@ -179,4 +179,4 @@ typedef unsigned short uip_stats_t;
 typedef unsigned long off_t;
 
 
-#endif /* CONTIKI_CONF_H_ */
+#endif /* __CONTIKI_CONF_H__ */

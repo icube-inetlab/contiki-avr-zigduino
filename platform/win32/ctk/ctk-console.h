@@ -31,8 +31,8 @@
  * Author: Oliver Schmidt <ol.sc@web.de>
  *
  */
-#ifndef CTK_CONSOLE_H_
-#define CTK_CONSOLE_H_
+#ifndef __CTK_CONSOLE_H__
+#define __CTK_CONSOLE_H__
 
 #define cputc console_cputc
 #define cputs console_cputs
@@ -64,4 +64,4 @@ void textcolor(unsigned char c);
 char ctk_arch_getkey(void);
 unsigned char ctk_arch_keyavail(void);
 
-#endif /* CTK_CONSOLE_H_ */
+#endif /* __CTK_CONSOLE_H__ */

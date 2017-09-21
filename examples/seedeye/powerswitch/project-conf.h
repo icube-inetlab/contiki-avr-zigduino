@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef PROJECT_RPL_WEB_CONF_H_
-#define PROJECT_RPL_WEB_CONF_H_
+#ifndef __PROJECT_RPL_WEB_CONF_H__
+#define __PROJECT_RPL_WEB_CONF_H__
 
 #define SICSLOWPAN_CONF_FRAG	     1
 
@@ -49,4 +49,4 @@
 #define COAP_MAX_OBSERVERS           COAP_MAX_OPEN_TRANSACTIONS-1
 #endif
 
-#endif /* PROJECT_RPL_WEB_CONF_H_ */
+#endif /* __PROJECT_RPL_WEB_CONF_H__ */

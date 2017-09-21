@@ -47,8 +47,8 @@
  * \date   2012-03-23
  */
 
-#ifndef INCLUDE_PIC32_PIC32_H_
-#define INCLUDE_PIC32_PIC32_H_
+#ifndef __INCLUDE_PIC32_PIC32_H__
+#define __INCLUDE_PIC32_PIC32_H__
 
 /*
  * PIC32MX795F512L - Specific Functions
@@ -94,6 +94,6 @@
 
 void pic32_init(void);
 
-#endif /* INCLUDE_PIC32_PIC32_H_ */
+#endif /* __INCLUDE_PIC32_PIC32_H__ */
 
 /** @} */

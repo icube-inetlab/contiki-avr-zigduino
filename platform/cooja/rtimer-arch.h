@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef RTIMER_ARCH_H_
-#define RTIMER_ARCH_H_
+#ifndef __RTIMER_ARCH_H__
+#define __RTIMER_ARCH_H__
 
 #include "contiki-conf.h"
 #include "sys/clock.h"
@@ -43,4 +43,4 @@ int rtimer_arch_check(void);
 int rtimer_arch_pending(void);
 rtimer_clock_t rtimer_arch_next(void);
 
-#endif /* RTIMER_ARCH_H_ */
+#endif /* __RTIMER_ARCH_H__ */

@@ -32,8 +32,8 @@
  *
  */
 
-#ifndef VNC_VIEWER_H_
-#define VNC_VIEWER_H_
+#ifndef __VNC_VIEWER_H__
+#define __VNC_VIEWER_H__
 
 
 struct vnc_viewer_state;
@@ -323,4 +323,4 @@ struct rfb_pointer_event {
   uint16_t y;
 };
 
-#endif /* VNC_VIEWER_H_ */
+#endif /* __VNC_VIEWER_H__ */

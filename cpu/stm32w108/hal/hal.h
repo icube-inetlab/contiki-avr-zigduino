@@ -26,8 +26,8 @@
  */
 
 
-#ifndef HAL_H_
-#define HAL_H_
+#ifndef __HAL_H__
+#define __HAL_H__
 
 // Keep micro first for specifics used by other headers
 #include "micro/micro-common.h"
@@ -38,5 +38,5 @@
 #include "hal/micro/cortexm3/uart.h"
 #include "hal/micro/adc.h"
 
-#endif //HAL_H_
+#endif //__HAL_H__
 

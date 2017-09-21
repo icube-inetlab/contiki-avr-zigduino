@@ -40,8 +40,8 @@
   POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef UART_USB_LIB_H_
-#define UART_USB_LIB_H_
+#ifndef _UART_USB_LIB_H_
+#define _UART_USB_LIB_H_
 
 /** 
   \addtogroup cdctask
@@ -85,6 +85,6 @@ extern void uart_usb_configure_endpoints();
 
 /** @} **/
 
-#endif /*UART_USB_LIB_H_ */
+#endif /* _UART_USB_LIB_H_ */
 
 

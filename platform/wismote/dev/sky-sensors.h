@@ -36,10 +36,10 @@
  *           $Revision: 1.1 $
  */
 
-#ifndef SKY_SENSORS_H_
-#define SKY_SENSORS_H_
+#ifndef __SKY_SENSORS_H__
+#define __SKY_SENSORS_H__
 
 void sky_sensors_activate(uint8_t);
 void sky_sensors_deactivate(uint8_t);
 
-#endif /* SKY_SENSORS_H_ */
+#endif /* __SKY_SENSORS_H__ */

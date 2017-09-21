@@ -7,8 +7,8 @@
  * <!--(C) COPYRIGHT 2010 STMicroelectronics. All rights reserved.        -->
  */
 
-#ifndef ERRORS_H_
-#define ERRORS_H_
+#ifndef __ERRORS_H__
+#define __ERRORS_H__
 
 /**
  * @brief  Return type for St functions.
@@ -48,7 +48,7 @@ enum {
 
 #undef DEFINE_ERROR
 
-#endif // ERRORS_H_
+#endif // __ERRORS_H__
 
 /**@} // End of addtogroup
  */

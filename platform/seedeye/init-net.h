@@ -47,13 +47,13 @@
  * \date   2012-03-25
  */
 
-#ifndef INIT_NET_H_
-#define INIT_NET_H_
+#ifndef __INIT_NET_H__
+#define __INIT_NET_H__
 
 #include <stdint.h>
 
 void init_net(uint8_t );
 
-#endif /* INIT_NET_H_ */
+#endif /* __INIT_NET_H__ */
 
 /** @} */

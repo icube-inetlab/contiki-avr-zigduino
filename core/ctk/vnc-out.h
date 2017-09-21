@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef VNC_OUT_H_
-#define VNC_OUT_H_
+#ifndef __VNC_OUT_H__
+#define __VNC_OUT_H__
 
 
 void vnc_out_init(void);
@@ -88,4 +88,4 @@ unsigned char vnc_out_add_icon(struct ctk_icon *icon);
 
 #endif
 
-#endif /* VNC_OUT_H_ */
+#endif /* __VNC_OUT_H__ */

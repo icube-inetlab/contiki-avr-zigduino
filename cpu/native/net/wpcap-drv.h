@@ -30,8 +30,8 @@
  * 
  */
 
-#ifndef WPCAP_DRV_H_
-#define WPCAP_DRV_H_
+#ifndef __WPCAP_DRV_H__
+#define __WPCAP_DRV_H__
 
 #include "contiki.h"
 
@@ -39,4 +39,4 @@ PROCESS_NAME(wpcap_process);
 
 uint8_t wpcap_output(void);
 
-#endif /* WPCAP_DRV_H_ */
+#endif /* __WPCAP_DRV_H__ */

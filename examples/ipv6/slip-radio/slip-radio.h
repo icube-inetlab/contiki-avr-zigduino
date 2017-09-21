@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef SLIP_RADIO_H_
-#define SLIP_RADIO_H_
+#ifndef __SLIP_RADIO_H__
+#define __SLIP_RADIO_H__
 
 struct slip_radio_sensors {
   /** Initialize the driver */
@@ -38,4 +38,4 @@ struct slip_radio_sensors {
   void (* send)(void);
 };
 
-#endif /* SLIP_RADIO_H_ */
+#endif /* __SLIP_RADIO_H__ */

@@ -40,8 +40,8 @@
  *         David Kopf <dak664@embarqmail.com>
  */
 
-#ifndef CONTIKI_CONF_H_
-#define CONTIKI_CONF_H_
+#ifndef __CONTIKI_CONF_H__
+#define __CONTIKI_CONF_H__
 
 /* ************************************************************************** */
 //#pragma mark Basic Configuration
@@ -483,4 +483,4 @@ typedef unsigned short uip_stats_t;
 #define CCIF
 #define CLIF
 
-#endif /* CONTIKI_CONF_H_ */
+#endif /* __CONTIKI_CONF_H__ */

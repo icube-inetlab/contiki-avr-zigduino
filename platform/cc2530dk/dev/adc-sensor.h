@@ -40,8 +40,8 @@
  *         George Oikonomou - <oikonomou@users.sourceforge.net>
  */
 
-#ifndef ADC_SENSOR_H_
-#define ADC_SENSOR_H_
+#ifndef __ADC_SENSOR_H__
+#define __ADC_SENSOR_H__
 
 #include "cc253x.h"
 #include "contiki-conf.h"
@@ -79,4 +79,4 @@ extern const struct sensors_sensor adc_sensor;
 #define VDD_SENSOR_ON VDD_SENSOR_CONF_ON
 #endif /* VDD_SENSOR_CONF_ON */
 
-#endif /* ADC_SENSOR_H_ */
+#endif /* __ADC_SENSOR_H__ */

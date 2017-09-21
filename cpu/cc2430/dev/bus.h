@@ -38,8 +38,8 @@
  */
 
 
-#ifndef BUS_H_
-#define BUS_H_
+#ifndef __BUS_H__
+#define __BUS_H__
 
 #include "cc2430_sfr.h"
 #include "8051def.h"
@@ -50,4 +50,4 @@
 void bus_init(void);
 void clock_ISR( void ) __interrupt (ST_VECTOR);
 
-#endif /* BUS_H_ */
+#endif /* __BUS_H__ */

@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef PROJECT_CONF_H_
-#define PROJECT_CONF_H_
+#ifndef __PROJECT_CONF_H__
+#define __PROJECT_CONF_H__
 
 #undef QUEUEBUF_CONF_NUM
 #define QUEUEBUF_CONF_NUM          4
@@ -73,4 +73,4 @@
 #undef UART1_CONF_RX_WITH_DMA
 #define UART1_CONF_RX_WITH_DMA           1
 
-#endif /* PROJECT_CONF_H_ */
+#endif /* __PROJECT_CONF_H__ */

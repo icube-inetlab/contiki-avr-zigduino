@@ -33,8 +33,8 @@
  *
  */
 
-#ifndef RS232_H_
-#define RS232_H_
+#ifndef __RS232_H__
+#define __RS232_H__
 
 #include <avr/pgmspace.h>
 #include "contiki-conf.h"
@@ -155,4 +155,4 @@ rs232_send(uint8_t port, unsigned char c);
 void
 rs232_redirect_stdout (uint8_t port);
 
-#endif /* RS232_H_ */
+#endif /* __RS232_H__ */

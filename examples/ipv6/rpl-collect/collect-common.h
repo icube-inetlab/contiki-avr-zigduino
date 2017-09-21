@@ -35,8 +35,8 @@
  *         Niclas Finne <nfi@sics.se>
  */
 
-#ifndef COLLECT_COMMON_H_
-#define COLLECT_COMMON_H_
+#ifndef __COLLECT_COMMON_H__
+#define __COLLECT_COMMON_H__
 
 #include "contiki.h"
 #include "net/rime/rimeaddr.h"
@@ -53,4 +53,4 @@ void collect_common_set_send_active(int active);
 
 PROCESS_NAME(collect_common_process);
 
-#endif /* COLLECT_COMMON_H_ */
+#endif /* __COLLECT_COMMON_H__ */

@@ -1,3 +1,0 @@
-
-
-$(error This is not an actual platform. Please use one of openlab-xxx instead)

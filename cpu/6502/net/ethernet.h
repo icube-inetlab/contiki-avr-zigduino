@@ -32,12 +32,12 @@
  *
  */
 
-#ifndef ETHERNET_H_
-#define ETHERNET_H_
+#ifndef __ETHERNET_H__
+#define __ETHERNET_H__
 
 void CC_FASTCALL ethernet_init(struct ethernet_config *config);
 uint16_t ethernet_poll(void);
 void ethernet_send(void);
 void ethernet_exit(void);
 
-#endif /* ETHERNET_H_ */
+#endif /* __ETHERNET_H__ */

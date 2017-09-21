@@ -45,8 +45,8 @@
  *         Mariano Alvira <mar@devl.org>
  */
 
-#ifndef CONTIKI_CONF_H_
-#define CONTIKI_CONF_H_
+#ifndef __CONTIKI_CONF_H__
+#define __CONTIKI_CONF_H__
 
 #include <stdint.h>
 
@@ -243,4 +243,4 @@
 #include PROJECT_CONF_H
 #endif /* PROJECT_CONF_H */
 
-#endif /* CONTIKI_CONF_H_ */
+#endif /* __CONTIKI_CONF_H__ */

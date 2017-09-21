@@ -41,8 +41,8 @@
  *         George Oikonomou - <oikonomou@users.sourceforge.net>
  */
 
-#ifndef MODELS_H_
-#define MODELS_H_
+#ifndef __MODELS_H__
+#define __MODELS_H__
 
 /*---------------------------------------------------------------------------*/
 /* LEDs */
@@ -116,4 +116,4 @@
 /* Buttons */
 /*---------------------------------------------------------------------------*/
 
-#endif /* MODELS_H_ */
+#endif /* __MODELS_H__ */

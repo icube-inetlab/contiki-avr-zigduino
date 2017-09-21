@@ -31,8 +31,8 @@
  *
  *
  */
-#ifndef WEBSERVER_NOGUI_H_
-#define WEBSERVER_NOGUI_H_
+#ifndef __WEBSERVER_NOGUI_H__
+#define __WEBSERVER_NOGUI_H__
 
 #include "contiki-net.h"
 
@@ -42,4 +42,4 @@ PROCESS_NAME(raven_lcd_process);
 void webserver_log(char *msg);
 void webserver_log_file(uip_ipaddr_t *requester, char *file);
 
-#endif /* WEBSERVER_H_ */
+#endif /* __WEBSERVER_H__ */

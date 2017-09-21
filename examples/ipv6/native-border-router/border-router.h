@@ -34,8 +34,8 @@
  *         Joakim Eriksson <joakime@sics.se>
  */
 
-#ifndef BORDER_ROUTER_H_
-#define BORDER_ROUTER_H_
+#ifndef __BORDER_ROUTER_H__
+#define __BORDER_ROUTER_H__
 
 #include "contiki.h"
 #include "net/uip.h"
@@ -56,4 +56,4 @@ int slip_init(void);
 int slip_set_fd(int maxfd, fd_set *rset, fd_set *wset);
 void slip_handle_fd(fd_set *rset, fd_set *wset);
 
-#endif /* BORDER_ROUTER_H_ */
+#endif /* __BORDER_ROUTER_H__ */

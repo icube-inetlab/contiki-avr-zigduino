@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef PROJECT_ROUTER_CONF_H_
-#define PROJECT_ROUTER_CONF_H_
+#ifndef __PROJECT_ROUTER_CONF_H__
+#define __PROJECT_ROUTER_CONF_H__
 
 #undef UIP_FALLBACK_INTERFACE
 #define UIP_FALLBACK_INTERFACE rpl_interface
@@ -57,4 +57,4 @@
 /* used by wpcap (see /cpu/native/net/wpcap-drv.c) */
 #define SELECT_CALLBACK 1
 
-#endif /* PROJECT_ROUTER_CONF_H_ */
+#endif /* __PROJECT_ROUTER_CONF_H__ */

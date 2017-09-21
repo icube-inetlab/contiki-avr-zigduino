@@ -1,5 +1,5 @@
-#ifndef MODELS_H_
-#define MODELS_H_
+#ifndef __MODELS_H__
+#define __MODELS_H__
 
 /* Define model text */
 #ifdef MODEL_N100
@@ -57,4 +57,4 @@
 /* Model-Specific startup functions */
 void model_init();
 void model_uart_intr_en();
-#endif /* MODELS_H_ */
+#endif /* __MODELS_H__ */

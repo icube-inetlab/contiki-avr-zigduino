@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef COOJA_RADIO_H_
-#define COOJA_RADIO_H_
+#ifndef __COOJA_RADIO_H__
+#define __COOJA_RADIO_H__
 
 #include "contiki.h"
 #include "dev/radio.h"
@@ -64,11 +64,4 @@ radio_signal_strength_last(void);
 int
 radio_signal_strength_current(void);
 
-/**
- * Link quality indicator of last received packet.
- */
-int
-radio_LQI(void);
-
-
-#endif /* COOJA_RADIO_H_ */
+#endif /* __COOJA_RADIO_H__ */

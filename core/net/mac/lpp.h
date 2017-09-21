@@ -40,12 +40,12 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef LPP_H_
-#define LPP_H_
+#ifndef __LPP_H__
+#define __LPP_H__
 
 #include "net/mac/rdc.h"
 #include "dev/radio.h"
 
 extern const struct rdc_driver lpp_driver;
 
-#endif /* LPP_H_ */
+#endif /* __LPP_H__ */

@@ -31,8 +31,8 @@
  *
  *@{
  */
-#ifndef ADC_H_
-#define ADC_H_
+#ifndef __ADC_H__
+#define __ADC_H__
 
 #ifdef CORTEXM3_STM32W108
 
@@ -314,7 +314,7 @@ boolean halAdcGetRange(void);
 #include "micro/cortexm3/stm32f103ret/adc.h"
 #endif /* CORTEXM3_STM32F103 */
 
-#endif // ADC_H_
+#endif // __ADC_H__
 
 /** @} // END addtogroup
  */

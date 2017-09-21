@@ -32,8 +32,8 @@
  *
  */
 
-#ifndef CONTIKI_CONF_H_
-#define CONTIKI_CONF_H_
+#ifndef __CONTIKI_CONF_H__
+#define __CONTIKI_CONF_H__
 
 #include "6502def.h"
 
@@ -65,4 +65,4 @@
 #define WWW_CONF_MAX_INPUTNAMELEN   20
 #define WWW_CONF_MAX_INPUTVALUELEN  20
 
-#endif /* CONTIKI_CONF_H_ */
+#endif /* __CONTIKI_CONF_H__ */

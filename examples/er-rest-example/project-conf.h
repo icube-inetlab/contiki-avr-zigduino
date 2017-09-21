@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef PROJECT_ERBIUM_CONF_H_
-#define PROJECT_ERBIUM_CONF_H_
+#ifndef __PROJECT_ERBIUM_CONF_H__
+#define __PROJECT_ERBIUM_CONF_H__
 
 /* Some platforms have weird includes. */
 #undef IEEE802154_CONF_PANID
@@ -85,4 +85,4 @@
 #undef SICSLOWPAN_CONF_FRAG
 #define SICSLOWPAN_CONF_FRAG	1
 
-#endif /* PROJECT_ERBIUM_CONF_H_ */
+#endif /* __PROJECT_ERBIUM_CONF_H__ */

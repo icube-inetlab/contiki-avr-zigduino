@@ -29,8 +29,8 @@
  *@{
  */
 
-#ifndef NVM_DEF_H_
-#define NVM_DEF_H_
+#ifndef __NVM_DEF_H__
+#define __NVM_DEF_H__
 
 //The bottom 64 bytes of NVM storage is allocated to radio calibration
 //values.  These 64 bytes *must* exist for the radio to function.
@@ -49,5 +49,5 @@
 
 /** @} END addtogroup */
 
-#endif // NVM_DEF_H_
+#endif // __NVM_DEF_H__
 

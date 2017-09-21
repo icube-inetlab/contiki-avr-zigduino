@@ -44,8 +44,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef COMPILER_H_
-#define COMPILER_H_
+#ifndef _COMPILER_H_
+#define _COMPILER_H_
 
 /*_____ I N C L U D E S ____________________________________________________*/
 
@@ -347,5 +347,5 @@ typedef char      r_uart_ptchar;
    #define Disable_interrupt() cli()
 
    #endif
-#endif /*COMPILER_H_ */
+#endif /* _COMPILER_H_ */
 

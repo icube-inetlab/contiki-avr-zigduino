@@ -33,14 +33,14 @@
  *
  *
  */
-#ifndef TAPDEV_H_
-#define TAPDEV_H_
+#ifndef __TAPDEV_H__
+#define __TAPDEV_H__
 
 #include "contiki-net.h"
 
 void tapdev_init(void);
-uint8_t tapdev_send(const uip_lladdr_t *lladdr);
+uint8_t tapdev_send(uip_lladdr_t *lladdr);
 uint16_t tapdev_poll(void);
 void tapdev_do_send(void);
 void tapdev_exit(void); //math
-#endif /* TAPDEV_H_ */
+#endif /* __TAPDEV_H__ */

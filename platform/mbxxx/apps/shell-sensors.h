@@ -42,12 +42,12 @@
  *         Salvatore Pitrulli <salvopitru@users.sourceforge.net>
  */
 
-#ifndef SHELL_SENSORS_H_
-#define SHELL_SENSORS_H_
+#ifndef __SHELL_SENSORS_H__
+#define __SHELL_SENSORS_H__
 
 #include "shell.h"
 
 void shell_sensors_init(void);
 
-#endif /* SHELL_SENSORS_H_ */
+#endif /* __SHELL_SENSORS_H__ */
 /** @} */

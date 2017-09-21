@@ -1,5 +1,5 @@
-#ifndef EFSL_CONFIG_H_
-#define EFSL_CONFIG_H_
+#ifndef __EFSL_CONFIG_H__
+#define __EFSL_CONFIG_H__
 
 /* Close enough */
 #define HW_ENDPOINT_LPC2000_SD

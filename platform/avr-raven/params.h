@@ -1,5 +1,5 @@
-#ifndef PARAMS_H_
-#define PARAMS_H_
+#ifndef __PARAMS_H__
+#define __PARAMS_H__
 /* PARAMETER_STORAGE =
  * 0 Hard coded, minmal program and eeprom usage.
  * 1 Stored in fixed eeprom locations, rewritten from flash if corrupt.
@@ -117,4 +117,4 @@ uint16_t params_get_panaddr(void);
 uint8_t params_get_txpower(void);
 #endif
 
-#endif /* PARAMS_H_ */
+#endif /* __PARAMS_H__ */

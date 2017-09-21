@@ -39,8 +39,8 @@
  * \author
  *         George Oikonomou - <oikonomou@users.sourceforge.net>
  */
-#ifndef LPM_H_
-#define LPM_H_
+#ifndef __LPM_H__
+#define __LPM_H__
 
 #include "contiki-conf.h"
 
@@ -54,4 +54,4 @@
 #define LPM_MODE LPM_MODE_IDLE
 #endif /* LPM_CONF_MODE */
 
-#endif /* LPM_H_ */
+#endif /* __LPM_H__ */

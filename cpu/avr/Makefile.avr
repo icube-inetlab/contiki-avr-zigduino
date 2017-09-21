@@ -4,8 +4,7 @@
 
 ### Optimization setting. $make OPTI=0 for easier debugging of changed source file(s)
 ifndef OPTI
-  #OPTI=s
-  OPTI=0
+  OPTI=s
 endif
 
 ### Define the CPU directory of the AVR port

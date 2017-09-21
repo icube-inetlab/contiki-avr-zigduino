@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef SIMENVCHANGE_H_
-#define SIMENVCHANGE_H_
+#ifndef __SIMENVCHANGE_H__
+#define __SIMENVCHANGE_H__
 
 #include "contiki.h"
 
@@ -64,4 +64,4 @@ const struct simInterface *simInterfaces[] = {__VA_ARGS__, NULL};
 void doActionsBeforeTick();
 void doActionsAfterTick();
 
-#endif /* SIMENVCHANGE_H_ */
+#endif /* __SIMENVCHANGE_H__ */

@@ -41,8 +41,8 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
-#ifndef STM32W_H_
-#define STM32W_H_
+#ifndef __STM32W_H__
+#define __STM32W_H__
 
 #include "contiki.h"
 #include "dev/radio.h"
@@ -59,5 +59,5 @@ short last_packet_rssi();
 
 int stm32w_radio_is_on(void);
 
-#endif /* STM32W_H_ */
+#endif /* __STM32W_H__ */
 /** @} */

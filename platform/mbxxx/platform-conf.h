@@ -48,8 +48,8 @@
 */
 /*---------------------------------------------------------------------------*/
 
-#ifndef PLATFORM_CONF_H_
-#define PLATFORM_CONF_H_
+#ifndef __PLATFORM_CONF_H__
+#define __PLATFORM_CONF_H__
 
 #include PLATFORM_HEADER
 
@@ -98,5 +98,5 @@ typedef unsigned long rtimer_clock_t;
 
 #define UIP_CONF_BYTE_ORDER      UIP_LITTLE_ENDIAN
 
-#endif /* PLATFORM_CONF_H_ */
+#endif /* __PLATFORM_CONF_H__ */
 /** @} */

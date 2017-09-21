@@ -40,8 +40,8 @@
  *         David Kopf <dak664@embarqmail.com>
  */
 
-#ifndef CONTIKI_CONF_H_
-#define CONTIKI_CONF_H_
+#ifndef __CONTIKI_CONF_H__
+#define __CONTIKI_CONF_H__
 
 /* Platform name, type, and MCU clock rate */
 #define PLATFORM_NAME  "Raven"
@@ -55,6 +55,13 @@
 /* Skip the last four bytes of the EEPROM, to leave room for things
  * like the avrdude erase count and bootloader signaling. */
 #define EEPROM_CONF_SIZE		((E2END + 1) - 4)
+
+/* UIP_CONF_BUFFER_SIZE specifies how much memory should be reserved
+   for the uIP packet buffer. This sets an upper bound on the largest
+   IP packet that can be received by the system. */
+#ifndef UIP_CONF_BUFFER_SIZE
+#define UIP_CONF_BUFFER_SIZE 1280
+#endif /* UIP_CONF_BUFFER_SIZE */
 
 /* MCU_CONF_LOW_WEAR will remove the signature and eeprom from the .elf file */
 /* This reduces reprogramming wear during development */
@@ -203,7 +210,6 @@ typedef unsigned short uip_stats_t;
 #define NETSTACK_CONF_RDC         sicslowmac_driver
 #define NETSTACK_CONF_FRAMER      framer_802154
 #define NETSTACK_CONF_RADIO       rf230_driver
-#define CHANNEL_802_15_4          26
 #define RADIO_CONF_CALIBRATE_INTERVAL 256
 /* AUTOACK receive mode gives better rssi measurements, even if ACK is never requested */
 #define RF230_CONF_AUTOACK        1
@@ -366,4 +372,4 @@ typedef unsigned short uip_stats_t;
 #include PROJECT_CONF_H
 #endif /* PROJECT_CONF_H */
 
-#endif /* CONTIKI_CONF_H_ */
+#endif /* __CONTIKI_CONF_H__ */

@@ -47,8 +47,8 @@
  * \date   2012-04-11
  */
 
-#ifndef INCLUDE_PIC32_CLOCK_H_
-#define INCLUDE_PIC32_CLOCK_H_
+#ifndef __INCLUDE_PIC32_CLOCK_H__
+#define __INCLUDE_PIC32_CLOCK_H__
 
 #include <stdint.h>
 
@@ -69,6 +69,6 @@ uint32_t pic32_clock_get_peripheral_clock(void);
 /* Function used to calculate the appropriate brg param to approximate desidered frequency */
 uint32_t pic32_clock_calculate_brg(uint32_t mul, uint32_t desired);
 
-#endif /* INCLUDE_PIC32_CLOCK_H_ */
+#endif /* __INCLUDE_PIC32_CLOCK_H__ */
 
 /** @} */

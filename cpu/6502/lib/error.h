@@ -32,9 +32,9 @@
  *
  */
 
-#ifndef ERROR_H_
-#define ERROR_H_
+#ifndef __ERROR_H__
+#define __ERROR_H__
 
 void error_exit(void);
 
-#endif /* ERROR_H_ */
+#endif /* __ERROR_H__ */

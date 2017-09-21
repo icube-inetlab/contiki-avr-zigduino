@@ -67,6 +67,8 @@
 #include "net/rime/rimestats.h"
 #include "net/netstack.h"
 
+#include "sys/timetable.h"
+
 #define WITH_SEND_CCA 0
 
 /* Timestamps have not been tested */
@@ -1275,6 +1277,11 @@ rf230_set_pan_addr(unsigned pan,
 static volatile rtimer_clock_t interrupt_time;
 static volatile int interrupt_time_set;
 #endif /* RF230_CONF_TIMESTAMPS */
+#if RF230_TIMETABLE_PROFILING
+#define rf230_timetable_size 16
+TIMETABLE(rf230_timetable);
+TIMETABLE_AGGREGATE(aggregate_time, 10);
+#endif /* RF230_TIMETABLE_PROFILING */
 int
 rf230_interrupt(void)
 {
@@ -1290,6 +1297,11 @@ if (RF230_receive_on) {
 
   process_poll(&rf230_process);
   
+#if RF230_TIMETABLE_PROFILING
+  timetable_clear(&rf230_timetable);
+  TIMETABLE_TIMESTAMP(rf230_timetable, "interrupt");
+#endif /* RF230_TIMETABLE_PROFILING */
+
   rf230_pending = 1;
   
 #if RADIOSTATS //TODO:This will double count buffered packets
@@ -1327,6 +1339,9 @@ PROCESS_THREAD(rf230_process, ev, data)
   while(1) {
     PROCESS_YIELD_UNTIL(ev == PROCESS_EVENT_POLL);
     RF230PROCESSFLAG(42);
+#if RF230_TIMETABLE_PROFILING
+    TIMETABLE_TIMESTAMP(rf230_timetable, "poll");
+#endif /* RF230_TIMETABLE_PROFILING */
 
     packetbuf_clear();
 
@@ -1354,6 +1369,12 @@ PROCESS_THREAD(rf230_process, ev, data)
       packetbuf_set_datalen(len);
       RF230PROCESSFLAG(2);
       NETSTACK_RDC.input();
+#if RF230_TIMETABLE_PROFILING
+      TIMETABLE_TIMESTAMP(rf230_timetable, "end");
+      timetable_aggregate_compute_detailed(&aggregate_time,
+                                           &rf230_timetable);
+      timetable_clear(&rf230_timetable);
+#endif /* RF230_TIMETABLE_PROFILING */
     } else {
 #if RADIOSTATS
        RF230_receivefail++;
@@ -1650,7 +1671,7 @@ rf230_cca(void)
 
     /* Use ED register to determine result. 77dBm is poweron csma default.*/
 #ifdef RF230_CONF_CCA_THRES
-    if (hal_register_read(RG_PHY_ED_LEVEL)<(91+RF230_CONF_CCA_THRES)) cca=0xff;
+    if (hal_register_read(RG_PHY_ED_LEVEL)<(91+RF230_CONF_CCA_THRES) cca=0xff;
 #else
     if (hal_register_read(RG_PHY_ED_LEVEL)<(91-77)) cca=0xff;
 #endif

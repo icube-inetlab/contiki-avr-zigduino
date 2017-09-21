@@ -32,8 +32,8 @@
  * Created : 2005-11-01
  */
 
-#ifndef ACC_SENSOR_H_
-#define ACC_SENSOR_H_
+#ifndef __ACC_SENSOR_H__
+#define __ACC_SENSOR_H__
 
 #include "lib/sensors.h"
 
@@ -41,4 +41,4 @@ extern const struct sensors_sensor acc_sensor;
 
 #define ACC_SENSOR "Acc"
 
-#endif /* ACC_SENSOR_H_ */
+#endif /* __ACC_SENSOR_H__ */

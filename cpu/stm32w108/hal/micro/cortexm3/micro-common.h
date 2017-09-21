@@ -11,8 +11,8 @@
  *@{
  */
 
-#ifndef STM32W108XX_MICRO_COMMON_H_
-#define STM32W108XX_MICRO_COMMON_H_
+#ifndef __STM32W108XX_MICRO_COMMON_H__
+#define __STM32W108XX_MICRO_COMMON_H__
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #ifndef __STSTATUS_TYPE__
@@ -285,7 +285,7 @@ void halCommonSeedRandom(uint32_t seed);
  */
 uint16_t halCommonGetRandom(void);
 
-#endif //STM32W108XX_MICRO_COMMON_H_
+#endif //__STM32W108XX_MICRO_COMMON_H__
 
 /**@} // END micro group
  */

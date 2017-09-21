@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef PIR_H_
-#define PIR_H_
+#ifndef __PIR_H__
+#define __PIR_H__
 
 #include "lib/sensors.h"
 
@@ -37,4 +37,4 @@ extern const struct sensors_sensor pir_sensor;
 
 #define PIR_SENSOR "PIR"
 
-#endif /* PIR_H_ */
+#endif /* __PIR_H__ */

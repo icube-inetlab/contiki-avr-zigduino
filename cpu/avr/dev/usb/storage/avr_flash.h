@@ -44,8 +44,8 @@
  @{
 */
 
-#ifndef DFMEM_H_
-#define DFMEM_H_
+#ifndef _DFMEM_H_
+#define _DFMEM_H_
 
 #include "conf_access.h"
 #include "ctrl_status.h"
@@ -132,6 +132,6 @@ Ctrl_status avrf_usb_write( void );
 
 
 
-#endif   //DFMEM_H_
+#endif   // _DFMEM_H_
 
 /** @} */

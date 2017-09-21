@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef PROJECT_ROUTER_CONF_H_
-#define PROJECT_ROUTER_CONF_H_
+#ifndef __PROJECT_ROUTER_CONF_H__
+#define __PROJECT_ROUTER_CONF_H__
 
 #ifndef UIP_FALLBACK_INTERFACE
 #define UIP_FALLBACK_INTERFACE rpl_interface
@@ -51,10 +51,4 @@
 #define WEBSERVER_CONF_CFS_CONNS 2
 #endif
 
-#undef SLIP_ARCH_CONF_ENABLE
-#define SLIP_ARCH_CONF_ENABLE 1
-
-//#define RF2XX_TX_POWER PHY_POWER_0dBm
-//#define RF2XX_CHANNEL   11
-
-#endif /* PROJECT_ROUTER_CONF_H_ */
+#endif /* __PROJECT_ROUTER_CONF_H__ */

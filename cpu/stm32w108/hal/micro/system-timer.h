@@ -29,8 +29,8 @@
  *@{
  */
 
-#ifndef SYSTEM_TIMER_H_
-#define SYSTEM_TIMER_H_
+#ifndef __SYSTEM_TIMER_H__
+#define __SYSTEM_TIMER_H__
 
 /**
  * @brief Initializes the system tick.
@@ -72,7 +72,7 @@ uint32_t halCommonGetInt32uMillisecondTick(void);
  */
 uint16_t halCommonGetInt16uQuarterSecondTick(void);
 
-#endif //SYSTEM_TIMER_H_
+#endif //__SYSTEM_TIMER_H__
 
 /**@} //END addtogroup 
  */

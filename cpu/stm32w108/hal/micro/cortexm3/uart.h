@@ -5,8 +5,8 @@
  * <!--(C) COPYRIGHT 2010 STMicroelectronics. All rights reserved.        -->
  */
 
-#ifndef UART_MIN_H_
-#define UART_MIN_H_
+#ifndef __UART_MIN_H__
+#define __UART_MIN_H__
 #ifdef __ICCARM__
 #include <yfuns.h>
 #endif
@@ -69,4 +69,4 @@ int __io_getchar(void);
 void __io_flush( void );
 
 
-#endif //UART_MIN_H_
+#endif //__UART_MIN_H__

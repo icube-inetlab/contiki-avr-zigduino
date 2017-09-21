@@ -42,8 +42,8 @@
  *         George Oikonomou - <oikonomou@users.sourceforge.net>
  */
 
-#ifndef CC253X_H_
-#define CC253X_H_
+#ifndef __CC253X_H__
+#define __CC253X_H__
 
 /*---------------------------------------------------------------------------*/
 /* Compiler Abstraction */
@@ -670,4 +670,4 @@ SFRX(X_P2DIR,     0x70FF); /* Port 2 direction */
 SFRX(X_INFOPAGE,  0x7800); /* Start of Information Page */
 SFRX(X_IEEE_ADDR, 0x780C); /* Start of unique IEEE Address */
 
-#endif /* CC253X_H_ */
+#endif /* __CC253X_H__ */

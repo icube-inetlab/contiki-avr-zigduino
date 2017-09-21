@@ -55,8 +55,8 @@
  * the 3xx and 4xx families of the pic32mx.
  */
 
-#ifndef INCLUDE_PIC32_IRQ_H_
-#define INCLUDE_PIC32_IRQ_H_
+#ifndef __INCLUDE_PIC32_IRQ_H__
+#define __INCLUDE_PIC32_IRQ_H__
 
 #define ASM_DIS_INT        \
 do {                       \
@@ -74,6 +74,6 @@ void __attribute__((vector(v), interrupt(ipl7))) isr_##v(void)
 #define ISR(v) \
 void __attribute__((vector(v), interrupt(ipl6))) isr_##v(void)
 
-#endif /* INCLUDE_PIC32_IRQ_H_ */
+#endif /* __INCLUDE_PIC32_IRQ_H__ */
 
 /** @} */

@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef BEEP_H_
-#define BEEP_H_
+#ifndef __BEEP_H__
+#define __BEEP_H__
 
 #include "sys/clock.h"
 
@@ -57,4 +57,4 @@ void beep_long(clock_time_t len);
 
 void beep_quick(int num);
 
-#endif /* BEEP_H_ */
+#endif /* __BEEP_H__ */

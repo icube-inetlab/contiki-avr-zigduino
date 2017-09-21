@@ -1,9 +1,7 @@
 CONTIKI_PROJECT = sky-shell-exec
 all: $(CONTIKI_PROJECT)
 
-ifndef TARGET
 TARGET=sky
-endif
 
 DEFINES=ELFLOADER_DATAMEMORY_SIZE=0x100,ELFLOADER_TEXTMEMORY_SIZE=0x100
 
@@ -20,6 +18,6 @@ include $(CONTIKI)/Makefile.include
 .PHONY: compile-executable upload-executable
 compile-executable: hello-world.ce
 	echo Compiled Contiki executable: $<
-
+	
 upload-executable: hello-world.shell-upload
 	echo Uploaded Contiki executable: $<

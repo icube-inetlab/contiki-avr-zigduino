@@ -38,8 +38,8 @@
  *         Enric Calvo, Zolertia <ecalvo@zolertia.com>
  */
 
-#ifndef ADXL345_H_
-#define ADXL345_H_
+#ifndef __ADXL345_H__
+#define __ADXL345_H__
 #include <stdio.h>
 #include "dev/i2cmaster.h"
 
@@ -290,4 +290,4 @@ extern process_event_t int1_event, int2_event;   // static ?
 
 
 /* -------------------------------------------------------------------------- */
-#endif /* ifndef ADXL345_H_ */
+#endif /* ifndef __ADXL345_H__ */

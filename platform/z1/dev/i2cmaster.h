@@ -38,8 +38,8 @@
  *         Marcus Lundén, SICS <mlunden@sics.se>
  */
 
-#ifndef I2CMASTER_H_
-#define I2CMASTER_H_
+#ifndef __I2CMASTER_H__
+#define __I2CMASTER_H__
 
 #include "contiki.h"
 
@@ -87,4 +87,4 @@ uint8_t i2c_busy(void);
 #define PRINTFDEBUG(...)
 #endif
 
-#endif    /* #ifdef I2CMASTER_H_ */
+#endif    /* #ifdef __I2CMASTER_H__ */

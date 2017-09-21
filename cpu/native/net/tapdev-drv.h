@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef TAPDEV_DRV_H_
-#define TAPDEV_DRV_H_
+#ifndef __TAPDEV_DRV_H__
+#define __TAPDEV_DRV_H__
 
 #include "contiki.h"
 
@@ -40,4 +40,4 @@ PROCESS_NAME(tapdev_process);
 uint8_t tapdev_output(void);
 int tapdev_fd(void);
 
-#endif /* TAPDEV_DRV_H_ */
+#endif /* __TAPDEV_DRV_H__ */

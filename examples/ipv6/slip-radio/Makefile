@@ -8,6 +8,7 @@ endif
 
 CONTIKI=../../..
 
+WITH_UIP6=1
 UIP_CONF_IPV6=1
 UIP_CONF_RPL=0
 

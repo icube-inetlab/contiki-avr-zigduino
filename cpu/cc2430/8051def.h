@@ -9,8 +9,8 @@
  *	   (recent updates for the sensinode/cc2430 port)
  */
 
-#ifndef E051_DEF_H_
-#define E051_DEF_H_
+#ifndef __8051_DEF_H__
+#define __8051_DEF_H__
 
 #include <stdint.h>
 
@@ -110,4 +110,4 @@ typedef unsigned short clock_time_t;
 #define uip_ipaddr_copy(dest, src)		\
     memcpy(dest, src, sizeof(*dest))
 
-#endif /* E051_DEF_H_ */
+#endif /* __8051_DEF_H__ */

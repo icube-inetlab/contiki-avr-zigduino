@@ -1,5 +1,5 @@
-#ifndef AVR_RNG_H_
-#define AVR_RNG_H_
+#ifndef __AVR_RNG_H__
+#define __AVR_RNG_H__
 
 #include <inttypes.h>
 

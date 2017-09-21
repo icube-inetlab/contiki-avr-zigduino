@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef RADIO_UIP_UAODV_H_
-#define RADIO_UIP_UAODV_H_
+#ifndef __RADIO_UIP_UAODV_H__
+#define __RADIO_UIP_UAODV_H__
 
 #include "contiki.h"
 #include "dev/radio.h"
@@ -42,4 +42,4 @@ radio_uip_uaodv_init(const struct radio_driver *d);
 uint8_t
 radio_uip_uaodv_send(void);
 
-#endif /* RADIO_UIP_UAODV_H_ */
+#endif /* __RADIO_UIP_UAODV_H__ */

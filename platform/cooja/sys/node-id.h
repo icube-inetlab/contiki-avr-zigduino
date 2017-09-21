@@ -29,11 +29,11 @@
  * 
  */
 
-#ifndef NODE_ID_H_
-#define NODE_ID_H_
+#ifndef __NODE_ID_H__
+#define __NODE_ID_H__
 
 #include "dev/moteid.h"
 
 #define node_id simMoteID
 
-#endif /* NODE_ID_H_ */
+#endif /* __NODE_ID_H__ */

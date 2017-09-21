@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef HTTPD_CGI_H_
-#define HTTPD_CGI_H_
+#ifndef __HTTPD_CGI_H__
+#define __HTTPD_CGI_H__
 
 #include "contiki.h"
 #include "httpd.h"
@@ -57,4 +57,4 @@ void web_set_temp(char *s);
 void web_set_voltage(char *s);
 uint8_t httpd_cgi_sprint_ip6(uip_ip6addr_t addr, char * result);
 
-#endif /* HTTPD_CGI_H_ */
+#endif /* __HTTPD_CGI_H__ */

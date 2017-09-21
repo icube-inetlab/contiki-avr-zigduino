@@ -40,9 +40,9 @@
  *         George Oikonomou - <oikonomou@users.sourceforge.net>
  */
 
-#ifndef BUTTON_SENSOR_H_
-#define BUTTON_SENSOR_H_
+#ifndef __BUTTON_SENSOR_H__
+#define __BUTTON_SENSOR_H__
 
 #include "dev/sensinode-sensors.h"
 
-#endif /* BUTTON_SENSOR_H_ */
+#endif /* __BUTTON_SENSOR_H__ */

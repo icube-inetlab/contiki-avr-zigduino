@@ -1,5 +1,5 @@
-#ifndef DEBUG_UART_H_1V2039076V__
-#define DEBUG_UART_H_1V2039076V__
+#ifndef __DEBUG_UART_H__1V2039076V__
+#define __DEBUG_UART_H__1V2039076V__
 
 
 void
@@ -30,4 +30,4 @@ dbg_blocking_putchar(const char ch);
 void
 dbg_drain();
 
-#endif /* DEBUG_UART_H_1V2039076V__ */
+#endif /* __DEBUG_UART_H__1V2039076V__ */

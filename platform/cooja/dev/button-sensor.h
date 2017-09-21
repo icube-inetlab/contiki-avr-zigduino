@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef BUTTON_SENSOR_H_
-#define BUTTON_SENSOR_H_
+#ifndef __BUTTON_SENSOR_H__
+#define __BUTTON_SENSOR_H__
 
 #include "lib/sensors.h"
 
@@ -37,4 +37,4 @@ extern const struct sensors_sensor button_sensor;
 
 #define BUTTON_SENSOR "Button"
 
-#endif /* BUTTON_SENSOR_H_ */
+#endif /* __BUTTON_SENSOR_H__ */

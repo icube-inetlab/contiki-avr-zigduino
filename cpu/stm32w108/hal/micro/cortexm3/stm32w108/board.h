@@ -7,8 +7,8 @@
  *
  * <!--(C) COPYRIGHT 2010 STMicroelectronics. All rights reserved.        -->
  */
-#ifndef BOARD_H_
-#define BOARD_H_
+#ifndef _BOARD_H_
+#define _BOARD_H_
 
 /** @addtogroup board
  * @brief ST board abstraction layer
@@ -253,7 +253,7 @@ void halBoardPowerUp(void);
  */
 void halBoardPowerDown(void);
 
-#endif /*BOARD_H_ */
+#endif /* _BOARD_H_ */
 
 /** @} // END addtogroup
  */

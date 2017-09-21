@@ -52,8 +52,8 @@
  @{
 */
 
-#ifndef CTRL_STATUS_H_
-#define CTRL_STATUS_H_
+#ifndef _CTRL_STATUS_H_
+#define _CTRL_STATUS_H_
 
 //_____ D E F I N I T I O N S ______________________________________________
 
@@ -66,5 +66,5 @@ typedef enum
 ,  CTRL_BUSY         =(FAIL+2)  // Not initialize
 } Ctrl_status;
 
-#endif   //CTRL_STATUS_H_
+#endif   // _CTRL_STATUS_H_
 /** @} */

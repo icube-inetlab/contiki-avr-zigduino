@@ -38,8 +38,8 @@
  *         Kasun Hewage <kasun.ch@gmail.com>
  */
 
-#ifndef MTS300_H_
-#define MTS300_H_
+#ifndef __MTS300_H__
+#define __MTS300_H__
 
 #include <avr/io.h>
 #include "contiki-conf.h"
@@ -106,7 +106,7 @@ uint16_t get_mic();
 
 void mts300_init();
 
-#endif /* MTS300_H_ */
+#endif /* __MTS300_H__ */
 
 
 
