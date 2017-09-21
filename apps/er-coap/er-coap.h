@@ -44,10 +44,25 @@
 #include "er-coap-constants.h"
 #include "er-coap-conf.h"
 
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+
 /* sanity check for configured values */
 #define COAP_MAX_PACKET_SIZE  (COAP_MAX_HEADER_SIZE + REST_MAX_CHUNK_SIZE)
+
+// FIXME: quick hack
+#undef COAP_MAX_PACKET_SIZE
+#define COAP_MAX_PACKET_SIZE 60
+
 #if COAP_MAX_PACKET_SIZE > (UIP_BUFSIZE - UIP_IPH_LEN - UIP_UDPH_LEN)
-#error "UIP_CONF_BUFFER_SIZE too small for REST_MAX_CHUNK_SIZE"
+#pragma message "condition = COAP_MAX_PACKET_SIZE > (UIP_BUFSIZE - UIP_IPH_LEN - UIP_UDPH_LEN)" \
+"\n" "COAP_MAX_PACKET_SIZE = " STRING (COAP_MAX_PACKET_SIZE) \
+"\n" "UIP_BUFSIZE = " STRING (UIP_BUFSIZE) \
+"\n" "UIP_LLH_LEN = " STRING (UIP_LLH_LEN) \
+"\n" "UIP_IPH_LEN = " STRING (UIP_IPH_LEN) \
+"\n" "UIP_IPUDPH_LEN = " STRING (UIP_IPUDPH_LEN) \
+"\n" "REST_MAX_CHUNK_SIZE = " STRING(REST_MAX_CHUNK_SIZE)
+#error "UIP_BUFSIZE too small for REST_MAX_CHUNK_SIZE"
 #endif
 
 /* use Erbium CoAP for the REST Engine. Must come before include of rest-engine.h. */
