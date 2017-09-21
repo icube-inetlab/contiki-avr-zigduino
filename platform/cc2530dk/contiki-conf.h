@@ -1,5 +1,5 @@
-#ifndef __CONTIKI_CONF_H__
-#define __CONTIKI_CONF_H__
+#ifndef CONTIKI_CONF_H_
+#define CONTIKI_CONF_H_
 
 #include "8051def.h"
 #include "sys/cc.h"
@@ -85,17 +85,6 @@
 #define UART0_CONF_WITH_INPUT 1
 #endif
 
-/* Output all captured frames over the UART in hexdump format */
-#ifndef CC2530_RF_CONF_HEXDUMP
-#define CC2530_RF_CONF_HEXDUMP 0
-#endif
-
-#if CC2530_RF_CONF_HEXDUMP
-/* We need UART1 output */
-#undef UART_ZERO_CONF_ENABLE
-#define UART_ZERO_CONF_ENABLE   1
-#endif
-
 /* Code Shortcuts */
 /*
  * When set, this directive also configures the following bypasses:
@@ -157,19 +146,19 @@
 #endif
 
 /* Viztool on by default for IPv6 builds */
-#if UIP_CONF_IPV6
+#if NETSTACK_CONF_WITH_IPV6
 #ifndef VIZTOOL_CONF_ON
 #define VIZTOOL_CONF_ON        1
 #endif /* VIZTOOL_CONF_ON */
-#endif /* UIP_CONF_IPV6 */
+#endif /* NETSTACK_CONF_WITH_IPV6 */
 
 /* Network Stack */
 #ifndef NETSTACK_CONF_NETWORK
-#if UIP_CONF_IPV6
+#if NETSTACK_CONF_WITH_IPV6
 #define NETSTACK_CONF_NETWORK sicslowpan_driver
 #else
 #define NETSTACK_CONF_NETWORK rime_driver
-#endif /* UIP_CONF_IPV6 */
+#endif /* NETSTACK_CONF_WITH_IPV6 */
 #endif /* NETSTACK_CONF_NETWORK */
 
 #ifndef NETSTACK_CONF_MAC
@@ -193,7 +182,13 @@
 #define NETSTACK_CONF_RADIO   cc2530_rf_driver
 
 /* RF Config */
-#define IEEE802154_CONF_PANID 0x5449 /* TI */
+#ifndef IEEE802154_CONF_PANID
+#define IEEE802154_CONF_PANID 0xABCD
+#endif
+
+#ifdef RF_CHANNEL
+#define CC2530_RF_CONF_CHANNEL RF_CHANNEL
+#endif
 
 #ifndef CC2530_RF_CONF_CHANNEL
 #define CC2530_RF_CONF_CHANNEL    25
@@ -203,10 +198,10 @@
 #define CC2530_RF_CONF_AUTOACK 1
 #endif /* CC2530_CONF_AUTOACK */
 
-#if UIP_CONF_IPV6
+#if NETSTACK_CONF_WITH_IPV6
 /* Addresses, Sizes and Interfaces */
 /* 8-byte addresses here, 2 otherwise */
-#define RIMEADDR_CONF_SIZE                   8
+#define LINKADDR_CONF_SIZE                   8
 #define UIP_CONF_LL_802154                   1
 #define UIP_CONF_LLH_LEN                     0
 #define UIP_CONF_NETIF_MAX_ADDRESSES         3
@@ -224,10 +219,6 @@
 #define UIP_CONF_ND6_SEND_RA                 0
 #define UIP_CONF_IP_FORWARD                  0
 #define RPL_CONF_STATS                       0
-#define RPL_CONF_MAX_DAG_ENTRIES             1
-#ifndef RPL_CONF_OF
-#define RPL_CONF_OF rpl_mrhof
-#endif
 
 #define UIP_CONF_ND6_REACHABLE_TIME     600000
 #define UIP_CONF_ND6_RETRANS_TIMER       10000
@@ -257,8 +248,8 @@
 /* Define our IPv6 prefixes/contexts here */
 #define SICSLOWPAN_CONF_MAX_ADDR_CONTEXTS    1
 #define SICSLOWPAN_CONF_ADDR_CONTEXT_0 { \
-  addr_contexts[0].prefix[0] = 0xaa; \
-  addr_contexts[0].prefix[1] = 0xaa; \
+  addr_contexts[0].prefix[0] = UIP_DS6_DEFAULT_PREFIX_0; \
+  addr_contexts[0].prefix[1] = UIP_DS6_DEFAULT_PREFIX_1; \
 }
 
 #define MAC_CONF_CHANNEL_CHECK_RATE          8
@@ -267,17 +258,17 @@
 #define QUEUEBUF_CONF_NUM                    6
 #endif
 
-#else /* UIP_CONF_IPV6 */
+#else /* NETSTACK_CONF_WITH_IPV6 */
 /* Network setup for non-IPv6 (rime). */
 #define UIP_CONF_IP_FORWARD                  1
 #define UIP_CONF_BUFFER_SIZE               108
 #define RIME_CONF_NO_POLITE_ANNOUCEMENTS     0
 #define QUEUEBUF_CONF_NUM                    8
-#endif /* UIP_CONF_IPV6 */
+#endif /* NETSTACK_CONF_WITH_IPV6 */
 
 /* Prevent SDCC compile error when UIP_CONF_ROUTER == 0 */
 #if !UIP_CONF_ROUTER
 #define UIP_CONF_DS6_AADDR_NBU               1
 #endif
 
-#endif /* __CONTIKI_CONF_H__ */
+#endif /* CONTIKI_CONF_H_ */

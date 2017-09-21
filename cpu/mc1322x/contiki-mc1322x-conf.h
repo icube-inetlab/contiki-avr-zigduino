@@ -33,8 +33,8 @@
  *
  */
 
-#ifndef __CONTIKI_MC1322X_CONF_H__
-#define __CONTIKI_MC1322X_CONF_H__
+#ifndef CONTIKI_MC1322X_CONF_H_
+#define CONTIKI_MC1322X_CONF_H_
 
 typedef int32_t s32_t;
 
@@ -55,8 +55,8 @@ typedef unsigned short uip_stats_t;
 
 typedef uint32_t clock_time_t;
 
-/* Core rtimer.h defaults to 16 bit timer unless RTIMER_CLOCK_LT is defined */
+/* Core rtimer.h defaults to 16 bit timer unless RTIMER_CLOCK_DIFF is defined */
 typedef unsigned long rtimer_clock_t;
-#define RTIMER_CLOCK_LT(a,b)     ((signed long)((a)-(b)) < 0)
+#define RTIMER_CLOCK_DIFF(a,b)     ((signed long)((a)-(b)))
 
 #endif

@@ -33,6 +33,7 @@
  */
 
 #include <stdlib.h>
+#include <cc65.h>
 
 #include "sys/log.h"
 
@@ -42,8 +43,12 @@
 void
 error_exit(void)
 {
-  log_message("Press any key to continue ...", "");
-  ctk_arch_getkey();
+#if LOG_CONF_ENABLED
+  if(doesclrscrafterexit()) {
+    log_message("Press any key to continue ...", "");
+    ctk_arch_getkey();
+  }
+#endif /* LOG_CONF_ENABLED */
   exit(EXIT_FAILURE);
 }
 /*-----------------------------------------------------------------------------------*/

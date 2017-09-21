@@ -1,17 +1,3 @@
-/**
- * \addtogroup ctk
- * @{
- */
-
-/**
- * \file
- * CTK header file.
- * \author Adam Dunkels <adam@dunkels.com>
- *
- * The CTK header file contains functioin declarations and definitions
- * of CTK structures and macros.
- */
-
 /*
  * Copyright (c) 2002-2003, Adam Dunkels.
  * All rights reserved.
@@ -46,8 +32,22 @@
  *
  */
 
-#ifndef __CTK_H__
-#define __CTK_H__
+/**
+ * \file
+ * CTK header file.
+ * \author Adam Dunkels <adam@dunkels.com>
+ *
+ * The CTK header file contains functioin declarations and definitions
+ * of CTK structures and macros.
+ */
+
+/**
+ * \addtogroup ctk
+ * @{
+ */
+
+#ifndef CTK_H_
+#define CTK_H_
 
 
 #include "contiki-conf.h"
@@ -743,8 +743,8 @@ void ctk_icon_add(struct ctk_widget *icon, struct process *p);
  */
 #define CTK_WIDGET_ADD(win, widg) \
  ctk_widget_add(win, (struct ctk_widget *)widg)
-CCIF void CC_FASTCALL ctk_widget_add(struct ctk_window *window,
-				     struct ctk_widget *widget);
+CCIF void ctk_widget_add(struct ctk_window *window,
+			 struct ctk_widget *widget);
 
 /**
  * Set focus to a widget.
@@ -986,4 +986,4 @@ CCIF extern process_event_t ctk_signal_button_activate,
 /** @} */
 /** @} */
 /** @} */
-#endif /* __CTK_H__ */
+#endif /* CTK_H_ */

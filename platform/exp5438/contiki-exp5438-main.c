@@ -34,7 +34,7 @@
 #include <stdarg.h>
 
 #include "dev/button-sensor.h"
-#include "dev/cc2420.h"
+#include "cc2420.h"
 #include "dev/flash.h"
 #include "dev/leds.h"
 #include "dev/serial-line.h"
@@ -46,17 +46,16 @@
 #include "lib/sensors.h"
 #include "net/mac/frame802154.h"
 #include "net/netstack.h"
-#include "net/rime.h"
+#include "net/rime/rime.h"
 #include "sys/autostart.h"
-#include "sys/profile.h"
 
 #include "sys/node-id.h"
 #include "lcd.h"
 #include "duty-cycle-scroller.h"
 
-#if WITH_UIP6
-#include "net/uip-ds6.h"
-#endif /* WITH_UIP6 */
+#if NETSTACK_CONF_WITH_IPV6
+#include "net/ipv6/uip-ds6.h"
+#endif /* NETSTACK_CONF_WITH_IPV6 */
 
 
 #define DEBUG 1
@@ -71,22 +70,18 @@ extern unsigned char node_mac[8];
 
 //SENSORS(&button_sensor);
 /*---------------------------------------------------------------------------*/
-#ifndef RF_CHANNEL
-#define RF_CHANNEL              26
-#endif
-/*---------------------------------------------------------------------------*/
 static void
 set_rime_addr(void)
 {
-  rimeaddr_t addr;
+  linkaddr_t addr;
   int i;
 
-  memset(&addr, 0, sizeof(rimeaddr_t));
-#if UIP_CONF_IPV6
+  memset(&addr, 0, sizeof(linkaddr_t));
+#if NETSTACK_CONF_WITH_IPV6
   memcpy(addr.u8, node_mac, sizeof(addr.u8));
 #else
   if(node_id == 0) {
-    for(i = 0; i < sizeof(rimeaddr_t); ++i) {
+    for(i = 0; i < sizeof(linkaddr_t); ++i) {
       addr.u8[i] = node_mac[7 - i];
     }
   } else {
@@ -94,7 +89,7 @@ set_rime_addr(void)
     addr.u8[1] = node_id >> 8;
   }
 #endif
-  rimeaddr_set_node_addr(&addr);
+  linkaddr_set_node_addr(&addr);
   printf("Rime addr ");
   for(i = 0; i < sizeof(addr.u8) - 1; i++) {
     printf("%u.", addr.u8[i]);
@@ -127,9 +122,9 @@ main(int argc, char **argv)
   leds_on(LEDS_RED);
 
   uart1_init(BAUD2UBR(115200)); /* Must come before first printf */
-#if WITH_UIP
+#if NETSTACK_CONF_WITH_IPV4
   slip_arch_init(BAUD2UBR(115200));
-#endif /* WITH_UIP */
+#endif /* NETSTACK_CONF_WITH_IPV4 */
 
   leds_on(LEDS_GREEN);
   /* xmem_init(); */
@@ -189,18 +184,16 @@ main(int argc, char **argv)
     uint8_t longaddr[8];
     uint16_t shortaddr;
 
-    shortaddr = (rimeaddr_node_addr.u8[0] << 8) +
-      rimeaddr_node_addr.u8[1];
+    shortaddr = (linkaddr_node_addr.u8[0] << 8) +
+      linkaddr_node_addr.u8[1];
     memset(longaddr, 0, sizeof(longaddr));
-    rimeaddr_copy((rimeaddr_t *)&longaddr, &rimeaddr_node_addr);
+    linkaddr_copy((linkaddr_t *)&longaddr, &linkaddr_node_addr);
     printf("MAC %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n",
            longaddr[0], longaddr[1], longaddr[2], longaddr[3],
            longaddr[4], longaddr[5], longaddr[6], longaddr[7]);
 
     cc2420_set_pan_addr(IEEE802154_PANID, shortaddr, longaddr);
   }
-
-  cc2420_set_channel(RF_CHANNEL);
 
   leds_off(LEDS_ALL);
 
@@ -210,7 +203,7 @@ main(int argc, char **argv)
     PRINTF("Node id not set.\n");
   }
 
-#if WITH_UIP6
+#if NETSTACK_CONF_WITH_IPV6
   memcpy(&uip_lladdr.addr, node_mac, sizeof(uip_lladdr.addr));
   /* Setup nullmac-like MAC for 802.15.4 */
 
@@ -224,7 +217,7 @@ main(int argc, char **argv)
          NETSTACK_RDC.name,
          CLOCK_SECOND / (NETSTACK_RDC.channel_check_interval() == 0 ? 1:
                          NETSTACK_RDC.channel_check_interval()),
-         RF_CHANNEL);
+         CC2420_CONF_CHANNEL);
 
   process_start(&tcpip_process, NULL);
 
@@ -243,7 +236,7 @@ main(int argc, char **argv)
   if(!UIP_CONF_IPV6_RPL) {
     uip_ipaddr_t ipaddr;
     int i;
-    uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
+    uip_ip6addr(&ipaddr, UIP_DS6_DEFAULT_PREFIX, 0, 0, 0, 0, 0, 0, 0);
     uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
     uip_ds6_addr_add(&ipaddr, 0, ADDR_TENTATIVE);
     printf("Tentative global IPv6 address ");
@@ -255,7 +248,7 @@ main(int argc, char **argv)
            ipaddr.u8[7 * 2], ipaddr.u8[7 * 2 + 1]);
   }
 
-#else /* WITH_UIP6 */
+#else /* NETSTACK_CONF_WITH_IPV6 */
 
   NETSTACK_RDC.init();
   NETSTACK_MAC.init();
@@ -265,17 +258,17 @@ main(int argc, char **argv)
          NETSTACK_RDC.name,
          CLOCK_SECOND / (NETSTACK_RDC.channel_check_interval() == 0? 1:
                          NETSTACK_RDC.channel_check_interval()),
-         RF_CHANNEL);
-#endif /* WITH_UIP6 */
+         CC2420_CONF_CHANNEL);
+#endif /* NETSTACK_CONF_WITH_IPV6 */
 
-#if !WITH_UIP6
+#if !NETSTACK_CONF_WITH_IPV6
   uart1_set_input(serial_line_input_byte);
   serial_line_init();
 #endif
 
 #if TIMESYNCH_CONF_ENABLED
   timesynch_init();
-  timesynch_set_authority_level(rimeaddr_node_addr.u8[0]);
+  timesynch_set_authority_level(linkaddr_node_addr.u8[0]);
 #endif /* TIMESYNCH_CONF_ENABLED */
 
 
@@ -314,8 +307,7 @@ main(int argc, char **argv)
       static unsigned long irq_energest = 0;
 
       /* Re-enable interrupts and go to sleep atomically. */
-      ENERGEST_OFF(ENERGEST_TYPE_CPU);
-      ENERGEST_ON(ENERGEST_TYPE_LPM);
+      ENERGEST_SWITCH(ENERGEST_TYPE_CPU, ENERGEST_TYPE_LPM);
       /* We only want to measure the processing done in IRQs when we
          are asleep, so we discard the processing time done when we
          were awake. */
@@ -334,8 +326,7 @@ main(int argc, char **argv)
       irq_energest = energest_type_time(ENERGEST_TYPE_IRQ);
       eint();
       watchdog_start();
-      ENERGEST_OFF(ENERGEST_TYPE_LPM);
-      ENERGEST_ON(ENERGEST_TYPE_CPU);
+      ENERGEST_SWITCH(ENERGEST_TYPE_LPM, ENERGEST_TYPE_CPU);
     }
   }
 }

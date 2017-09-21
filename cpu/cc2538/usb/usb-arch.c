@@ -46,11 +46,20 @@
 #include "dev/ioc.h"
 #include "dev/udma.h"
 #include "sys/clock.h"
+#include "lpm.h"
 #include "reg.h"
 
 #include "dev/watchdog.h"
 
+#include <stdbool.h>
 #include <stdint.h>
+/*---------------------------------------------------------------------------*/
+#ifdef USB_PULLUP_PORT
+#define USB_PULLUP_PORT_BASE     GPIO_PORT_TO_BASE(USB_PULLUP_PORT)
+#endif
+#ifdef USB_PULLUP_PIN
+#define USB_PULLUP_PIN_MASK      GPIO_PIN_MASK(USB_PULLUP_PIN)
+#endif
 /*---------------------------------------------------------------------------*/
 /* EP max FIFO sizes without double buffering */
 #if CTRL_EP_SIZE > 32
@@ -158,6 +167,24 @@ static void in_ep_interrupt_handler(uint8_t ep_hw);
 static void out_ep_interrupt_handler(uint8_t ep_hw);
 static void ep0_interrupt_handler(void);
 /*---------------------------------------------------------------------------*/
+static uint8_t
+disable_irq(void)
+{
+  uint8_t enabled = NVIC_IsIRQEnabled(USB_IRQn);
+  if(enabled) {
+    NVIC_DisableIRQ(USB_IRQn);
+  }
+  return enabled;
+}
+/*---------------------------------------------------------------------------*/
+static void
+restore_irq(uint8_t enabled)
+{
+  if(enabled) {
+    NVIC_EnableIRQ(USB_IRQn);
+  }
+}
+/*---------------------------------------------------------------------------*/
 static void
 notify_process(unsigned int e)
 {
@@ -196,12 +223,12 @@ usb_arch_get_global_events(void)
   uint8_t flag;
   volatile unsigned int e;
 
-  flag = nvic_interrupt_en_save(NVIC_INT_USB);
+  flag = disable_irq();
 
   e = events;
   events = 0;
 
-  nvic_interrupt_en_restore(NVIC_INT_USB, flag);
+  restore_irq(flag);
 
   return e;
 }
@@ -213,12 +240,12 @@ usb_get_ep_events(uint8_t addr)
   uint8_t flag;
   usb_endpoint_t *ep = EP_STRUCT(addr);
 
-  flag = nvic_interrupt_en_save(NVIC_INT_USB);
+  flag = disable_irq();
 
   e = ep->events;
   ep->events = 0;
 
-  nvic_interrupt_en_restore(NVIC_INT_USB, flag);
+  restore_irq(flag);
 
   return e;
 }
@@ -303,11 +330,23 @@ reset(void)
   usb_arch_setup_control_endpoint(0);
 }
 /*---------------------------------------------------------------------------*/
+static bool
+permit_pm1(void)
+{
+  /*
+   * Note: USB Suspend/Resume/Remote Wake-Up are not supported. Once the PLL is
+   * on, it stays on.
+   */
+  return REG(USB_CTRL) == 0;
+}
+/*---------------------------------------------------------------------------*/
 /* Init USB */
 void
 usb_arch_setup(void)
 {
   uint8_t i;
+
+  lpm_register_peripheral(permit_pm1);
 
   /* Switch on USB PLL & USB module */
   REG(USB_CTRL) = USB_CTRL_USB_EN | USB_CTRL_PLL_EN;
@@ -315,9 +354,11 @@ usb_arch_setup(void)
   /* Wait until USB PLL is stable */
   while(!(REG(USB_CTRL) & USB_CTRL_PLL_LOCKED));
 
-  /* Enable pull-up on usb port */
-  GPIO_SET_OUTPUT(USB_PULLUP_PORT, USB_PULLUP_PIN_MASK);
-  REG((USB_PULLUP_PORT | GPIO_DATA) + (USB_PULLUP_PIN_MASK << 2)) = 1;
+  /* Enable pull-up on usb port if driven by GPIO */
+#if defined(USB_PULLUP_PORT_BASE) && defined(USB_PULLUP_PIN_MASK)
+  GPIO_SET_OUTPUT(USB_PULLUP_PORT_BASE, USB_PULLUP_PIN_MASK);
+  GPIO_SET_PIN(USB_PULLUP_PORT_BASE, USB_PULLUP_PIN_MASK);
+#endif
 
   for(i = 0; i < USB_MAX_ENDPOINTS; i++) {
     usb_endpoints[i].flags = 0;
@@ -337,7 +378,7 @@ usb_arch_setup(void)
     udma_channel_mask_set(USB_ARCH_CONF_TX_DMA_CHAN);
   }
 
-  nvic_interrupt_enable(NVIC_INT_USB);
+  NVIC_EnableIRQ(USB_IRQn);
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -358,7 +399,7 @@ usb_submit_recv_buffer(uint8_t addr, usb_buffer *buffer)
     return;
   }
 
-  flag = nvic_interrupt_en_save(NVIC_INT_USB);
+  flag = disable_irq();
 
   tailp = &ep->buffer;
   while(*tailp) {
@@ -381,7 +422,7 @@ usb_submit_recv_buffer(uint8_t addr, usb_buffer *buffer)
     }
   }
 
-  nvic_interrupt_en_restore(NVIC_INT_USB, flag);
+  restore_irq(flag);
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -396,7 +437,7 @@ usb_submit_xmit_buffer(uint8_t addr, usb_buffer *buffer)
     return;
   }
 
-  flag = nvic_interrupt_en_save(NVIC_INT_USB);
+  flag = disable_irq();
 
   if(EP_HW_NUM(addr) == 0) {
     if(buffer->data == NULL) {
@@ -406,7 +447,7 @@ usb_submit_xmit_buffer(uint8_t addr, usb_buffer *buffer)
       REG(USB_INDEX) = 0;
       REG(USB_CS0) = USB_CS0_CLR_OUTPKT_RDY | USB_CS0_DATA_END;
       notify_ep_process(ep, USB_EP_EVENT_NOTIFICATION);
-      nvic_interrupt_en_restore(NVIC_INT_USB, flag);
+      restore_irq(flag);
       return;
     } else {
       /* Release the HW FIFO */
@@ -432,7 +473,7 @@ usb_submit_xmit_buffer(uint8_t addr, usb_buffer *buffer)
     res = ep0_tx();
   }
 
-  nvic_interrupt_en_restore(NVIC_INT_USB, flag);
+  restore_irq(flag);
 
   if(res & USB_WRITE_NOTIFY) {
     notify_ep_process(ep, USB_EP_EVENT_NOTIFICATION);
@@ -497,7 +538,7 @@ ep_setup(uint8_t addr)
   ep->events = 0;
   ep->xfer_size = ep_xfer_size[ei];
 
-  flag = nvic_interrupt_en_save(NVIC_INT_USB);
+  flag = disable_irq();
 
   /* Select endpoint register */
   REG(USB_INDEX) = ei;
@@ -513,7 +554,7 @@ ep_setup(uint8_t addr)
     }
   }
 
-  nvic_interrupt_en_restore(NVIC_INT_USB, flag);
+  restore_irq(flag);
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -593,7 +634,7 @@ usb_arch_disable_endpoint(uint8_t addr)
 
   ep->flags &= ~USB_EP_FLAGS_ENABLED;
 
-  flag = nvic_interrupt_en_save(NVIC_INT_USB);
+  flag = disable_irq();
 
   REG(USB_INDEX) = ei;
   if(ei == 0) {
@@ -605,7 +646,7 @@ usb_arch_disable_endpoint(uint8_t addr)
       out_ep_dis(addr);
     }
   }
-  nvic_interrupt_en_restore(NVIC_INT_USB, flag);
+  restore_irq(flag);
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -615,11 +656,11 @@ usb_arch_discard_all_buffers(uint8_t addr)
   uint8_t flag;
   volatile usb_endpoint_t *ep = EP_STRUCT(addr);
 
-  flag = nvic_interrupt_en_save(NVIC_INT_USB);
+  flag = disable_irq();
 
   buffer = ep->buffer;
   ep->buffer = NULL;
-  nvic_interrupt_en_restore(NVIC_INT_USB, flag);
+  restore_irq(flag);
 
   while(buffer) {
     buffer->flags &= ~USB_BUFFER_SUBMITTED;
@@ -666,11 +707,11 @@ usb_arch_control_stall(uint8_t addr)
     return;
   }
 
-  flag = nvic_interrupt_en_save(NVIC_INT_USB);
+  flag = disable_irq();
 
   set_stall(addr, 1);
 
-  nvic_interrupt_en_restore(NVIC_INT_USB, flag);
+  restore_irq(flag);
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -688,7 +729,7 @@ usb_arch_halt_endpoint(uint8_t addr, int halt)
     return;
   }
 
-  flag = nvic_interrupt_en_save(NVIC_INT_USB);
+  flag = disable_irq();
 
   if(halt) {
     ep->halted = 0x1;
@@ -709,7 +750,7 @@ usb_arch_halt_endpoint(uint8_t addr, int halt)
     }
   }
 
-  nvic_interrupt_en_restore(NVIC_INT_USB, flag);
+  restore_irq(flag);
 }
 /*---------------------------------------------------------------------------*/
 void
@@ -744,7 +785,7 @@ usb_arch_send_pending(uint8_t addr)
   uint8_t ret;
   uint8_t ei = EP_INDEX(addr);
 
-  flag = nvic_interrupt_en_save(NVIC_INT_USB);
+  flag = disable_irq();
 
   REG(USB_INDEX) = ei;
   if(ei == 0) {
@@ -753,7 +794,7 @@ usb_arch_send_pending(uint8_t addr)
     ret = REG(USB_CSIL) & USB_CSIL_INPKT_RDY;
   }
 
-  nvic_interrupt_en_restore(NVIC_INT_USB, flag);
+  restore_irq(flag);
 
   return ret;
 }
@@ -849,7 +890,7 @@ fill_buffers(usb_buffer *buffer, uint8_t hw_ep, unsigned int len,
 static uint8_t
 ep0_get_setup_pkt(void)
 {
-  uint8_t res;
+  uint8_t res = 0;
   usb_buffer *buffer =
     skip_buffers_until(usb_endpoints[0].buffer, USB_BUFFER_SETUP,
                        USB_BUFFER_SETUP, &res);
@@ -893,8 +934,6 @@ ep0_get_data_pkt(void)
   }
 
   if(buffer->flags & (USB_BUFFER_SETUP | USB_BUFFER_IN)) {
-    uint8_t temp;
-
     buffer->flags |= USB_BUFFER_FAILED;
     buffer->flags &= ~USB_BUFFER_SUBMITTED;
     if(buffer->flags & USB_BUFFER_NOTIFY) {
@@ -902,7 +941,7 @@ ep0_get_data_pkt(void)
     }
     /* Flush the fifo */
     while(len--) {
-      temp = REG(USB_F0);
+      REG(USB_F0);
     }
     usb_endpoints[0].buffer = buffer->next;
     /* Force data stage end */

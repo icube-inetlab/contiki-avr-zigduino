@@ -39,7 +39,7 @@
 #define PRINTA(...)
 #endif
 
-#define DEBUG 1
+#define DEBUG 0
 #if DEBUG
 #define PRINTD(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
 #else
@@ -69,7 +69,7 @@ unsigned char debugflowsize,debugflow[DEBUGFLOWSIZE];
 #include "radio/rf230bb/rf230bb.h"
 #include "net/mac/frame802154.h"
 #include "net/mac/framer-802154.h"
-#include "net/sicslowpan.h"
+#include "net/ipv6/sicslowpan.h"
 
 #else                 //radio driver using Atmel/Cisco 802.15.4'ish MAC
 #include <stdbool.h>
@@ -106,7 +106,7 @@ unsigned char debugflowsize,debugflow[DEBUGFLOWSIZE];
 #include "net/rime/rime-udp.h"
 #endif
 
-#include "net/rime.h"
+#include "net/rime/rime.h"
 
 #include "params.h"
 
@@ -170,8 +170,6 @@ uint8_t i,j;
 /*------Done in a subroutine to keep main routine stack usage small--------*/
 void initialize(void)
 {
-  uint8_t resetSrc = MCUSR;
-  MCUSR = 0;
   watchdog_init();
   watchdog_start();
 
@@ -192,12 +190,12 @@ void initialize(void)
   clock_init();
 
   PRINTD("\n\nChecking MCUSR...\n");
-  if(resetSrc & (1<<PORF )) PRINTD("Power-on reset.\n");
-  if(resetSrc & (1<<EXTRF)) PRINTD("External reset!\n");
-  if(resetSrc & (1<<BORF )) PRINTD("Brownout reset!\n");
-  if(resetSrc & (1<<WDRF )) PRINTD("Watchdog reset!\n");
-  if(resetSrc & (1<<JTRF )) PRINTD("JTAG reset!\n");
-
+  if(MCUSR & (1<<PORF )) PRINTD("Power-on reset.\n");
+  if(MCUSR & (1<<EXTRF)) PRINTD("External reset!\n");
+  if(MCUSR & (1<<BORF )) PRINTD("Brownout reset!\n");
+  if(MCUSR & (1<<WDRF )) PRINTD("Watchdog reset!\n");
+  if(MCUSR & (1<<JTRF )) PRINTD("JTAG reset!\n");
+  MCUSR = 0;
   
   PRINTD("CLOCK_SECOND %d\n",CLOCK_SECOND);
   PRINTD("RTIMER_ARCH_SECOND %lu\n",RTIMER_ARCH_SECOND);
@@ -262,14 +260,14 @@ uint8_t i;
 
   /* Set addresses BEFORE starting tcpip process */
 
-  rimeaddr_t addr;
+  linkaddr_t addr;
   if (params_get_eui64(addr.u8)) {
       PRINTA("Random EUI64 address generated\n");
   }
  
-#if UIP_CONF_IPV6 
-  memcpy(&uip_lladdr.addr, &addr.u8, sizeof(rimeaddr_t));
-  rimeaddr_set_node_addr(&addr);  
+#if NETSTACK_CONF_WITH_IPV6 
+  memcpy(&uip_lladdr.addr, &addr.u8, sizeof(linkaddr_t));
+  linkaddr_set_node_addr(&addr);  
   rf230_set_pan_addr(params_get_panid(),params_get_panaddr(),(uint8_t *)&addr.u8);
 #elif WITH_NODE_ID
   node_id=get_panaddr_from_eeprom();
@@ -277,21 +275,21 @@ uint8_t i;
   addr.u8[0]=(node_id&0xff00)>>8;
   PRINTA("Node ID from eeprom: %X\n",node_id);
   uint16_t inv_node_id=((node_id&0xff00)>>8)+((node_id&0xff)<<8); // change order of bytes for rf23x
-  rimeaddr_set_node_addr(&addr);
+  linkaddr_set_node_addr(&addr);
   rf230_set_pan_addr(params_get_panid(),inv_node_id,NULL);
 #else
-  rimeaddr_set_node_addr(&addr);
+  linkaddr_set_node_addr(&addr);
   rf230_set_pan_addr(params_get_panid(),params_get_panaddr(),(uint8_t *)&addr.u8);
 #endif
   rf230_set_channel(params_get_channel());
   rf230_set_txpower(params_get_txpower());
 
-#if UIP_CONF_IPV6
+#if NETSTACK_CONF_WITH_IPV6
   PRINTA("EUI-64 MAC: %x-%x-%x-%x-%x-%x-%x-%x\n",addr.u8[0],addr.u8[1],addr.u8[2],addr.u8[3],addr.u8[4],addr.u8[5],addr.u8[6],addr.u8[7]);
 #else
   PRINTA("MAC address ");
   uint8_t i;
-  for (i=sizeof(rimeaddr_t); i>0; i--){
+  for (i=sizeof(linkaddr_t); i>0; i--){
     PRINTA("%x:",addr.u8[i-1]);
   }
   PRINTA("\n");
@@ -318,13 +316,17 @@ uint8_t i;
 // rime_init(rime_udp_init(NULL));
 // uip_router_register(&rimeroute);
 
+#if NETSTACK_CONF_WITH_IPV6 || NETSTACK_CONF_WITH_IPV4
   process_start(&tcpip_process, NULL);
+#endif
 
 #else /* !RF230BB */
 /* Original RF230 combined mac/radio driver */
 /* mac process must be started before tcpip process! */
   process_start(&mac_process, NULL);
+#if NETSTACK_CONF_WITH_IPV6 || NETSTACK_CONF_WITH_IPV4
   process_start(&tcpip_process, NULL);
+#endif
 #endif /* RF230BB */
 
 #ifdef RAVEN_LCD_INTERFACE
@@ -355,7 +357,7 @@ uint8_t i;
 #if 0
 {  
   uip_ip6addr_t ipaddr;
-  uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
+  uip_ip6addr(&ipaddr, UIP_DS6_DEFAULT_PREFIX, 0, 0, 0, 0, 0, 0, 0);
   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
 //  uip_ds6_prefix_add(&ipaddr,64,0);
 }
@@ -403,7 +405,7 @@ uint8_t i;
 }
 }
 
-#if ROUTES && UIP_CONF_IPV6
+#if ROUTES && NETSTACK_CONF_WITH_IPV6
 static void
 ipaddr_add(const uip_ipaddr_t *addr)
 {
@@ -431,9 +433,9 @@ ipaddr_add(const uip_ipaddr_t *addr)
 int
 main(void)
 {
-#if UIP_CONF_IPV6
+#if NETSTACK_CONF_WITH_IPV6
   uip_ds6_nbr_t *nbr;
-#endif /* UIP_CONF_IPV6 */
+#endif /* NETSTACK_CONF_WITH_IPV6 */
   initialize();
 
   while(1) {
@@ -504,7 +506,7 @@ extern volatile unsigned long radioontime;
       clocktime+=1;
 #endif
 
-#if PINGS && UIP_CONF_IPV6
+#if PINGS && NETSTACK_CONF_WITH_IPV6
 extern void raven_ping6(void); 
 if ((clocktime%PINGS)==1) {
   PRINTF("**Ping\n");
@@ -512,7 +514,7 @@ if ((clocktime%PINGS)==1) {
 }
 #endif
 
-#if ROUTES && UIP_CONF_IPV6
+#if ROUTES && NETSTACK_CONF_WITH_IPV6
 if ((clocktime%ROUTES)==2) {
       
 extern uip_ds6_netif_t uip_ds6_if;
@@ -525,6 +527,7 @@ extern uip_ds6_netif_t uip_ds6_if;
       PRINTF("\n");
     }
   }
+  j = 1;
   PRINTF("\nNeighbors [%u max]\n",NBR_TABLE_MAX_NEIGHBORS);
   for(nbr = nbr_table_head(ds6_neighbors);
       nbr != NULL;

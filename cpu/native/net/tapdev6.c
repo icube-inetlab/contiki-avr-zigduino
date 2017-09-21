@@ -33,10 +33,10 @@
  *
  */
 
-#include "net/uip.h"
-#include "net/uipopt.h"
+#include "net/ip/uip.h"
+#include "net/ip/uipopt.h"
 
-#if UIP_CONF_IPV6
+#if NETSTACK_CONF_WITH_IPV6
 
 #include <fcntl.h>
 #include <stdlib.h>
@@ -98,7 +98,7 @@ static unsigned long lasttime;
 #endif
 
 static void do_send(void);
-uint8_t tapdev_send(uip_lladdr_t *lladdr);
+uint8_t tapdev_send(const uip_lladdr_t *lladdr);
 
 /*---------------------------------------------------------------------------*/
 int
@@ -166,7 +166,7 @@ tapdev_init_darwin_routes(void)
 
   addreq6.ifra_addr.sin6_family = AF_INET6;
   addreq6.ifra_addr.sin6_len = sizeof(addreq6.ifra_addr);
-  addreq6.ifra_addr.sin6_addr.__u6_addr.__u6_addr16[0] = UIP_HTONS(0xAAAA);
+  addreq6.ifra_addr.sin6_addr.__u6_addr.__u6_addr16[0] = UIP_HTONS(0xFD00);
   addreq6.ifra_addr.sin6_addr.__u6_addr.__u6_addr16[7] = UIP_HTONS(0x0001);
 
   addreq6.ifra_prefixmask.sin6_family = AF_INET6;
@@ -227,7 +227,7 @@ tapdev_init_darwin_routes(void)
 
   msg.dst.sin6_family = AF_INET6;
   msg.dst.sin6_len = sizeof(msg.dst);
-  msg.dst.sin6_addr.__u6_addr.__u6_addr16[0] = UIP_HTONS(0xAAAA);
+  msg.dst.sin6_addr.__u6_addr.__u6_addr16[0] = UIP_HTONS(0xFD00);
 
   msg.gw.sdl_family = AF_LINK;
   msg.gw.sdl_len = sizeof(msg.gw);
@@ -269,7 +269,7 @@ tapdev_cleanup_darwin_routes(void)
 
   msg.dst.sin6_family = AF_INET6;
   msg.dst.sin6_len = sizeof(msg.dst);
-  msg.dst.sin6_addr.__u6_addr.__u6_addr16[0] = UIP_HTONS(0xAAAA);
+  msg.dst.sin6_addr.__u6_addr.__u6_addr16[0] = UIP_HTONS(0xFD00);
 
   msg.gw.sdl_family = AF_LINK;
   msg.gw.sdl_len = sizeof(msg.gw);
@@ -331,7 +331,10 @@ tapdev_init(void)
   */
   /* freebsd */
   snprintf(buf, sizeof(buf), "ifconfig tap0 up");
-  system(buf);
+  if(system(buf) == -1) {
+    perror("tapdev: system: ifconfig");
+    return;
+  }
   printf("%s\n", buf);
   
   /*  */
@@ -371,7 +374,8 @@ do_send(void)
   }
 }
 /*---------------------------------------------------------------------------*/
-uint8_t tapdev_send(uip_lladdr_t *lladdr)
+uint8_t
+tapdev_send(const uip_lladdr_t *lladdr)
 {
   /*
    * If L3 dest is multicast, build L2 multicast address
@@ -418,4 +422,4 @@ tapdev_exit(void)
 }
 /*---------------------------------------------------------------------------*/
 
-#endif /* UIP_CONF_IPV6 */
+#endif /* NETSTACK_CONF_WITH_IPV6 */

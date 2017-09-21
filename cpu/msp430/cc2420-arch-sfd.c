@@ -30,7 +30,7 @@
 
 #include "contiki.h"
 #include "dev/spi.h"
-#include "dev/cc2420.h"
+#include "cc2420.h"
 #include "isr_compat.h"
 
 extern volatile uint8_t cc2420_sfd_counter;
@@ -45,6 +45,8 @@ ISR(TIMERB1, cc2420_timerb1_interrupt)
   ENERGEST_ON(ENERGEST_TYPE_IRQ);
   /* always read TBIV to clear IFG */
   tbiv = TBIV;
+  /* read and discard tbiv to avoid "variable set but not used" warning */
+  (void)tbiv;
   if(CC2420_SFD_IS_1) {
     cc2420_sfd_counter++;
     cc2420_sfd_start_time = TBCCR1;
@@ -59,7 +61,7 @@ void
 cc2420_arch_sfd_init(void)
 {
   /* Need to select the special function! */
-  P4SEL = BV(CC2420_SFD_PIN);
+  CC2420_SFD_PORT(SEL) = BV(CC2420_SFD_PIN);
   
   /* start timer B - 32768 ticks per second */
   TBCTL = TBSSEL_1 | TBCLR;

@@ -13,6 +13,8 @@ uip_buf_t uip_aligned_buf;
 
 uint16_t uip_len;
 
+uint8_t uip_ext_len;
+
 struct uip_stats uip_stat;
 
 uip_lladdr_t uip_lladdr;
@@ -25,14 +27,14 @@ void tcpip_input( void )
   mac_LowpanToEthernet();
 }
 
-uint8_t tcpip_output(uip_lladdr_t * lladdr){
+uint8_t tcpip_output(const uip_lladdr_t * lladdr){
   if(output != NULL) {
     return output(lladdr);
   }
  return 0;
 }
 //Called from  sicslowpan.c
-void tcpip_set_outputfunc(uint8_t (* f)(uip_lladdr_t *)) {
+void tcpip_set_outputfunc(uint8_t (* f)(const uip_lladdr_t *)) {
   output = f;
 }
 

@@ -31,8 +31,8 @@
  *
  *
  */
-#ifndef __WWW_H__
-#define __WWW_H__
+#ifndef WWW_H_
+#define WWW_H_
 
 #ifndef WWW_CONF_WEBPAGE_WIDTH
 #define WWW_CONF_WEBPAGE_WIDTH 80
@@ -44,7 +44,7 @@
 #define WWW_CONF_HISTORY_SIZE 10
 #endif
 #ifndef WWW_CONF_MAX_URLLEN
-#define WWW_CONF_MAX_URLLEN 300
+#define WWW_CONF_MAX_URLLEN 255
 #endif
 #ifndef WWW_CONF_PAGEATTRIB_SIZE
 #define WWW_CONF_PAGEATTRIB_SIZE 2000
@@ -64,4 +64,4 @@
 
 PROCESS_NAME(www_process);
 
-#endif /* __WWW_H__ */
+#endif /* WWW_H_ */

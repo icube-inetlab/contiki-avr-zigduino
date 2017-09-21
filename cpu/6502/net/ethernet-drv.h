@@ -30,8 +30,8 @@
  * 
  */
 
-#ifndef __ETHERNET_DRV_H__
-#define __ETHERNET_DRV_H__
+#ifndef ETHERNET_DRV_H_
+#define ETHERNET_DRV_H_
 
 #include "contiki.h"
 
@@ -42,6 +42,10 @@ struct ethernet_config {
 
 PROCESS_NAME(ethernet_process);
 
+#if NETSTACK_CONF_WITH_IPV6
+uint8_t ethernet_output(const uip_lladdr_t *);
+#else
 uint8_t ethernet_output(void);
+#endif
 
-#endif /* __ETHERNET_DRV_H__ */
+#endif /* ETHERNET_DRV_H_ */

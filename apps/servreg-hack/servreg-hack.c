@@ -1,6 +1,3 @@
-/** \addtogroup servreghack
- * @{ */
-
 /*
  * Copyright (c) 2010, Swedish Institute of Computer Science.
  * All rights reserved.
@@ -40,13 +37,16 @@
  *         Adam Dunkels <adam@sics.se>
  */
 
+/** \addtogroup servreghack
+ * @{ */
+
 #include "contiki.h"
 #include "contiki-lib.h"
 #include "contiki-net.h"
 
-#include "net/uip.h"
+#include "net/ip/uip.h"
 
-#include "net/uip-ds6.h"
+#include "net/ipv6/uip-ds6.h"
 
 #include "servreg-hack.h"
 
@@ -332,14 +332,10 @@ static void
 parse_incoming_packet(const uint8_t *buf, int len)
 {
   int numregs;
-  int flags;
   int i;
   int bufptr;
 
   numregs = buf[MSG_NUMREGS_OFFSET];
-  flags   = buf[MSG_FLAGS_OFFSET];
-
-  /*  printf("parse_incoming_packet Numregs %d flags %d\n", numregs, flags);*/
 
   bufptr = MSG_ADDRS_OFFSET;
   for(i = 0; i < numregs; ++i) {
@@ -379,3 +375,5 @@ PROCESS_THREAD(servreg_hack_process, ev, data)
   PROCESS_END();
 }
 /*---------------------------------------------------------------------------*/
+
+/** @} */

@@ -34,9 +34,9 @@
 #include "lib/random.h"
 #include "sys/ctimer.h"
 #include "sys/etimer.h"
-#include "net/uip.h"
-#include "net/uip-ds6.h"
-#include "net/uip-debug.h"
+#include "net/ip/uip.h"
+#include "net/ipv6/uip-ds6.h"
+#include "net/ip/uip-debug.h"
 
 #include "sys/node-id.h"
 
@@ -78,7 +78,7 @@ set_global_address(void)
   int i;
   uint8_t state;
 
-  uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
+  uip_ip6addr(&ipaddr, UIP_DS6_DEFAULT_PREFIX, 0, 0, 0, 0, 0, 0, 0);
   uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
 

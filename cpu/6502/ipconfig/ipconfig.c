@@ -35,7 +35,7 @@
 #include "contiki-net.h"
 #include "ctk/ctk.h"
 #include "cfs/cfs.h"
-#include "net/dhcpc.h"
+#include "net/ip/dhcpc.h"
 
 static struct ctk_window window;
 
@@ -117,7 +117,7 @@ makestrings(void)
   makeaddr(&addr, gateway);
 
 #if WITH_DNS
-  addrptr = resolv_getserver();
+  addrptr = uip_nameserver_get(0);
   if(addrptr != NULL) {
     makeaddr(addrptr, dnsserver);
   }
@@ -177,9 +177,9 @@ app_quit(void)
 PROCESS_THREAD(ipconfig_process, ev, data)
 {
   PROCESS_BEGIN();
-  
+
   ctk_window_new(&window, 29, 14, "IP config");
-  
+
   CTK_WIDGET_ADD(&window, &requestbutton);
   CTK_WIDGET_ADD(&window, &statuslabel);  
   CTK_WIDGET_ADD(&window, &ipaddrlabel);  
@@ -197,6 +197,8 @@ PROCESS_THREAD(ipconfig_process, ev, data)
 
   CTK_WIDGET_FOCUS(&window, &requestbutton);  
 
+  makestrings();
+
   ctk_window_open(&window);
 
   /* Allow resolver to set DNS server address. */
@@ -206,11 +208,11 @@ PROCESS_THREAD(ipconfig_process, ev, data)
 
   while(1) {
     PROCESS_WAIT_EVENT();
-    
+
     if(ev == PROCESS_EVENT_MSG) {
       makestrings();
       ctk_window_redraw(&window);
-    } else if(ev == tcpip_event) {
+    } else if(ev == tcpip_event || ev == PROCESS_EVENT_TIMER) {
       dhcpc_appcall(ev, data);
     } else if(ev == ctk_signal_button_activate) {   
       if(data == (process_data_t)&requestbutton) {
@@ -243,7 +245,7 @@ dhcpc_configured(const struct dhcpc_state *s)
   uip_setnetmask(&s->netmask);
   uip_setdraddr(&s->default_router);
 #if WITH_DNS
-  resolv_conf(&s->dnsaddr);
+  uip_nameserver_update(&s->dnsaddr, UIP_NAMESERVER_INFINITE_LIFETIME);
 #endif /* WITH_DNS */
 
   set_statustext("Configured.");
@@ -259,7 +261,7 @@ dhcpc_unconfigured(const struct dhcpc_state *s)
   uip_setnetmask(&nulladdr);
   uip_setdraddr(&nulladdr);
 #if WITH_DNS
-  resolv_conf(&nulladdr);
+  uip_nameserver_update(&nulladdr, UIP_NAMESERVER_INFINITE_LIFETIME);
 #endif /* WITH_DNS */
 
   set_statustext("Unconfigured.");

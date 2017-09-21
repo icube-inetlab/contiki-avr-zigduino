@@ -4,8 +4,8 @@
  * to get a few things */
 
 
-#include "net/uip.h"
-#include "net/uip-ds6.h"
+#include "net/ip/uip.h"
+#include "net/ipv6/uip-ds6.h"
 #include <string.h>
 
 #define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
@@ -55,7 +55,7 @@ uip_ds6_get_link_local(int8_t state) {
   for(locaddr = uip_ds6_if.addr_list;
       locaddr < uip_ds6_if.addr_list + UIP_DS6_ADDR_NB; locaddr++) {
     if((locaddr->isused) && (state == - 1 || locaddr->state == state)
-       && (uip_is_addr_link_local(&locaddr->ipaddr))) {
+       && (uip_is_addr_linklocal(&locaddr->ipaddr))) {
       return locaddr;
     }
   }

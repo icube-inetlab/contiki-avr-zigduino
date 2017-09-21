@@ -39,7 +39,7 @@
 #include "lib/crc16.h"
 #include "lib/random.h"
 
-#include "net/rime.h"
+#include "net/rime/rime.h"
 #include "net/rime/unicast.h"
 
 #include "net/rime/timesynch.h"
@@ -95,7 +95,7 @@ PROCESS_THREAD(shell_sendcmd_process, ev, data)
 {
   struct cmd_msg  *msg;
   int len;
-  rimeaddr_t addr;
+  linkaddr_t addr;
   const char *nextptr;
   char buf[32];
 
@@ -133,7 +133,7 @@ PROCESS_THREAD(shell_sendcmd_process, ev, data)
 
   /* Terminate the string with a NUL character. */
   msg->sendcmd[len] = 0;
-  msg->crc = crc16_data(msg->sendcmd, len, 0);
+  msg->crc = crc16_data((unsigned char *)msg->sendcmd, len, 0);
   /*    printf("sendcmd sending '%s'\n", msg->sendcmd);*/
   unicast_send(&uc, &addr);
 
@@ -141,7 +141,7 @@ PROCESS_THREAD(shell_sendcmd_process, ev, data)
 }
 /*---------------------------------------------------------------------------*/
 static void
-recv_uc(struct unicast_conn *c, const rimeaddr_t *from)
+recv_uc(struct unicast_conn *c, const linkaddr_t *from)
 {
   struct cmd_msg *msg;
   uint16_t crc;
@@ -160,9 +160,9 @@ recv_uc(struct unicast_conn *c, const rimeaddr_t *from)
     msg->sendcmd[len] = 0;
     memcpy(&crc, &msg->crc, sizeof(crc));
 
-    if(crc == crc16_data(msg->sendcmd, len, 0)) {
+    if(crc == crc16_data((unsigned char *)msg->sendcmd, len, 0)) {
       /* Start the server process with the incoming command. */
-      process_start(&shell_sendcmd_server_process, msg->sendcmd);
+      process_start(&shell_sendcmd_server_process, (void *)msg->sendcmd);
     }
   }
 }

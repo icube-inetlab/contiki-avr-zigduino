@@ -36,8 +36,8 @@
  *         Joakim Eriksson <joakime@sics.se>
  */
 
-#ifndef __PLATFORM_CONF_H__
-#define __PLATFORM_CONF_H__
+#ifndef PLATFORM_CONF_H_
+#define PLATFORM_CONF_H_
 
 /*
  * Definitions below are dictated by the hardware and not really
@@ -46,11 +46,21 @@
 /* Platform TMOTE_SKY */
 #define TMOTE_SKY 1
 
+/* Delay between GO signal and SFD: radio fixed delay + 4Bytes preample + 1B SFD -- 1Byte time is 32us
+ * ~327us + 129preample = 456 us */
+#define RADIO_DELAY_BEFORE_TX ((unsigned)US_TO_RTIMERTICKS(456))
+/* Delay between GO signal and start listening
+ * ~50us delay + 129preample + ?? = 183 us */
+#define RADIO_DELAY_BEFORE_RX ((unsigned)US_TO_RTIMERTICKS(183))
+/* Delay between the SFD finishes arriving and it is detected in software */
+#define RADIO_DELAY_BEFORE_DETECT 0
+
 #define PLATFORM_HAS_LEDS    1
 #define PLATFORM_HAS_BUTTON  1
 #define PLATFORM_HAS_LIGHT   1
 #define PLATFORM_HAS_BATTERY 1
 #define PLATFORM_HAS_SHT11   1
+#define PLATFORM_HAS_RADIO   1
 
 /* CPU target speed in Hz */
 #define F_CPU 3900000uL /*2457600uL*/
@@ -70,7 +80,7 @@
 /* Types for clocks and uip_stats */
 typedef unsigned short uip_stats_t;
 typedef unsigned long clock_time_t;
-typedef unsigned long off_t;
+typedef long off_t;
 
 /* the low-level radio driver */
 #define NETSTACK_CONF_RADIO   cc2420_driver
@@ -209,4 +219,4 @@ typedef unsigned long off_t;
 #define CC2420_SPI_DISABLE()    (CC2420_CSN_PORT(OUT) |=  BV(CC2420_CSN_PIN))
 #define CC2420_SPI_IS_ENABLED() ((CC2420_CSN_PORT(OUT) & BV(CC2420_CSN_PIN)) != BV(CC2420_CSN_PIN))
 
-#endif /* __PLATFORM_CONF_H__ */
+#endif /* PLATFORM_CONF_H_ */

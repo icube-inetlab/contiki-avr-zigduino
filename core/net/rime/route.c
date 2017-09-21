@@ -1,8 +1,3 @@
-/**
- * \addtogroup rimeroute
- * @{
- */
-
 /*
  * Copyright (c) 2007, Swedish Institute of Computer Science.
  * All rights reserved.
@@ -40,6 +35,11 @@
  *         Rime route table
  * \author
  *         Adam Dunkels <adam@sics.se>
+ */
+
+/**
+ * \addtogroup rimeroute
+ * @{
  */
 
 #include <stdio.h>
@@ -118,21 +118,27 @@ route_init(void)
 }
 /*---------------------------------------------------------------------------*/
 int
-route_add(const rimeaddr_t *dest, const rimeaddr_t *nexthop,
+route_add(const linkaddr_t *dest, const linkaddr_t *nexthop,
 	  uint8_t cost, uint8_t seqno)
 {
-  struct route_entry *e;
+  struct route_entry *e, *oldest = NULL;
 
   /* Avoid inserting duplicate entries. */
   e = route_lookup(dest);
-  if(e != NULL && rimeaddr_cmp(&e->nexthop, nexthop)) {
+  if(e != NULL && linkaddr_cmp(&e->nexthop, nexthop)) {
     list_remove(route_table, e);
   } else {
     /* Allocate a new entry or reuse the oldest entry with highest cost. */
     e = memb_alloc(&route_mem);
     if(e == NULL) {
-      /* Remove oldest entry.  XXX */
-      e = list_chop(route_table);
+      /* Remove oldest entry. */
+      for(e = list_head(route_table); e != NULL; e = list_item_next(e)) {
+        if(oldest == NULL || e->time >= oldest->time) {
+          oldest = e;
+        }
+      }
+      e = oldest;
+      list_remove(route_table, e);
       PRINTF("route_add: removing entry to %d.%d with nexthop %d.%d and cost %d\n",
 	     e->dest.u8[0], e->dest.u8[1],
 	     e->nexthop.u8[0], e->nexthop.u8[1],
@@ -140,8 +146,8 @@ route_add(const rimeaddr_t *dest, const rimeaddr_t *nexthop,
     }
   }
 
-  rimeaddr_copy(&e->dest, dest);
-  rimeaddr_copy(&e->nexthop, nexthop);
+  linkaddr_copy(&e->dest, dest);
+  linkaddr_copy(&e->nexthop, nexthop);
   e->cost = cost;
   e->seqno = seqno;
   e->time = 0;
@@ -159,7 +165,7 @@ route_add(const rimeaddr_t *dest, const rimeaddr_t *nexthop,
 }
 /*---------------------------------------------------------------------------*/
 struct route_entry *
-route_lookup(const rimeaddr_t *dest)
+route_lookup(const linkaddr_t *dest)
 {
   struct route_entry *e;
   uint8_t lowest_cost;
@@ -173,7 +179,7 @@ route_lookup(const rimeaddr_t *dest)
     /*    printf("route_lookup: comparing %d.%d.%d.%d with %d.%d.%d.%d\n",
 	   uip_ipaddr_to_quad(dest), uip_ipaddr_to_quad(&e->dest));*/
 
-    if(rimeaddr_cmp(dest, &e->dest)) {
+    if(linkaddr_cmp(dest, &e->dest)) {
       if(e->cost < lowest_cost) {
 	best_entry = e;
 	lowest_cost = e->cost;

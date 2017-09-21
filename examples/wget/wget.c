@@ -35,6 +35,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef __CC65__
+#include <cc65.h>
+#endif /* __CC65__ */
+
 #include "contiki-net.h"
 #include "webclient.h"
 #include "cfs/cfs.h"
@@ -43,6 +47,9 @@
 PROCESS(wget_process, "Wget");
 
 AUTOSTART_PROCESSES(&wget_process);
+
+extern int contiki_argc;
+extern char **contiki_argv;
 
 static int file = -1;
 static char url[128];
@@ -143,8 +150,12 @@ app_quit(void)
   if(file != -1) {
     cfs_close(file);
   }
-  puts("Press any key to continue...");
-  getchar();
+#ifdef __CC65__
+  if(doesclrscrafterexit()) {
+    puts("Press <enter> to continue...");
+    getchar();
+  }
+#endif /* __CC65__ */
   process_exit(&wget_process);
   LOADER_UNLOAD();
 }
@@ -161,11 +172,22 @@ PROCESS_THREAD(wget_process, ev, data)
     PROCESS_PAUSE();
   }
 
-  fputs("\nGet url:", stdout);
-  gets(url);
-  fputs("\nSave as:", stdout);
-  gets(name);
-  puts("");
+  fputs("Get url:", stdout);
+  if(contiki_argc > 1) {
+    strcpy(url, contiki_argv[1]);
+    puts(url);
+  } else {
+    fgets(url, sizeof(url), stdin);
+    url[strlen(url) - 1] = 0;
+  }
+  fputs("Save as:", stdout);
+  if(contiki_argc > 2) {
+    strcpy(name, contiki_argv[2]);
+    puts(name);
+  } else {
+    fgets(name, sizeof(name), stdin);
+    name[strlen(name) - 1] = 0;
+  }
   file = cfs_open(name, CFS_WRITE);
   if(file == -1) {
     printf("Open error with '%s'\n", name);

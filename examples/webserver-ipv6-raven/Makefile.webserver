@@ -1,10 +1,8 @@
 
 all: webserver6
 
-APPS=raven-webserver
-ifndef TARGET
-TARGET=avr-atmega128rfa1
-endif
+APPS=raven-webserver raven-lcd-interface
+TARGET=avr-raven
 
 #RF230BB=1             //Use radio driver that communicates with the core MAC layer. Now the default.
 #COFFEE_FILES=1        //Static coffee file system in EEPROM
@@ -14,5 +12,5 @@ endif
 #COFFEE_ADDRESS=0xnnnn //Override default coffee file system starting address
 CONTIKI = ../..
 
-
+CONTIKI_WITH_IPV6 = 1
 include $(CONTIKI)/Makefile.include

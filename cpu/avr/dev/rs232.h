@@ -33,8 +33,8 @@
  *
  */
 
-#ifndef __RS232_H__
-#define __RS232_H__
+#ifndef RS232_H_
+#define RS232_H_
 
 #include <avr/pgmspace.h>
 #include "contiki-conf.h"
@@ -48,6 +48,10 @@
 #elif defined (__AVR_AT90USB1287__)
 #include "dev/rs232_at90usb1287.h"
 #elif defined (__AVR_ATmega128RFA1__)
+#include "dev/rs232_atmega128rfa1.h"
+#elif defined (__AVR_ATmega128RFR2__)
+#include "dev/rs232_atmega128rfa1.h"
+#elif defined (__AVR_ATmega256RFR2__)
 #include "dev/rs232_atmega128rfa1.h"
 #elif defined (__AVR_ATmega644__) || defined (__AVR_ATmega328P__)
 #include "dev/rs232_atmega644.h"
@@ -155,4 +159,4 @@ rs232_send(uint8_t port, unsigned char c);
 void
 rs232_redirect_stdout (uint8_t port);
 
-#endif /* __RS232_H__ */
+#endif /* RS232_H_ */

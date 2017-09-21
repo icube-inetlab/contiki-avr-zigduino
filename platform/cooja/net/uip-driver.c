@@ -37,22 +37,25 @@
  */
 
 #include "net/netstack.h"
-#include "net/uip.h"
-#include "net/tcpip.h"
-#include "net/hc.h"
+#include "net/ip/uip.h"
+#include "net/ip/tcpip.h"
 #include "net/packetbuf.h"
 #include "net/uip-driver.h"
 #include <string.h>
 
 /*--------------------------------------------------------------------*/
 uint8_t
+#if NETSTACK_CONF_WITH_IPV6
+uip_driver_send(const uip_lladdr_t *addr)
+#else
 uip_driver_send(void)
+#endif
 {
   packetbuf_copyfrom(&uip_buf[UIP_LLH_LEN], uip_len);
 
   /* XXX we should provide a callback function that is called when the
      packet is sent. For now, we just supply a NULL pointer. */
-  NETSTACK_MAC.send(NULL, NULL);
+  NETSTACK_LLSEC.send(NULL, NULL);
   return 1;
 }
 /*--------------------------------------------------------------------*/

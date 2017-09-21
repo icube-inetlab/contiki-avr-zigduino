@@ -148,10 +148,10 @@
  * Modified! 0xff and 0xfe are sobstituted by 0x02 and 0x00.
 */
 
-#include "net/uip.h"
-#include "net/uip_arp.h" /* For ethernet header structure */
-#include "net/rime.h"
-#include "net/sicslowpan.h"
+#include "net/ip/uip.h"
+#include "net/ipv4/uip_arp.h" /* For ethernet header structure */
+#include "net/rime/rime.h"
+#include "net/ipv6/sicslowpan.h"
 #include "sicslow_ethernet.h"
 #include "dev/stm32w-radio.h"
 #include "net/mac/frame802154.h"
@@ -267,13 +267,13 @@ void mac_ethernetToLowpan(uint8_t * ethHeader)
   if (((struct uip_eth_hdr *) ethHeader)->type != UIP_HTONS(UIP_ETHTYPE_IPV6)) {
     PRINTF("eth2low: Packet is not IPv6, dropping\n");
 /*     rndis_stat.txbad++; */
-    uip_len = 0;
+    uip_clear_buf();
     return;
   }
 
   // In sniffer mode we don't ever send anything
   if (usbstick_mode.sendToRf == 0) {
-    uip_len = 0;
+    uip_clear_buf();
     return;
   }
 
@@ -292,7 +292,7 @@ void mac_ethernetToLowpan(uint8_t * ethHeader)
     /* IPv6 does not use broadcast addresses, hence this should not happen */
     PRINTF("eth2low: Ethernet broadcast address received, should not happen?\n");
 /*     rndis_stat.txbad++; */
-    uip_len = 0;
+    uip_clear_buf();
     return;
   } else {
     PRINTF("eth2low: Addressed packet received... ");
@@ -300,7 +300,7 @@ void mac_ethernetToLowpan(uint8_t * ethHeader)
     if (mac_createSicslowpanLongAddr( &(((struct uip_eth_hdr *) ethHeader)->dest.addr[0]), &destAddr) == 0) {
       PRINTF(" translation failed\n");
 /*       rndis_stat.txbad++; */
-      uip_len = 0;
+      uip_clear_buf();
       return;
     }
     PRINTF(" translated OK\n");
@@ -322,7 +322,7 @@ void mac_ethernetToLowpan(uint8_t * ethHeader)
 /* 	  rndis_stat.txok++; */
   }
 
-  uip_len = 0;
+  uip_clear_buf();
 
 }
 
@@ -339,7 +339,7 @@ void mac_LowpanToEthernet(void)
   ETHBUF(uip_buf)->type = htons(UIP_ETHTYPE_IPV6);
 
   //Check for broadcast message
-  if(rimeaddr_cmp(packetbuf_addr(PACKETBUF_ADDR_RECEIVER), &rimeaddr_null)) {
+  if(packetbuf_holds_broadcast()) {
 /*   if(  ( parsed_frame->fcf->destAddrMode == SHORTADDRMODE) && */
 /*        ( parsed_frame->dest_addr->addr16 == 0xffff) ) { */
     ETHBUF(uip_buf)->dest.addr[0] = 0x33;
@@ -370,7 +370,7 @@ void mac_LowpanToEthernet(void)
 
 /*   rndis_send(uip_buf, uip_len, 1); */
 /*   rndis_stat.rxok++; */
-/*   uip_len = 0; */
+/*   uip_clear_buf(); */
 }
 
 /**
@@ -399,8 +399,8 @@ int8_t mac_translateIPLinkLayer(lltype_t target)
 
 }
 
-#include "net/uip-icmp6.h"
-#include "net/uip-nd6.h"
+#include "net/ipv6/uip-icmp6.h"
+#include "net/ipv6/uip-nd6.h"
 
 typedef struct {
   uint8_t type;
@@ -825,7 +825,7 @@ void mac_logTXtoEthernet(frame_create_params_t *p,frame_result_t *frame_result)
 
 
   //Check for broadcast message
-  //if(rimeaddr_cmp((const rimeaddr_t *)destAddr, &rimeaddr_null)) {
+  //if(linkaddr_cmp((const linkaddr_t *)destAddr, &linkaddr_null)) {
   if(  ( p->fcf.destAddrMode == SHORTADDRMODE) &&
        ( p->dest_addr.addr16 == 0xffff) ) {
     ETHBUF(raw_buf)->dest.addr[0] = 0x33;
@@ -940,7 +940,7 @@ void mac_802154raw(const struct radio_driver *radio)
 
 #if 0
   //Check for broadcast message
-  //if(rimeaddr_cmp((const rimeaddr_t *)destAddr, &rimeaddr_null)) {
+  //if(linkaddr_cmp((const linkaddr_t *)destAddr, &linkaddr_null)) {
   if(  ( parsed_frame->fcf->destAddrMode == SHORTADDRMODE) &&
        ( parsed_frame->dest_addr->addr16 == 0xffff) ) {
     ETHBUF(raw_buf)->dest.addr[0] = 0x33;
@@ -968,7 +968,7 @@ void mac_802154raw(const struct radio_driver *radio)
 #endif
   
   slip_write(uip_buf, len);
-  leds_invert(LEDS_RED);
+  leds_toggle(LEDS_RED);
 
   //rndis_send(raw_buf, sendlen, 1);
   //rndis_stat.rxok++;

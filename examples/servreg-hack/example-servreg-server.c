@@ -39,7 +39,7 @@
 
 #include "contiki.h"
 #include "contiki-lib.h"
-#include "net/uip-ds6.h"
+#include "net/ipv6/uip-ds6.h"
 #include "servreg-hack.h"
 
 #include <stdio.h> /* For printf() */
@@ -53,7 +53,7 @@ PROCESS_THREAD(example_servreg_server_process, ev, data)
   PROCESS_BEGIN();
 
   /* Set a global address. */
-  uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
+  uip_ip6addr(&ipaddr, UIP_DS6_DEFAULT_PREFIX, 0, 0, 0, 0, 0, 0, 0);
   uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
 

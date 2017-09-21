@@ -37,8 +37,8 @@
  *         Joakim Eriksson <joakime@sics.se>
  */
 
-#ifndef __JSONTREE_H__
-#define __JSONTREE_H__
+#ifndef JSONTREE_H_
+#define JSONTREE_H_
 
 #include "contiki-conf.h"
 #include "json.h"
@@ -48,6 +48,12 @@
 #else
 #define JSONTREE_MAX_DEPTH 10
 #endif /* JSONTREE_CONF_MAX_DEPTH */
+
+#ifdef JSONTREE_CONF_PRETTY
+#define JSONTREE_PRETTY JSONTREE_CONF_PRETTY
+#else
+#define JSONTREE_PRETTY 0
+#endif /* JSONTREE_CONF_PRETTY */
 
 struct jsontree_context {
   struct jsontree_value *values[JSONTREE_MAX_DEPTH];
@@ -66,6 +72,11 @@ struct jsontree_value {
 struct jsontree_string {
   uint8_t type;
   const char *value;
+};
+
+struct jsontree_uint {
+  uint8_t type;
+  unsigned int value;
 };
 
 struct jsontree_int {
@@ -98,6 +109,11 @@ struct jsontree_array {
   struct jsontree_value **values;
 };
 
+struct jsontree_ptr {
+  uint8_t type;
+  const void *value;
+};
+
 #define JSONTREE_STRING(text) {JSON_TYPE_STRING, (text)}
 #define JSONTREE_PAIR(name, value) {(name), (struct jsontree_value *)(value)}
 #define JSONTREE_CALLBACK(output, set) {JSON_TYPE_CALLBACK, (output), (set)}
@@ -115,6 +131,13 @@ struct jsontree_array {
     JSON_TYPE_OBJECT,							\
     sizeof(jsontree_pair_##name)/sizeof(struct jsontree_pair),          \
     jsontree_pair_##name }
+    
+#define JSONTREE_ARRAY(name, count)                                     \
+  static struct jsontree_value *jsontree_value##name[count];            \
+  static struct jsontree_array name = {                                 \
+    JSON_TYPE_ARRAY,              \
+    count,                        \
+    jsontree_value##name }         
 
 void jsontree_setup(struct jsontree_context *js_ctx,
                     struct jsontree_value *root, int (* putchar)(int));
@@ -123,6 +146,8 @@ void jsontree_reset(struct jsontree_context *js_ctx);
 const char *jsontree_path_name(const struct jsontree_context *js_ctx,
                                int depth);
 
+void jsontree_write_uint(const struct jsontree_context *js_ctx,
+                         unsigned int value);
 void jsontree_write_int(const struct jsontree_context *js_ctx, int value);
 void jsontree_write_atom(const struct jsontree_context *js_ctx,
                          const char *text);
@@ -132,4 +157,4 @@ int jsontree_print_next(struct jsontree_context *js_ctx);
 struct jsontree_value *jsontree_find_next(struct jsontree_context *js_ctx,
                                           int type);
 
-#endif /* __JSONTREE_H__ */
+#endif /* JSONTREE_H_ */

@@ -31,14 +31,13 @@
 #include "contiki-lib.h"
 #include "contiki-net.h"
 
-#include "sleep.h"
 #include "board-sensors.h"
 #include "board.h"
 
 #include <string.h>
 
 #define DEBUG DEBUG_PRINT
-#include "net/uip-debug.h"
+#include "net/ip/uip-debug.h"
 
 #define SEND_INTERVAL		25 * CLOCK_SECOND
 
@@ -108,7 +107,7 @@ set_global_address(void)
 {
   uip_ipaddr_t ipaddr;
 
-  uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
+  uip_ip6addr(&ipaddr, UIP_DS6_DEFAULT_PREFIX, 0, 0, 0, 0, 0, 0, 0);
   uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
 }
@@ -124,7 +123,7 @@ set_connection_address(uip_ipaddr_t *ipaddr)
     PRINTF("UDP client failed to parse address '%s'\n", QUOTEME(UDP_CONNECTION_ADDR));
   }
 #elif UIP_CONF_ROUTER
-  uip_ip6addr(ipaddr,0xaaaa,0,0,0,0x0280,0xe102,0x0000,0x008a);
+  uip_ip6addr(ipaddr,UIP_DS6_DEFAULT_PREFIX,0,0,0,0x0280,0xe102,0x0000,0x008a);
 #else
   uip_ip6addr(ipaddr,0xfe80,0,0,0,0x0280,0xe102,0x0000,0x008a);
 #endif /* UDP_CONNECTION_ADDR */

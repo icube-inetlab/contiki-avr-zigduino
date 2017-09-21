@@ -38,8 +38,8 @@
  *         Nicolas Tsiftes <nvt@sics.se>
  */
 
-#include "net/uip.h"
-#include "net/uip-ds6.h"
+#include "net/ip/uip.h"
+#include "net/ipv6/uip-ds6.h"
 #include "dev/slip.h"
 #include "dev/uart1.h"
 #include <string.h>
@@ -47,7 +47,7 @@
 #define UIP_IP_BUF        ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 
 #define DEBUG DEBUG_PRINT
-#include "net/uip-debug.h"
+#include "net/ip/uip-debug.h"
 
 void set_prefix_64(uip_ipaddr_t *);
 
@@ -59,7 +59,7 @@ slip_input_callback(void)
  // PRINTF("SIN: %u\n", uip_len);
   if(uip_buf[0] == '!') {
     PRINTF("Got configuration message of type %c\n", uip_buf[1]);
-    uip_len = 0;
+    uip_clear_buf();
     if(uip_buf[1] == 'P') {
       uip_ipaddr_t prefix;
       /* Here we set a prefix !!! */
@@ -85,7 +85,7 @@ slip_input_callback(void)
       slip_send();
       
     }
-    uip_len = 0;
+    uip_clear_buf();
   }
   /* Save the last sender received over SLIP to avoid bouncing the
      packet back if no route is found */
@@ -100,7 +100,7 @@ init(void)
   slip_set_input_callback(slip_input_callback);
 }
 /*---------------------------------------------------------------------------*/
-static void
+static int
 output(void)
 {
   if(uip_ipaddr_cmp(&last_sender, &UIP_IP_BUF->srcipaddr)) {
@@ -115,6 +115,7 @@ output(void)
  //   PRINTF("SUT: %u\n", uip_len);
     slip_send();
   }
+  return 0;
 }
 
 /*---------------------------------------------------------------------------*/

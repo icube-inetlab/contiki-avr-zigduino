@@ -41,12 +41,12 @@
 #include "contiki.h"
 #include "contiki-lib.h"
 #include "contiki-net.h"
-#include "net/uip-ds6-route.h"
+#include "net/ipv6/uip-ds6-route.h"
 
 #include <string.h>
 
 #define DEBUG DEBUG_NONE
-#include "net/uip-debug.h"
+#include "net/ip/uip-debug.h"
 
 #define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 #define UIP_UDP_BUF  ((struct uip_udp_hdr *)&uip_buf[uip_l2_l3_hdr_len])
@@ -127,8 +127,8 @@ process_request() CC_NON_BANKED
       if(rt != NULL) {
         entry_size = sizeof(i) + sizeof(rt->ipaddr)
           + sizeof(rt->length)
-          + sizeof(rt->state.lifetime)
-          + sizeof(rt->state.learned_from);
+          + sizeof(rt->state.lifetime);
+          /* + sizeof(rt->state.learned_from); */
 
         memcpy(buf + len, &i, sizeof(i));
         len += sizeof(i);
@@ -147,11 +147,11 @@ process_request() CC_NON_BANKED
         len += sizeof(flip);
         PRINTF(" - %08lx", rt->state.lifetime);
 
-        memcpy(buf + len, &rt->state.learned_from,
-               sizeof(rt->state.learned_from));
-        len += sizeof(rt->state.learned_from);
+        /* memcpy(buf + len, &rt->state.learned_from, */
+        /*        sizeof(rt->state.learned_from)); */
+        /* len += sizeof(rt->state.learned_from); */
 
-        PRINTF(" - %02x [%u]\n", rt->state.learned_from, entry_size);
+        PRINTF(" - [%u]\n", entry_size);
 
         count++;
         left -= entry_size;

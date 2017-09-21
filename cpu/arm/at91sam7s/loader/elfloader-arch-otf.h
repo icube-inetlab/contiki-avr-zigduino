@@ -63,15 +63,16 @@
  *
  */
 
-#ifndef __ELFLOADER_ARCH_H__
-#define __ELFLOADER_ARCH_H__
+#ifndef ELFLOADER_ARCH_H_
+#define ELFLOADER_ARCH_H_
 
 #include "elfloader-otf.h"
 
 
 /**
  * \brief      Perform a relocation.
- * \param output   The output object for the segment.
+ * \param input_fd The file descriptor for the ELF file.
+ * \param output The output object for the segment.
  * \param sectionoffset The file offset at which the relocation can be found.
  * \param sectionaddr The section start address (absolute runtime).
  * \param rela A pointer to an ELF32 rela structure (struct elf32_rela).
@@ -89,12 +90,12 @@
  *             processor.
  */
 int elfloader_arch_relocate(int input_fd,
-			    struct elfloader_output *output,
-			    unsigned int sectionoffset,
-			    char *sectionaddr,
-			    struct elf32_rela *rela, char *addr);
+                            struct elfloader_output *output,
+                            unsigned int sectionoffset,
+                            char *sectionaddr,
+                            struct elf32_rela *rela, char *addr);
 
-#endif /* __ELFLOADER_ARCH_H__ */
+#endif /* ELFLOADER_ARCH_H_ */
 
 /** @} */
 /** @} */

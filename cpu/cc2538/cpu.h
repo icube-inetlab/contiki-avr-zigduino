@@ -29,12 +29,21 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \addtogroup cc2538
+ * \addtogroup platform
+ * @{
+ *
+ * \defgroup cc2538-platforms TI cc2538-powered platforms
+ *
+ * Documentation for all platforms powered by the TI cc2538 System-on-Chip
+ * @{
+ *
+ * \defgroup cc2538 The TI cc2538 System-on-Chip
+ * CPU-Specific functionality - available to all cc2538-based platforms
  * @{
  *
  * \defgroup cc2538-cpu cc2538 CPU
  *
- * cc2538 CPU-specific functions for the cc2538 core
+ * CPU-specific functions for the cc2538 core
  * @{
  *
  * \file
@@ -45,21 +54,19 @@
 #ifndef CPU_H_
 #define CPU_H_
 
-/** \brief Disables all CPU interrupts */
-unsigned long cpu_cpsid(void);
+#include "cc2538_cm3.h"
 
 /** \brief Enables all CPU interrupts */
-unsigned long cpu_cpsie(void);
-
-/** \brief Enables all CPU interrupts */
-#define INTERRUPTS_ENABLE()  cpu_cpsie()
+#define INTERRUPTS_ENABLE()  __enable_irq()
 
 /** \brief Disables all CPU interrupts. */
-#define INTERRUPTS_DISABLE() cpu_cpsid()
+#define INTERRUPTS_DISABLE() __disable_irq()
 
 #endif /* CPU_H_ */
 
 /**
+ * @}
+ * @}
  * @}
  * @}
  */

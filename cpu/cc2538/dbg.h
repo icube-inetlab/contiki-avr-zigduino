@@ -34,13 +34,11 @@
  *
  * \defgroup cc2538-char-io cc2538 Character I/O
  *
- * cc2538 CPU-specific functions for debugging and SLIP I/O
+ * CPU-specific functions for debugging and SLIP I/O
  *
  * On the cc2538, character I/O can be directed over USB or UART. This is
  * controlled by a series of configuration directives:
  * - SLIP_ARCH_CONF_USB: Controls the operation of slip-arch.
- * - CC2538_RF_CONF_SNIFFER_USB: Controls the output of the RF driver when
- *                               operating as a sniffer
  * - DBG_CONF_USB: Controls all debugging output
  *
  * Defaults for those defines are set in contiki-conf.h

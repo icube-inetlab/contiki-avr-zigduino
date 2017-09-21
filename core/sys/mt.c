@@ -46,10 +46,6 @@
 #include "sys/mt.h"
 #include "sys/cc.h"
 
-#define MT_STATE_READY   1
-#define MT_STATE_RUNNING 2
-#define MT_STATE_EXITED  5
-
 static struct mt_thread *current;
 
 /*--------------------------------------------------------------------------*/
@@ -72,14 +68,13 @@ mt_start(struct mt_thread *thread, void (* function)(void *), void *data)
      stack with the correct parameters. */
   mtarch_start(&thread->thread, function, data);
 
-  thread->state = MT_STATE_READY;
+  thread->state = MT_STATE_STARTED;
 }
 /*--------------------------------------------------------------------------*/
 void
 mt_exec(struct mt_thread *thread)
 {
-  if(thread->state == MT_STATE_READY) {
-    thread->state = MT_STATE_RUNNING;
+  if(thread->state == MT_STATE_STARTED) {
     current = thread;
     /* Switch context to the thread. The function call will not return
        until the the thread has yielded, or is preempted. */
@@ -91,21 +86,18 @@ void
 mt_yield(void)
 {
   mtarch_pstop();
-  current->state = MT_STATE_READY;
-  current = NULL;
   /* This function is called from the running thread, and we call the
      switch function in order to switch the thread to the main Contiki
      program instead. For us, the switch function will not return
      until the next time we are scheduled to run. */
   mtarch_yield();
-  
 }
 /*--------------------------------------------------------------------------*/
 void
 mt_exit(void)
 {
+  mtarch_pstop();
   current->state = MT_STATE_EXITED;
-  current = NULL;
   mtarch_yield();
 }
 /*--------------------------------------------------------------------------*/

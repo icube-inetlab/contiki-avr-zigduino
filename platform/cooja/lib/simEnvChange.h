@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef __SIMENVCHANGE_H__
-#define __SIMENVCHANGE_H__
+#ifndef SIMENVCHANGE_H_
+#define SIMENVCHANGE_H_
 
 #include "contiki.h"
 
@@ -42,7 +42,7 @@ struct simInterface {
 // Variable for keeping the last process_run() return value
 extern int simProcessRunValue;
 extern int simEtimerPending;
-extern clock_time_t simNextExpirationTime;
+extern clock_time_t simEtimerNextExpirationTime;
 extern clock_time_t simCurrentTime;
 
 // Variable that when set to != 0, stops the mote from falling asleep next tick
@@ -64,4 +64,4 @@ const struct simInterface *simInterfaces[] = {__VA_ARGS__, NULL};
 void doActionsBeforeTick();
 void doActionsAfterTick();
 
-#endif /* __SIMENVCHANGE_H__ */
+#endif /* SIMENVCHANGE_H_ */
