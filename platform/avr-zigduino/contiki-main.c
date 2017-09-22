@@ -29,37 +29,32 @@
  * This file is part of the Contiki operating system.
  *
  */
-#define PRINTF(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
-
-#define ANNOUNCE_BOOT 1    //adds about 600 bytes to program size
-#if ANNOUNCE_BOOT
-#define PRINTA(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
-#else
-#define PRINTA(...)
-#endif
-
-#define DEBUG 0
-#if DEBUG
-#define PRINTD(FORMAT,args...) printf_P(PSTR(FORMAT),##args)
-#else
-#define PRINTD(...)
-#endif
+#define ANNOUNCE_BOOT 1
+#define DEBUG DEBUG_PRINT
+#include "net/ip/uip-debug.h" ////Does #define PRINTA(FORMAT,args...) printf_P(PSTR(FORMAT),##args) for AVR
 
 #include <avr/pgmspace.h>
 #include <avr/fuse.h>
 #include <avr/eeprom.h>
+#include <avr/io.h>
 #include <stdio.h>
 #include <string.h>
 #include <dev/watchdog.h>
 
 #include "loader/symbols-def.h"
 #include "loader/symtab.h"
-
-#include "params.h"
 #include "radio/rf230bb/rf230bb.h"
 #include "net/mac/frame802154.h"
 #include "net/mac/framer-802154.h"
-#include "core/net/ipv6/sicslowpan.h"
+#include "net/ipv6/sicslowpan.h"
+
+#if !RF230BB        //radio driver using contiki core mac
+#error Zigduino has only been tested with RF230BB
+#endif /*RF230BB*/
+
+//#if !NETSTACK_CONF_WITH_IPV6
+////#error Zigduino has only been tested with IPv6
+////#endif
 
 #include "contiki.h"
 #include "contiki-net.h"
@@ -69,34 +64,15 @@
 #include "dev/serial-line.h"
 #include "dev/slip.h"
 
-#ifdef RAVEN_LCD_INTERFACE
-#include "raven-lcd.h"
-#endif
+#include "params.h"
 
-#if AVR_WEBSERVER
-#include "httpd-fs.h"
-#include "httpd-cgi.h"
-#endif
-
-#ifdef COFFEE_FILES
-#include "cfs/cfs.h"
-#include "cfs/cfs-coffee.h"
-#endif
-
+// Zigduino has not been tested with Rime.
+#if 1
 #if UIP_CONF_ROUTER&&0
 #include "net/routing/rimeroute.h"
 #include "net/rime/rime-udp.h"
 #endif
-
-#include "core/net/rime/rime.h"
-
-/* Track interrupt flow through mac, rdc and radio driver */
-//#define DEBUGFLOWSIZE 32
-#if DEBUGFLOWSIZE
-uint8_t debugflowsize,debugflow[DEBUGFLOWSIZE];
-#define DEBUGFLOW(c) if (debugflowsize<(DEBUGFLOWSIZE-1)) debugflow[debugflowsize++]=c
-#else
-#define DEBUGFLOW(c)
+#include "net/rime/rime.h"
 #endif
 
 /* Get periodic prints from idle loop, from clock seconds or rtimer interrupts */
@@ -162,12 +138,12 @@ rng_get_uint8(void) {
   }
   ADCSRA=0;                   //Disable ADC
 #endif
-  PRINTD("rng issues %d\n",j);
+  PRINTA("rng issues %d\n",j);
   return j;
 }
 
 
-#if RIMEADDR_SIZE == 8
+#if LINKADDR_CONF_SIZE == 8
 uint8_t mac_address[8] EEMEM = {0x02, 0x11, 0x22, 0xff, 0xfe, 0x33, 0x44, 0x55};
 #else
 uint8_t short_mac_address[2] EEMEM = {0x01, 0xff};
@@ -175,7 +151,7 @@ uint8_t short_mac_address[2] EEMEM = {0x01, 0xff};
 
 static bool get_mac_from_eeprom(uint8_t* macptr)
 {
-#if RIMEADDR_SIZE == 8
+#if LINKADDR_CONF_SIZE == 8
   eeprom_read_block ((void *)macptr,  &mac_address, 8);
 #else
   printf("reading short_mac in eeprom\n");
@@ -192,20 +168,20 @@ static bool get_mac_from_eeprom(uint8_t* macptr)
 
 void print_rime_addr()
 {
-#if RIMEADDR_SIZE == 8
+#if LINKADDR_CONF_SIZE == 8
     printf("Rime Addr: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n",
-            rimeaddr_node_addr.u8[0],
-            rimeaddr_node_addr.u8[1],
-            rimeaddr_node_addr.u8[2],
-            rimeaddr_node_addr.u8[3],
-            rimeaddr_node_addr.u8[4],
-            rimeaddr_node_addr.u8[5],
-            rimeaddr_node_addr.u8[6],
-            rimeaddr_node_addr.u8[7]);
+            linkaddr_node_addr.u8[0],
+            linkaddr_node_addr.u8[1],
+            linkaddr_node_addr.u8[2],
+            linkaddr_node_addr.u8[3],
+            linkaddr_node_addr.u8[4],
+            linkaddr_node_addr.u8[5],
+            linkaddr_node_addr.u8[6],
+            linkaddr_node_addr.u8[7]);
 #else
     printf("Rime Addr: %02x:%02x\n",
-            rimeaddr_node_addr.u8[0],
-            rimeaddr_node_addr.u8[1]);
+            linkaddr_node_addr.u8[0],
+            linkaddr_node_addr.u8[1]);
 #endif
 }
 
@@ -239,11 +215,11 @@ void initialize(void)
 #endif
   clock_init();
 
-  if(MCUSR & (1<<PORF )) PRINTD("Power-on reset.\n");
-  if(MCUSR & (1<<EXTRF)) PRINTD("External reset!\n");
-  if(MCUSR & (1<<BORF )) PRINTD("Brownout reset!\n");
-  if(MCUSR & (1<<WDRF )) PRINTD("Watchdog reset!\n");
-  if(MCUSR & (1<<JTRF )) PRINTD("JTAG reset!\n");
+  if(MCUSR & (1<<PORF )) PRINTA("Power-on reset.\n");
+  if(MCUSR & (1<<EXTRF)) PRINTA("External reset!\n");
+  if(MCUSR & (1<<BORF )) PRINTA("Brownout reset!\n");
+  if(MCUSR & (1<<WDRF )) PRINTA("Watchdog reset!\n");
+  if(MCUSR & (1<<JTRF )) PRINTA("JTAG reset!\n");
 
 #if STACKMONITOR
   /* Simple stack pointer highwater monitor. Checks for magic numbers in the main
@@ -266,10 +242,10 @@ void calibrate_rc_osc_32k();
 {
 extern uint8_t osccal_calibrated;
 uint8_t i;
-  PRINTD("\nBefore calibration OSCCAL=%x\n",OSCCAL);
+  PRINTA("\nBefore calibration OSCCAL=%x\n",OSCCAL);
   for (i=0;i<10;i++) { 
     calibrate_rc_osc_32k();  
-    PRINTD("Calibrated=%x\n",osccal_calibrated);
+    PRINTA("Calibrated=%x\n",osccal_calibrated);
 //#include <util/delay_basic.h>
 //#define delay_us( us )   ( _delay_loop_2(1+(us*F_CPU)/4000000UL) ) 
 //   delay_us(50000);
@@ -301,21 +277,18 @@ uint8_t i;
 
   /* Set addresses BEFORE starting tcpip process */
 
-  rimeaddr_t addr;
+  linkaddr_t addr;
+  //if (params_get_eui64(addr.u8)) {
+  //    PRINTA("Random EUI64 address generated\n");
+  //}
 
-  if (params_get_eui64(addr.u8)) {
-      PRINTA("Random EUI64 address generated\n");
-  }
-
-
-    /* Set addresses BEFORE starting tcpip process */
-  memset(&addr, 0, sizeof(rimeaddr_t));
+  /* Set addresses BEFORE starting tcpip process */
+  memset(&addr, 0, sizeof(linkaddr_t));
   get_mac_from_eeprom(addr.u8);
-  rimeaddr_set_node_addr(&addr);
-  rimeaddr_set_node_addr(&addr);
+  linkaddr_set_node_addr(&addr);
 
 #if UIP_CONF_IPV6 
-  memcpy(&uip_lladdr.addr, &addr.u8, sizeof(rimeaddr_t));
+  memcpy(&uip_lladdr.addr, &addr.u8, sizeof(linkaddr_t));
 #elif WITH_NODE_ID
   node_id=get_panaddr_from_eeprom();
   addr.u8[1]=node_id&0xff;
@@ -329,7 +302,11 @@ uint8_t i;
   rf230_set_txpower(params_get_txpower());
 
 #if UIP_CONF_IPV6
+#if LINKADDR_CONF_SIZE == 8
   PRINTA("EUI-64 MAC: %x-%x-%x-%x-%x-%x-%x-%x\n",addr.u8[0],addr.u8[1],addr.u8[2],addr.u8[3],addr.u8[4],addr.u8[5],addr.u8[6],addr.u8[7]);
+#else
+  PRINTA("SHORT MAC: %x-%x\n",addr.u8[0],addr.u8[1]);
+#endif
 #else
   PRINTA("MAC address ");
   uint8_t i;
@@ -510,7 +487,7 @@ main(void)
  */
     extern uint8_t rf230_calibrated;
     if (rf230_calibrated) {
-      PRINTD("\nRF230 calibrated!\n");
+      PRINTA("\nRF230 calibrated!\n");
       rf230_calibrated=0;
     }
 #endif
@@ -567,11 +544,11 @@ if ((clocktime%PINGS)==1) {
 #if ROUTES && UIP_CONF_IPV6
 if ((clocktime%ROUTES)==2) {
       
-extern uip_ds6_nbr_t uip_ds6_nbr_cache[];
-extern uip_ds6_route_t uip_ds6_routing_table[];
+//extern uip_ds6_nbr_t uip_ds6_nbr_cache[];
+//extern uip_ds6_route_t uip_ds6_routing_table[];
 extern uip_ds6_netif_t uip_ds6_if;
 
-  uint8_t i,j;
+  uint8_t i,j=0;
   PRINTF("\nAddresses [%u max]\n",UIP_DS6_ADDR_NB);
   for (i=0;i<UIP_DS6_ADDR_NB;i++) {
     if (uip_ds6_if.addr_list[i].isused) {
