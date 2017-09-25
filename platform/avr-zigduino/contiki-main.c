@@ -268,7 +268,7 @@ uint8_t i;
   ctimer_init();
 
   /* Start radio and radio receive process */
-  NETSTACK_RADIO.init();
+ netstack_init();
 
 /* Get a random seed for the 802.15.4 packet sequence number.
  * Some layers will ignore duplicates found in a history (e.g. Contikimac)
@@ -287,6 +287,7 @@ uint8_t i;
   memset(&addr, 0, sizeof(linkaddr_t));
   get_mac_from_eeprom(addr.u8);
   linkaddr_set_node_addr(&addr);
+  print_rime_addr();
 
 #if UIP_CONF_IPV6 
   memcpy(&uip_lladdr.addr, &addr.u8, sizeof(linkaddr_t));
