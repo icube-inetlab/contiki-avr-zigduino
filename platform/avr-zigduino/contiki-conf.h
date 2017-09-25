@@ -228,14 +228,14 @@ typedef unsigned short uip_stats_t;
 /* 25 bytes per UDP connection */
 #define UIP_CONF_UDP_CONNS       10
 /* See uip-ds6.h */
-#define NBR_TABLE_CONF_MAX_NEIGHBORS      40
+#define NBR_TABLE_CONF_MAX_NEIGHBORS      10
 #define UIP_CONF_DS6_DEFRT_NBU    2
 #define UIP_CONF_DS6_PREFIX_NBU   3
 #define UIP_CONF_DS6_ADDR_NBU     3
 #define UIP_CONF_DS6_MADDR_NBU    0
 #define UIP_CONF_DS6_AADDR_NBU    0
-#define RPL_NS_CONF_LINK_NUM 70
-#define UIP_CONF_MAX_ROUTES 70
+#define RPL_NS_CONF_LINK_NUM 20
+#define UIP_CONF_MAX_ROUTES 20
 
 
 #elif 1  /* Contiki-mac radio cycling */
