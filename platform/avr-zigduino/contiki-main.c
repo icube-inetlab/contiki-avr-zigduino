@@ -256,11 +256,12 @@ uint8_t i;
 
   PRINTA("\n*******Booting %s*******\n",CONTIKI_VERSION_STRING);
 
+ /* Initialize process subsystem */
+  process_init();
+
 /* rtimers needed for radio cycling */
   rtimer_init();
 
- /* Initialize process subsystem */
-  process_init();
 
   /* etimers must be started before ctimer_init */
   process_start(&etimer_process, NULL);
