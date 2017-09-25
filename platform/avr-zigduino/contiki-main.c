@@ -81,9 +81,9 @@
 #define PERIODICPRINTS 1
 #if PERIODICPRINTS
 //#define PINGS 64
-#define ROUTES 600
-#define STAMPS 60
-#define STACKMONITOR 1024
+#define ROUTES 20
+#define STAMPS 20
+#define STACKMONITOR 20
 uint32_t clocktime;
 #define TESTRTIMER 0
 #if TESTRTIMER
