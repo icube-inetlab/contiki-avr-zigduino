@@ -16,10 +16,10 @@
 #define CONTIKI_CONF_SETTINGS_MANAGER 0  //adds 1696 bytes
 
 #if CONTIKI_CONF_SETTINGS_MANAGER
-//#define PARAMETER_STORAGE 2
 #define PARAMETER_STORAGE 2
 #else
-#define PARAMETER_STORAGE 1
+//#define PARAMETER_STORAGE 1
+#define PARAMETER_STORAGE 0
 #endif
 
 /* Include settings.h, then dummy out the write routines */
