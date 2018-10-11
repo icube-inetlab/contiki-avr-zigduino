@@ -78,12 +78,12 @@
 /* Get periodic prints from idle loop, from clock seconds or rtimer interrupts */
 /* Use of rtimer will conflict with other rtimer interrupts such as contikimac radio cycling */
 /* STAMPS will print ENERGEST outputs if that is enabled. */
-#define PERIODICPRINTS 1
+//#define PERIODICPRINTS 1
 #if PERIODICPRINTS
 //#define PINGS 64
 #define ROUTES 20
 #define STAMPS 20
-#define STACKMONITOR 20
+//#define STACKMONITOR 20
 uint32_t clocktime;
 #define TESTRTIMER 0
 #if TESTRTIMER
@@ -312,7 +312,7 @@ uint8_t i;
 #else
   PRINTA("MAC address ");
   uint8_t i;
-  for (i=sizeof(rimeaddr_t); i>0; i--){
+  for (i=sizeof(linkaddr_t); i>0; i--){
     PRINTA("%x:",addr.u8[i-1]);
   }
   PRINTA("\n");
@@ -337,7 +337,9 @@ uint8_t i;
 
 #endif /* ANNOUNCE_BOOT */
 
+#if UIP_CONF_IPV6
   process_start(&tcpip_process, NULL);
+#endif
 
 #ifdef RAVEN_LCD_INTERFACE
   process_start(&raven_lcd_process, NULL);
