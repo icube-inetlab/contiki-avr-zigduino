@@ -243,16 +243,16 @@ void calibrate_rc_osc_32k();
 extern uint8_t osccal_calibrated;
 uint8_t i;
   PRINTA("\nBefore calibration OSCCAL=%x\n",OSCCAL);
-  for (i=0;i<10;i++) { 
-    calibrate_rc_osc_32k();  
+  for (i=0;i<10;i++) {
+    calibrate_rc_osc_32k();
     PRINTA("Calibrated=%x\n",osccal_calibrated);
 //#include <util/delay_basic.h>
-//#define delay_us( us )   ( _delay_loop_2(1+(us*F_CPU)/4000000UL) ) 
+//#define delay_us( us )   ( _delay_loop_2(1+(us*F_CPU)/4000000UL) )
 //   delay_us(50000);
  }
    clock_init();
 }
-#endif 
+#endif
 
   PRINTA("\n*******Booting %s*******\n",CONTIKI_VERSION_STRING);
 
@@ -289,7 +289,7 @@ uint8_t i;
   linkaddr_set_node_addr(&addr);
   print_rime_addr();
 
-#if UIP_CONF_IPV6 
+#if UIP_CONF_IPV6
   memcpy(&uip_lladdr.addr, &addr.u8, sizeof(linkaddr_t));
 #elif WITH_NODE_ID
   node_id=get_panaddr_from_eeprom();
@@ -327,7 +327,7 @@ uint8_t i;
 #if ANNOUNCE_BOOT
   PRINTA("%s %s, channel %u , check rate %u Hz tx power %u\n",NETSTACK_MAC.name, NETSTACK_RDC.name, rf230_get_channel(),
     CLOCK_SECOND / (NETSTACK_RDC.channel_check_interval() == 0 ? 1:NETSTACK_RDC.channel_check_interval()),
-    rf230_get_txpower());	  
+    rf230_get_txpower());
 #if UIP_CONF_IPV6_RPL
   PRINTA("RPL Enabled\n");
 #endif
@@ -367,7 +367,7 @@ uint8_t i;
 
 /* Add addresses for testing */
 #if 0
-{  
+{
   uip_ip6addr_t ipaddr;
   uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
@@ -383,7 +383,7 @@ uint8_t i;
   unsigned int size;
 
   for (i=0;i<UIP_DS6_ADDR_NB;i++) {
-	if (uip_ds6_if.addr_list[i].isused) {	  
+	if (uip_ds6_if.addr_list[i].isused) {
 	   httpd_cgi_sprint_ip6(uip_ds6_if.addr_list[i].ipaddr,buf);
        PRINTA("IPv6 Address: %s\n",buf);
 	}
@@ -467,7 +467,7 @@ main(void)
 #endif
 #if defined(RAVEN_LCD_INTERFACE)&&0
        /* ledtimer can be set by received ping; ping the other way for testing */
-       extern void raven_ping6(void);         
+       extern void raven_ping6(void);
        raven_ping6();
 #endif
       }
@@ -538,7 +538,7 @@ extern volatile unsigned long radioontime;
 #endif
 
 #if PINGS && UIP_CONF_IPV6
-extern void raven_ping6(void); 
+extern void raven_ping6(void);
 if ((clocktime%PINGS)==1) {
   PRINTF("**Ping\n");
   raven_ping6();
@@ -547,7 +547,7 @@ if ((clocktime%PINGS)==1) {
 
 #if ROUTES && UIP_CONF_IPV6
 if ((clocktime%ROUTES)==2) {
-      
+
 //extern uip_ds6_nbr_t uip_ds6_nbr_cache[];
 //extern uip_ds6_route_t uip_ds6_routing_table[];
 extern uip_ds6_netif_t uip_ds6_if;
