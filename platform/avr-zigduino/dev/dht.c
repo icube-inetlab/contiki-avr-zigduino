@@ -4,7 +4,7 @@
 #include "Arduino.h"
 
 
-int8_t readSensor(uint8_t pin, uint8_t wakeupDelay, uint8_t leadingZeroBits)
+int8_t readSensor(struct dht *DHT, uint8_t pin, uint8_t wakeupDelay, uint8_t leadingZeroBits)
 {
     // INIT BUFFERVAR TO RECEIVE DATA
     uint8_t mask = 128;
@@ -77,7 +77,7 @@ int8_t readSensor(uint8_t pin, uint8_t wakeupDelay, uint8_t leadingZeroBits)
             if (mask == 0)   // next byte
             {
                 mask = 128;
-                DHT.bits[idx] = data;
+                DHT->bits[idx] = data;
                 idx++;
                 data = 0;
             }
@@ -101,41 +101,40 @@ int8_t readSensor(uint8_t pin, uint8_t wakeupDelay, uint8_t leadingZeroBits)
     return DHTLIB_OK;
 }
 
-int8_t dht_read(uint8_t pin)
+int8_t dht_read(struct dht *DHT, uint8_t pin)
+{
+    // READ VALUES
+    int8_t result = readSensor(DHT, pin, DHTLIB_DHT_WAKEUP, DHTLIB_DHT_LEADING_ZEROS);
+
+    // these bits are always zero, masking them reduces errors.
+    DHT->bits[0] &= 0x03;
+    DHT->bits[2] &= 0x83;
+
+    // CONVERT AND STORE
+    DHT->humidity = (DHT->bits[0]*256 + DHT->bits[1]) * 0.1;
+    DHT->temperature = ((DHT->bits[2] & 0x7F)*256 + DHT->bits[3]) * 0.1;
+    if (DHT->bits[2] & 0x80)  // negative temperature
     {
-        // READ VALUES
-        int8_t result = readSensor(pin, DHTLIB_DHT_WAKEUP, DHTLIB_DHT_LEADING_ZEROS);
-
-        // these bits are always zero, masking them reduces errors.
-        DHT.bits[0] &= 0x03;
-        DHT.bits[2] &= 0x83;
-
-        // CONVERT AND STORE
-        DHT.humidity = (DHT.bits[0]*256 + DHT.bits[1]) * 0.1;
-        DHT.temperature = ((DHT.bits[2] & 0x7F)*256 + DHT.bits[3]) * 0.1;
-        if (DHT.bits[2] & 0x80)  // negative temperature
-        {
-            DHT.temperature = -DHT.temperature;
-        }
-
-        DHT.temp_h = (int)DHT.temperature;
-        DHT.temp_l = ((int)(DHT.temperature *10))%10;
-
-        DHT.humidity_h = (int)DHT.humidity;
-        DHT.humidity_l = ((int)(DHT.humidity*10))%10;
-
-        // TEST CHECKSUM
-        uint8_t sum = DHT.bits[0] + DHT.bits[1] + DHT.bits[2] + DHT.bits[3];
-        if (DHT.bits[4] != sum)
-        {
-            return DHTLIB_ERROR_CHECKSUM;
-        }
-        return result;
-
+        DHT->temperature = -DHT->temperature;
     }
 
-void print_temp_hum( struct dht *DHT ) {
+    DHT->temp_h = (int)DHT->temperature;
+    DHT->temp_l = ((int)(DHT->temperature *10))%10;
 
-   printf( "temperature : %u.%u *C ", DHT->temp_h, DHT->temp_l);
-   printf( "humidity : %u.%u %% ", DHT->humidity_h, DHT->humidity_l);
+    DHT->humidity_h = (int)DHT->humidity;
+    DHT->humidity_l = ((int)(DHT->humidity*10))%10;
+
+    // TEST CHECKSUM
+    uint8_t sum = DHT->bits[0] + DHT->bits[1] + DHT->bits[2] + DHT->bits[3];
+    if (DHT->bits[4] != sum)
+    {
+        return DHTLIB_ERROR_CHECKSUM;
+    }
+    return result;
+
+}
+
+void print_temp_hum( struct dht *DHT ) {
+  printf( "temperature : %u.%u *C ", DHT->temp_h, DHT->temp_l);
+  printf( "humidity : %u.%u %% ", DHT->humidity_h, DHT->humidity_l);
 }

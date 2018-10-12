@@ -28,22 +28,22 @@
 #endif
 
 struct dht
-{	
+{
 	double humidity;
 	double temperature;
 	uint8_t bits[5];  // buffer to receive data
 	uint8_t temp_h;
 	uint8_t temp_l;
 	uint8_t humidity_h;
-	uint8_t humidity_l; 
+	uint8_t humidity_l;
 };
 
-struct dht DHT;
+//struct dht DHT;
 
-int8_t dht_read(uint8_t pin);
+int8_t dht_read(struct dht *DHT, uint8_t pin);
 
-int8_t readSensor(uint8_t pin, uint8_t wakeupDelay, uint8_t leadingZeroBits);
+int8_t readSensor(struct dht *DHT, uint8_t pin, uint8_t wakeupDelay, uint8_t leadingZeroBits);
 
-void print_temp_hum( struct dht *DHT );
+void print_temp_hum(struct dht *DHT);
 
 #endif /* dht_h */
