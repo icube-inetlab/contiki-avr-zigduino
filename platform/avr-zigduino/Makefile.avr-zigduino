@@ -7,7 +7,7 @@ CONTIKI_TARGET_SOURCEFILES += contiki-main.c params.c
 #Needed for slip
 CONTIKI_TARGET_SOURCEFILES += button-sensor.c sensors.c slip_uart0.c slip.c
 #iBat sensors
-CONTIKI_TARGET_SOURCEFILES += adc.c
+CONTIKI_TARGET_SOURCEFILES += adc.c dht.c wiring_digital.c
 
 CONTIKIAVR=$(CONTIKI)/cpu/avr
 CONTIKIBOARD=.
