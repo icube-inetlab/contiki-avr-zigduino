@@ -218,6 +218,14 @@ struct {
 #define PRINTF(...)
 #endif
 
+#define DEMO_DEBUG 1
+#if DEMO_DEBUG
+#include <stdio.h>
+#define DEMO_PRINTF(...) printf(__VA_ARGS__)
+#else
+#define DEMO_PRINTF(...)
+#endif
+
 /* Forward declarations. */
 static void send_queued_packet(struct collect_conn *c);
 static void retransmit_callback(void *ptr);
@@ -322,6 +330,8 @@ update_parent(struct collect_conn *tc)
       /* New parent. */
       PRINTF("update_parent: new parent %d.%d\n",
              best->addr.u8[0], best->addr.u8[1]);
+      DEMO_PRINTF("update_parent;new=%d.%d\n",
+             best->addr.u8[6], best->addr.u8[7]);
       linkaddr_copy(&tc->parent, &best->addr);
       stats.foundroute++;
       bump_advertisement(tc);
@@ -338,6 +348,11 @@ update_parent(struct collect_conn *tc)
                best->addr.u8[0], best->addr.u8[1],
                collect_neighbor_rtmetric(best),
                tc->parent.u8[0], tc->parent.u8[1],
+               collect_neighbor_rtmetric(current));
+	DEMO_PRINTF("update_parent;new=%d.%d;metric=%d;old=%d.%d;metric=%d\n",
+               best->addr.u8[6], best->addr.u8[7],
+               collect_neighbor_rtmetric(best),
+               tc->parent.u8[6], tc->parent.u8[7],
                collect_neighbor_rtmetric(current));
         linkaddr_copy(&tc->parent, &best->addr);
         stats.newparent++;

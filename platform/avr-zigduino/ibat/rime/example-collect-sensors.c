@@ -45,6 +45,8 @@
 #include "dev/button-sensor.h"
 
 #include "dev/adc.h"
+#include "dev/dht.h"
+#include "dev/Arduino.h"
 
 
 #include "net/netstack.h"
@@ -52,9 +54,10 @@
 #include <stdio.h>
 
 /* ADC sensors */
-//#define A0 14
+#define A0 14
 #define A1 15
 #define A2 16
+#define D4 4
 /* sampling sensors every 10 seconds */
 //#define SAMPLE_INTERVAL_SEC 10
 /* sampling average in seconds */
@@ -83,7 +86,6 @@ PROCESS_THREAD(example_collect_process, ev, data)
   static struct etimer periodic;
   static struct etimer et;
   /* Networks metrics */
-  static linkaddr_t oldparent;
   const linkaddr_t *parent;
   uint8_t paddr[2];
   int depth;
@@ -92,15 +94,15 @@ PROCESS_THREAD(example_collect_process, ev, data)
   uint16_t num_neighbors;
 
   /* sensors */
-  int light_sensor;
-  int loudness_sensor;
+  int light, sound, pir;
+	struct dht SHT22;
 
   PROCESS_BEGIN();
 
   collect_open(&tc, 130, COLLECT_ROUTER, &callbacks);
 
-  if(linkaddr_node_addr.u8[6] == 68 &&
-     linkaddr_node_addr.u8[7] == 80) {
+  if(linkaddr_node_addr.u8[6] == 0 &&
+     linkaddr_node_addr.u8[7] == 1) {
     printf("I am sink\n");
     collect_set_sink(&tc, 1);
   }
@@ -117,6 +119,22 @@ PROCESS_THREAD(example_collect_process, ev, data)
 
     PROCESS_WAIT_UNTIL(etimer_expired(&et));
     {
+      light = readADC(A1);
+      sound = readADC(A2);
+      pir = digitalRead(D4);
+      if (dht_read(&SHT22, A0) == 0){
+          printf("[IBAT];hum=%u.%u;temp=%u.%u;light=%d;sound=%d;pir=%d\n",
+               SHT22.humidity_h, SHT22.humidity_l, SHT22.temp_h, SHT22.temp_l,
+               light, sound, pir);
+           packetbuf_clear();
+           packetbuf_set_datalen(sprintf(packetbuf_dataptr(),
+               "hum=%u.%u;temp=%u.%u;light=%d;sound=%d;pir=%d",
+               SHT22.humidity_h, SHT22.humidity_l, SHT22.temp_h, SHT22.temp_l,
+               light, sound, pir)
+               + 1);
+           collect_send(&tc, 15);
+      }
+
       depth = collect_depth(&tc);
       n = collect_neighbor_list_find(&tc.neighbor_list, &tc.parent);
       if(n != NULL) {
@@ -130,39 +148,10 @@ PROCESS_THREAD(example_collect_process, ev, data)
       paddr[0]=parent->u8[6];
       paddr[1]=parent->u8[7];
 
-      light_sensor = readADC(A1);
-      loudness_sensor = readADC(A2);
-      printf("[IBAT]:light:%d:loudness:%d\n", light_sensor, loudness_sensor);
-      packetbuf_clear();
-      packetbuf_set_datalen(sprintf(packetbuf_dataptr(),
-          "light:%d:loudness:%d",
-           light_sensor,loudness_sensor)
-          + 1);
-      collect_send(&tc, 15);
-
-      /*
       printf("node_sending:%d.%d;payload=parent:%d.%d:depth:%d:etx:%d:rtmetric:%d:neighbors:%d\n",
         linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7],
         paddr[0],paddr[1],depth,parent_etx,tc.rtmetric,
         num_neighbors);
-      packetbuf_clear();
-      packetbuf_set_datalen(sprintf(packetbuf_dataptr(),
-        "parent:%d.%d:depth:%d:etx:%d:rtmetric:%d:neighbors:%d",
-        paddr[0],paddr[1],depth,parent_etx,tc.rtmetric,
-        num_neighbors) + 1);
-      collect_send(&tc, 15);
-      parent = collect_parent(&tc);
-      */
-
-      if(!linkaddr_cmp(parent, &oldparent)) {
-        if(!linkaddr_cmp(&oldparent, &linkaddr_null)) {
-          printf("#L %d 0\n", oldparent.u8[7]);
-        }
-        if(!linkaddr_cmp(parent, &linkaddr_null)) {
-          printf("#L %d 1\n", parent->u8[7]);
-        }
-        linkaddr_copy(&oldparent, parent);
-      }
     }
     PROCESS_WAIT_UNTIL(etimer_expired(&periodic));
   }
