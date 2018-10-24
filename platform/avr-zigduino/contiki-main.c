@@ -144,7 +144,7 @@ rng_get_uint8(void) {
 
 
 #if LINKADDR_CONF_SIZE == 8
-uint8_t mac_address[8] EEMEM = {0x02, 0x11, 0x22, 0xff, 0xfe, 0x33, 0x44, 0x55};
+uint8_t mac_address[8] EEMEM = {0x02, 0x11, 0x22, 0xff, 0xfe, 0x33, 0x00, 0x55};
 #else
 uint8_t short_mac_address[2] EEMEM = {0x01, 0xff};
 #endif
@@ -208,7 +208,7 @@ void initialize(void)
    /* Get input from first port */
    rs232_set_input(RS232_PORT_0, serial_line_input_byte);
  #endif
- 
+
   clock_init();
 
   if(MCUSR & (1<<PORF )) PRINTA("Power-on reset.\n");
