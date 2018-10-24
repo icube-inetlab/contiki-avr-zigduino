@@ -49,26 +49,98 @@
 #include "dev/dht.h"
 #include "dev/Arduino.h"
 
-
 #include "net/netstack.h"
-
 #include <stdio.h>
 
-/* ADC sensors */
+/* ADC sensors pins */
 #define A0 14
 #define A1 15
 #define A2 16
 #define D4 4
-/* sampling sensors every 10 seconds */
-//#define SAMPLE_INTERVAL_SEC 10
-/* sampling average in seconds */
-//#define AVERAGE_TIME_SEC 60
 
+/* sensors */
+struct dht SHT22;
+int light=0, sound=0, pir=0;
+int sum_pir=0, sum_sound=0;
+int sum_counter=0;
+
+/* networks */
 static struct collect_conn tc;
 
+/* sampling sensors every 1 seconds */
+#define SAMPLE_INTERVAL_SEC 1
+/* sampling average and send interval in seconds */
+#define AVERAGE_TIME_SEC 10
+/* wait time the network settle in seconds */
+#define NETWORK_TIME_SETTLE 20
+
+//#define SERIAL_WAIT true
+
+/*
+ * Print the value of each available sensors once every second.
+ */
 /*---------------------------------------------------------------------------*/
-PROCESS(example_collect_process, "Test collect process");
-AUTOSTART_PROCESSES(&example_collect_process);
+PROCESS(sensor_collection, "Sensors collection");
+/*---------------------------------------------------------------------------*/
+
+/* light sensor */
+static void process_light()
+{
+  light = readADC(A1);
+}
+
+/* sound sensor */
+static void process_sound()
+{
+  sound = readADC(A2);
+  sum_sound += sound;
+}
+
+/* pir sensor */
+static void process_pir()
+{
+  pir = digitalRead(D4);
+  sum_pir += pir;
+}
+
+/* temperature humidity */
+static void process_dht()
+{
+  if (dht_read(&SHT22, A0) != 0){
+    printf("DHT22 error\n");
+  }
+}
+
+/*---------------------------------------------------------------------------*/
+PROCESS_THREAD(sensor_collection, ev, data)
+{
+  PROCESS_BEGIN();
+  static struct etimer timer;
+
+  etimer_set(&timer, CLOCK_SECOND * SAMPLE_INTERVAL_SEC);
+
+  while(1) {
+    PROCESS_WAIT_EVENT();
+    if (ev == PROCESS_EVENT_TIMER) {
+      process_light();
+      process_sound();
+      process_pir();
+      process_dht();
+      printf("[IBAT];hum=%u.%u;temp=%u.%u;light=%d;sound=%d;pir=%d\n",
+           SHT22.humidity_h, SHT22.humidity_l, SHT22.temp_h, SHT22.temp_l,
+           light, sound, pir);
+      sum_counter+=1;
+      etimer_restart(&timer);
+    }
+  }
+  PROCESS_END();
+}
+
+
+
+/*---------------------------------------------------------------------------*/
+PROCESS(collect_process, "Collect process");
+AUTOSTART_PROCESSES(&sensor_collection, &collect_process);
 /*---------------------------------------------------------------------------*/
 static void
 recv(const linkaddr_t *originator, uint8_t seqno, uint8_t hops)
@@ -82,7 +154,7 @@ recv(const linkaddr_t *originator, uint8_t seqno, uint8_t hops)
 /*---------------------------------------------------------------------------*/
 static const struct collect_callbacks callbacks = { recv };
 /*---------------------------------------------------------------------------*/
-PROCESS_THREAD(example_collect_process, ev, data)
+PROCESS_THREAD(collect_process, ev, data)
 {
   static struct etimer periodic;
   static struct etimer et;
@@ -93,22 +165,20 @@ PROCESS_THREAD(example_collect_process, ev, data)
   struct collect_neighbor *n;
   uint16_t parent_etx;
   uint16_t num_neighbors;
-  /* sensors */
-  int light, sound, pir;
-	struct dht SHT22;
+
   /* controls */
   int ready=0;
 
   PROCESS_BEGIN();
   while (1) {
     //Wait here for an event to happen
-
-
+#ifdef SERIAL_WAIT
     PROCESS_WAIT_EVENT();
     if(ev == serial_line_event_message) {
       printf("received line: %s\n", (char *)data);
       char *tt = data;
       if(tt[0] == 'm') {
+#endif
         printf("[INIT] Node %d.%d must begin\n", linkaddr_node_addr.u8[6],
         linkaddr_node_addr.u8[7]);
         collect_open(&tc, 130, COLLECT_ROUTER, &callbacks);
@@ -118,32 +188,27 @@ PROCESS_THREAD(example_collect_process, ev, data)
           collect_set_sink(&tc, 1);
         }
         /* Allow some time for the network to settle. */
-        etimer_set(&et, 20 * CLOCK_SECOND);
+        etimer_set(&et, CLOCK_SECOND * NETWORK_TIME_SETTLE);
         PROCESS_WAIT_UNTIL(etimer_expired(&et));
         ready = 1;
         if(ready) {
           while(1) {
             /* Send a packet every 10 seconds. */
-            etimer_set(&periodic, CLOCK_SECOND * 10);
-            etimer_set(&et, random_rand() % (CLOCK_SECOND * 10));
-
+            etimer_set(&periodic, CLOCK_SECOND * AVERAGE_TIME_SEC);
+            etimer_set(&et, random_rand() % (CLOCK_SECOND * AVERAGE_TIME_SEC));
             PROCESS_WAIT_UNTIL(etimer_expired(&et));
             {
-              light = readADC(A1);
-              sound = readADC(A2);
-              pir = digitalRead(D4);
-              if (dht_read(&SHT22, A0) == 0){
-                  printf("[IBAT];hum=%u.%u;temp=%u.%u;light=%d;sound=%d;pir=%d\n",
-                       SHT22.humidity_h, SHT22.humidity_l, SHT22.temp_h, SHT22.temp_l,
-                       light, sound, pir);
-                   packetbuf_clear();
-                   packetbuf_set_datalen(sprintf(packetbuf_dataptr(),
-                       "hum=%u.%u;temp=%u.%u;light=%d;sound=%d;pir=%d",
-                       SHT22.humidity_h, SHT22.humidity_l, SHT22.temp_h, SHT22.temp_l,
-                       light, sound, pir)
-                       + 1);
-                   collect_send(&tc, 15);
-              }
+              packetbuf_clear();
+              packetbuf_set_datalen(sprintf(packetbuf_dataptr(),
+                 "hum=%u.%u;temp=%u.%u;light=%d;sound=%d;pir=%d",
+                 SHT22.humidity_h, SHT22.humidity_l, SHT22.temp_h, SHT22.temp_l,
+                 light, sum_sound/sum_counter, sum_pir)
+                 + 1);
+
+              sum_pir = 0;
+              sum_sound = 0;
+              sum_counter = 0;
+              collect_send(&tc, 15);
 
               depth = collect_depth(&tc);
               n = collect_neighbor_list_find(&tc.neighbor_list, &tc.parent);
@@ -160,12 +225,13 @@ PROCESS_THREAD(example_collect_process, ev, data)
                 linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7],
                 paddr[0],paddr[1],depth,parent_etx,tc.rtmetric,
                 num_neighbors);
-            }
-            //PROCESS_WAIT_UNTIL(etimer_expired(&periodic));
-          } //end while 1
-        } // End ready
+            } // end PROCESS_WAIT_UNTIL
+          } // end while 1
+        } // end ready
+#ifdef SERIAL_WAIT
       } // end "m"
     } // end serial_line_event_message
+#endif
   } // end while 1
   PROCESS_END();
 }
