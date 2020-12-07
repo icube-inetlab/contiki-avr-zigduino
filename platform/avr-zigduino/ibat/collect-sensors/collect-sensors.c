@@ -70,7 +70,7 @@ static struct collect_conn tc;
 /* sampling sensors every 1 seconds */
 #define SAMPLE_INTERVAL_SEC 1
 /* sampling average and send interval in seconds */
-#define AVERAGE_TIME_SEC 10
+#define AVERAGE_TIME_SEC 60
 /* wait time the network settle in seconds */
 #define NETWORK_TIME_SETTLE 20
 
@@ -193,7 +193,7 @@ PROCESS_THREAD(collect_process, ev, data)
         ready = 1;
         if(ready) {
           while(1) {
-            /* Send a packet every 10 seconds. */
+            /* Send a packet every 60 seconds. */
             etimer_set(&periodic, CLOCK_SECOND * AVERAGE_TIME_SEC);
             etimer_set(&et, random_rand() % (CLOCK_SECOND * AVERAGE_TIME_SEC));
             PROCESS_WAIT_UNTIL(etimer_expired(&et));
