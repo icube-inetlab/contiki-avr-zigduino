@@ -95,6 +95,10 @@ void rtimercycle(void) {rtimerflag=1;}
 
 uint16_t ledtimer;
 
+
+#define read_eeprom_byte(address) eeprom_read_byte ((const uint8_t*)address)
+
+
 /*-------------------------------------------------------------------------*/
 /*----------------------Configuration of the .elf file---------------------*/
 #if 1
@@ -144,7 +148,8 @@ rng_get_uint8(void) {
 
 
 #if LINKADDR_CONF_SIZE == 8
-uint8_t mac_address[8] EEMEM = {0x02, 0x11, 0x22, 0xff, 0xfe, 0x33, 0x00, 0x55};
+//uint8_t mac_address[8] EEMEM = {0x02, 0x11, 0x22, 0xff, 0xfe, 0x33, 0x00, 0x55};
+uint8_t mac_address[8]  = {0x02, 0x11, 0x22, 0xff, 0xfe, 0x33, 0x00, 0x55};
 #else
 uint8_t short_mac_address[2] EEMEM = {0x01, 0xff};
 #endif
@@ -152,15 +157,22 @@ uint8_t short_mac_address[2] EEMEM = {0x01, 0xff};
 static bool get_mac_from_eeprom(uint8_t* macptr)
 {
 #if LINKADDR_CONF_SIZE == 8
-  eeprom_read_block ((void *)macptr,  &mac_address, 8);
+  printf("forging long mac from eeprom\n");
+  uint8_t small_addr[2];
+  small_addr[0] = read_eeprom_byte(0);
+  small_addr[1] = read_eeprom_byte(1);
+  printf("read EEPROM %02x:%02x\n", small_addr[0],small_addr[1]);
+  memcpy(macptr, mac_address, 8);
+  macptr[6]=small_addr[0];
+  macptr[7]=small_addr[1];
 #else
-  printf("reading short_mac in eeprom\n");
+  printf("forging short mac from eeprom\n");
   uint8_t small_addr[2];
   small_addr[0] = eeprom_read_byte( &short_mac_address[0]+8);
   small_addr[1] = eeprom_read_byte( &short_mac_address[1]+8);
   macptr[0]=small_addr[0];
   macptr[1]=small_addr[1];
-  printf("read %02x:%02x\n", small_addr[0],small_addr[1]);
+  printf("read EEPROM %02x:%02x\n", small_addr[0],small_addr[1]);
 
 #endif
   return true;
