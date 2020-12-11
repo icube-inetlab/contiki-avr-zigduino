@@ -6,3 +6,4 @@ all: collect-sensors
 
 CONTIKI_WITH_RIME = 1
 include $(CONTIKI)/Makefile.include
+CONTIKI_PLAT_DEFS = -DF_CPU=16000000UL -DAUTO_CRC_PADDING=2
